@@ -62,6 +62,12 @@
     -->
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        
+        <dependency>
             <groupId>com.lynden</groupId>
             <artifactId>GMapsFX</artifactId>
             <version>2.12.0</version>

@@ -6,11 +6,15 @@
 package com.lsmsdb.task3;
 
 import com.lsmsdb.task3.ui.SplashScreen;
+import com.lsmsdb.task3.ui.UserUiMapController;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -146,7 +150,46 @@ public class Main extends Application {
      * It will show the stages for the user.
      */
     private void showUserWorkspace() {
-        System.exit(1);
+        try {
+            //Map stage
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            Parent mapRoot = fxmlLoader.load(getClass().getResource("/fxml/UserUiMap.fxml").openStream());
+            UserUiMapController mapController = (UserUiMapController) fxmlLoader.getController();
+            Scene mapScene = new Scene(mapRoot);
+            Stage mapStage = new Stage();
+            mapStage.setTitle("Task 3: Map View");
+            mapStage.setScene(mapScene);
+            mapStage.setOnCloseRequest((event) -> {
+                Platform.exit();
+            });
+            mapStage.getIcons().add(getProgramIcon());
+            mapStage.show();
+
+            //Controls tage
+            /*Parent ctrlsRoot = FXMLLoader.load(getClass().getResource("/fxml/UserUiControls.fxml"));
+            Scene ctrlsScene = new Scene(ctrlsRoot);
+            Stage ctrlsStage = new Stage();
+            ctrlsStage.setTitle("Task 3: Controllers");
+            ctrlsStage.setScene(ctrlsScene);
+            ctrlsStage.setOnCloseRequest((event) -> {
+                Platform.exit();
+            });
+            ctrlsStage.getIcons().add(getProgramIcon());
+            ctrlsStage.show();*/
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Warning: can not procede");
+            alert.setContentText(
+                "It seems that some important file are missing.\n" + 
+                "Maybe you have a corrupted program (jar) or you are using an unsupported version of Java.\n" +
+                "The program will now be closed..."
+            );
+            alert.showAndWait();
+            System.exit(1);
+        }
     }
     
     /**
@@ -154,7 +197,7 @@ public class Main extends Application {
      * It will show the stage for the admin.
      */
     private void showAdminWorkspace() {
-        System.exit(1);
+        throw new UnsupportedOperationException("WIP");
     }
     
 }
