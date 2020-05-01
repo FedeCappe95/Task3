@@ -2,6 +2,7 @@ package com.lsmsdb.task3.neo4jmanager;
 
 import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.beans.Place;
+import com.lsmsdb.task3.computation.InfectionRiskCalculator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.neo4j.driver.AuthTokens;
