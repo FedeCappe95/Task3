@@ -1,13 +1,254 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
+    <!--
+        Project general properties
+    -->
     <groupId>com.lsmsdb</groupId>
     <artifactId>Task3</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <name>Task3</name>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <mainClass>com.lsmsdb.task3.Main</mainClass>
     </properties>
+    
+    <organization>
+        <!-- Used as the 'Vendor' for JNLP generation -->
+        <name>Gruppo Cappellini, Lelli, Lunghi, Susini</name>
+    </organization>
+    
+    
+    <!--
+        To ensure the correct execution of Maven, even with old version (like
+        the one shipped with NetBeans IDE 8.2), the repositories must be
+        specified manually since Maven Repository moved to HTTPS (only) on
+        January 15 2020 while the old versions of Maven still try to use HTTP.
+    -->
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </pluginRepository>
+    </pluginRepositories>
+    
+    
+    <!--
+        Dependencies section. It supports both online and offline dependecies.
+        Offline dependecies are jar placed in the folder
+        ${project.basedir}/storedLib
+    -->
+    <dependencies>
+        <dependency>
+            <groupId>com.lynden</groupId>
+            <artifactId>GMapsFX</artifactId>
+            <version>2.12.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/storedLib/GMapsFX-2.12.0.jar</systemPath>
+        </dependency>
+    </dependencies>
+    
+    
+    <!--
+        Follow the instructions for building the jar.
+    -->
+    <profiles>
+        <profile>
+            <!--
+                This profile creates a fat-jar.
+                A fat-jar is a jar executable with the main program and all the
+                libraries required to run
+            -->
+            <id>Fat-jar profile</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.6</version>
+                        <executions>
+                            <execution>
+                                <id>unpack-dependencies</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>unpack-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- <excludeScope>system</excludeScope> -->
+                                    <excludeGroupIds>junit,org.mockito,org.hamcrest</excludeGroupIds>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                    <excludes>**\/META-INF/*</excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>unpack-dependencies</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${java.home}/../bin/javafxpackager</executable>
+                                    <arguments>
+                                        <argument>-createjar</argument>
+                                        <argument>-nocss2bin</argument>
+                                        <argument>-appclass</argument>
+                                        <argument>${mainClass}</argument>
+                                        <!-- <argument>-classpath</argument>
+                                        <argument>../storedLib/*</argument> -->
+                                        <argument>-srcdir</argument>
+                                        <argument>${project.build.directory}/classes</argument>
+                                        <argument>-outdir</argument>
+                                        <argument>${project.build.directory}</argument>
+                                        <argument>-outfile</argument>
+                                        <argument>${project.build.finalName}.jar</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-cli</id>
+                                <goals>
+                                    <goal>exec</goal>                            
+                                </goals>
+                                <configuration>
+                                    <executable>${java.home}/bin/java</executable>
+                                    <commandlineArgs>${runfx.args}</commandlineArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.1</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <compilerArguments>
+                                <bootclasspath>${sun.boot.class.path}${path.separator}${java.home}/lib/jfxrt.jar</bootclasspath>
+                            </compilerArguments>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.16</version>
+                        <configuration>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${java.home}/lib/jfxrt.jar</additionalClasspathElement>
+                            </additionalClasspathElements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!--
+                In opposition to the previous one, this profile create a
+                thin-jar that is a jar without the libraries copied inside.
+            -->
+            <id>Thin-jar profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.1</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <compilerArguments>
+                                <bootclasspath>${sun.boot.class.path}${path.separator}${java.home}/lib/jfxrt.jar</bootclasspath>
+                            </compilerArguments>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>2.3.1</version>
+                        <configuration>
+                            <useDefaultManifestFile>true</useDefaultManifestFile>
+                            <archive>
+                                <index>false</index>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <classpathPrefix>libs/</classpathPrefix>
+                                    <mainClass>${mainClass}</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Class-Path>libs/GMapsFX-2.12.0.jar</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${java.home}/bin/java</executable>
+                                    <commandlineArgs>${runfx.args}</commandlineArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    
 </project>
