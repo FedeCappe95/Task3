@@ -1,6 +1,5 @@
 package com.lsmsdb.task3.ui;
 
-import com.lsmsdb.task3.Main;
 import static com.lsmsdb.task3.Main.getProgramIcon;
 import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
@@ -15,7 +14,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.print.Collation;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
