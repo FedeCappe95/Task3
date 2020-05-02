@@ -1,5 +1,6 @@
 package com.lsmsdb.task3;
 
+import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.ui.SplashScreen;
 import com.lsmsdb.task3.ui.UserUiMapController;
 import java.util.logging.Level;
@@ -83,10 +84,16 @@ public class Main extends Application {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
-                if(false) {
+                Neo4JManager.init();
+                
+                if(!Neo4JManager.isConnected()) {
                     Platform.runLater(() -> {
                         primaryStage.close();
-                        //showError();
+                        showErrorAlert(
+                            "Error: can not procede",
+                            "Error initializind Neo4J connection.\n" +
+                            "Please, verify if the database is reachable."
+                        );
                         System.exit(1);
                     });
                     return;
@@ -156,7 +163,7 @@ public class Main extends Application {
         }
         catch(Exception ex) {
             ex.printStackTrace();
-            showErrorAler();
+            showErrorAlertJarCorrupted();
             System.exit(1);
         }
     }
@@ -194,7 +201,7 @@ public class Main extends Application {
         }
         catch(Exception ex) {
             ex.printStackTrace();
-            showErrorAler();
+            showErrorAlertJarCorrupted();
             System.exit(1);
         }
     }
@@ -211,15 +218,20 @@ public class Main extends Application {
      * Show an arror alert that inform the user that an eror occured during
      * the loading phase
      */
-    private static void showErrorAler() {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("Warning: can not procede");
-        alert.setContentText(
+    private static void showErrorAlertJarCorrupted() {
+        showErrorAlert(
+            "Error: can not procede",
             "It seems that some important file are missing.\n" + 
             "Maybe you have a corrupted program (jar) or you are using an unsupported version of Java.\n" +
             "The program will now be closed..."
         );
+    }
+    
+    private static void showErrorAlert(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
         alert.showAndWait();
     }
     
