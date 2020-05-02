@@ -7,7 +7,9 @@ import com.lsmsdb.task3.utils.Utils;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -156,6 +158,13 @@ public class SignInUiController implements Initializable {
                     return null;
                 }
 
+                @Override
+                protected Set<String> handleKeySet() {
+                    Set<String> set = new HashSet<>();
+                    set.add("person");
+                    return set;
+                }
+                
                 @Override
                 public Enumeration<String> getKeys() {
                     return Collections.enumeration(keySet());
