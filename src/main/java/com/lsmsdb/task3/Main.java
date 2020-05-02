@@ -205,7 +205,7 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        Neo4JManager.explicitClose();
+        Neo4JManager.close();
         System.out.println("Goodbye! :)");
         super.stop();
     }
