@@ -1,11 +1,7 @@
 package com.lsmsdb.task3.ui;
 
 import com.lsmsdb.task3.utils.Utils;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
