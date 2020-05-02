@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<TabPane id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="694.0" prefWidth="634.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.AdminUiController">
+  <tabs>
+    <Tab id="updateTab" text="Update User">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="657.0" prefWidth="634.0">
+               <children>
+                  <Label layoutX="39.0" layoutY="45.0" prefHeight="32.0" prefWidth="232.0" text="Change a user current status:" />
+                  <TableView id="tableView" fx:id="tableViewUsers" layoutX="41.0" layoutY="215.0" prefHeight="382.0" prefWidth="553.0">
+                    <columns>
+                      <TableColumn prefWidth="75.0" text="C1" />
+                      <TableColumn prefWidth="75.0" text="C2" />
+                    </columns>
+                  </TableView>
+                  <Label layoutX="41.0" layoutY="99.0" prefHeight="14.0" prefWidth="46.0" text="User ID" />
+                  <Button id="updateButton" fx:id="buttonNewStatusUpdate" layoutX="460.0" layoutY="144.0" mnemonicParsing="false" text="Update" />
+                  <TextField id="userTextField" fx:id="textFieldSelectUserUserId" layoutX="97.0" layoutY="95.0" />
+                  <Label layoutX="205.0" layoutY="148.0" text="Pick date" />
+                  <Label layoutX="39.0" layoutY="148.0" text="New status" />
+                  <DatePicker id="datePicker" fx:id="datePickerNewStatus" layoutX="268.0" layoutY="144.0" prefHeight="23.0" prefWidth="159.0" />
+                  <RadioButton id="infectedRadioButton" fx:id="radioButtonNewStatusInfected" layoutX="114.0" layoutY="148.0" mnemonicParsing="false" text="Infected" />
+                  <RadioButton id="healedRadioButton" fx:id="radioButtonNewStatusHealed" layoutX="114.0" layoutY="171.0" mnemonicParsing="false" text="Healed" />
+               </children></AnchorPane>
+      </content>
+    </Tab>
+    <Tab id="criticalPlaceTab" text="Critical Places">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="47.0" layoutY="46.0" text="View Most Critical Places" />
+                  <Label layoutX="47.0" layoutY="83.0" text="Number of places to show" />
+                  <TextField id="numberOfPlacesTextField" fx:id="textFieldMostCriticalPlacesNumber" layoutX="199.0" layoutY="79.0" prefHeight="25.0" prefWidth="55.0" />
+                  <Button fx:id="buttonMostCriticalPlacesCompute" layoutX="273.0" layoutY="79.0" mnemonicParsing="false" text="Compute" />
+                  <TableView id="tableViewMostCriticalPlaces" fx:id="tableViewMostCriticalPlaces" layoutX="48.0" layoutY="163.0" prefHeight="466.0" prefWidth="541.0">
+                    <columns>
+                      <TableColumn prefWidth="75.0" text="ID" />
+                      <TableColumn prefWidth="75.0" text="Name" />
+                        <TableColumn prefWidth="96.0" text="Infection Risk" />
+                        <TableColumn prefWidth="75.0" text="Latitude" />
+                        <TableColumn prefWidth="54.0" text="Longitude" />
+                        <TableColumn prefWidth="75.0" text="Type" />
+                        <TableColumn prefWidth="75.0" text="Area" />
+                    </columns>
+                  </TableView>
+               </children></AnchorPane>
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>
