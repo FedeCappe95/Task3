@@ -18,26 +18,13 @@ import org.neo4j.driver.TransactionWork;
  * This class manages the Neo4j database. It is responsible for the connection
  * to the database and the queries needed by the whole application to work
  */
-public class Neo4JManager_singleton {
+public class Neo4JManager_static {
 
-    private static Neo4JManager_singleton istance = null;
     private static String hostUri;
     private static Driver driver;
-    private static Boolean connected = false;
-    private static Integer port_;
+    private static boolean connected = false;
+    private static int port_;
     private static String hostname_;
-    
-    
-    /**
-     * This function return the istance of Neo4JManager
-     * @return the Neo4JManager istance
-     */
-    public static Neo4JManager_singleton getIstance() {
-        if(istance == null) {
-            istance = new Neo4JManager_singleton();
-        }
-        return istance;
-    }
 
     /**
      * This function must be used to initiate a connection to the database
@@ -48,9 +35,9 @@ public class Neo4JManager_singleton {
      * @param password the password for the Neo4J graph connection
      * @return true if the connection is opened successfully, false otherwise
      */
-    public Boolean connect(String hostname, Integer port, String user, String password) {  
+    public static boolean init(String hostname, int port, String user, String password) {
         String uri = "bolt://" + hostname + ":" + port + "/";
-        driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));       
+        driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
         try {
             driver.verifyConnectivity();
         } catch (Exception e) {
@@ -73,41 +60,24 @@ public class Neo4JManager_singleton {
     }
 
     /**
-     * This function must be used to initiate a connection to the database with standard parameter
+     * This function must be used to initiate a connection to the database with
+     * standard parameter
+     *
      * @return true if the connection is opened successfully, false otherwise
      */
-    public Boolean connect() {
+    public static boolean init() {
         String host = "localhost";
-        Integer port = 7687;
+        int port = 7687;
         String user = "neo4j";
-        String password = "password4j";        
-        return connect(host, port, user, password);
-    }
-    
-    /**
-     * @return true if it is connected, false otherwise
-     */
-    public Boolean isConnected() {
-        return connected;
-    }
-    
-    /**
-     * Get the host bolt uri
-     * @return the host bolt uri
-     */
-    public String getUri() {
-        if (!connected) {
-            return null;
-        }
-        return hostUri;
-
+        String password = "password4j";
+        return init(host, port, user, password);
     }
 
     /**
      * Get the hostname
      * @return the hostname if the database is connected, null otherwise
      */
-    public String getHostname() {
+    public static String getHostname() {
         if (!connected) {
             return null;
         }
@@ -118,19 +88,39 @@ public class Neo4JManager_singleton {
      * Get the port
      * @return the port if the database is connected, -1 otherwise
      */
-    public Integer getPort() {
+    public static int getPort() {
         if (!connected) {
             return -1;
         }
         return port_;
     }
-    
+
+    /**
+     * @return true if it is connected, false otherwise
+     */
+    public static boolean isConnected() {
+        return connected;
+    }
+
+    /**
+     * Get the host bolt uri
+     *
+     * @return the host bolt uri
+     */
+    public static String getUri() {
+        if (!connected) {
+            return null;
+        }
+        return hostUri;
+
+    }
+
     /**
      * Explicit close function for the Neo4J driver
      *
      * @return true if the driver is now closed
      */
-    public Boolean close() {
+    public static boolean close() {
         try {
             if (driver != null) {
                 driver.close();
@@ -144,16 +134,17 @@ public class Neo4JManager_singleton {
         return false;
     }
 
+
     /**
-     * 
+     *
      * @param idPerson the id of the person which want to login
-     * @return the Person object, null if there are no person in the system
-     * with the idPerson specified
+     * @return the Person object, null if there are no person in the system with
+     * the idPerson specified
      */
-    public Person login(String idPerson) {
+    public static Person login(String idPerson) {
         if (!connected) {
             return null;
-        }        
+        }
         try (Session session = driver.session()) {
             return session.readTransaction(new TransactionWork<Person>() {
                 @Override
@@ -173,17 +164,17 @@ public class Neo4JManager_singleton {
             });
         }
     }
-    
+
     /**
      * Add a Person node to the database
      *
      * @param p the person to be added
      */
-    public Boolean addPerson(Person p) {
+    public static boolean addPerson(Person p) {
         if (!connected) {
             return false;
         }
-        
+
         try (Session session = driver.session()) {
             return session.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
@@ -218,7 +209,7 @@ public class Neo4JManager_singleton {
      *
      * @param p the place to be added
      */
-    public Boolean addPlace(Place p) {
+    public static boolean addPlace(Place p) {
         if (!connected) {
             return false;
         }
@@ -263,7 +254,7 @@ public class Neo4JManager_singleton {
      * @param idPerson id of the Person to be removed
      * @return true on success, false otherwise
      */
-    public Boolean removePerson(String idPerson) {
+    public static boolean removePerson(String idPerson) {
         if (!connected) {
             return false;
         }
@@ -292,7 +283,7 @@ public class Neo4JManager_singleton {
      * @param idPlace id of the Place to be removed
      * @return true on success, false otherwise
      */
-    public Boolean removePlace(String idPlace) {
+    public static boolean removePlace(String idPlace) {
         if (!connected) {
             return false;
         }
@@ -319,7 +310,7 @@ public class Neo4JManager_singleton {
      * Function used to delete all nodes and relationships from the databse.
      * Used only for testing.
      */
-    public Boolean clearDB() {
+    public static boolean clearDB() {
         if (!connected) {
             return false;
         }
@@ -344,7 +335,7 @@ public class Neo4JManager_singleton {
      * @param testTimestamp timestamp on which the visit occurred
      * @return
      */
-    public Boolean visit(String idPerson, Long idPlace, Long testTimestamp) {
+    public static boolean visit(String idPerson, Long idPlace, Long testTimestamp) {
         if (!connected) {
             return false;
         }
@@ -379,9 +370,9 @@ public class Neo4JManager_singleton {
      * @param n_hops maximum number of hops
      * @param validityTimeMillis interval of time on which each visit
      * relationships in the path are relevant
-     * @return number of infected people, -1 in case of errors
+     * @return number of infected people
      */
-    public Long infectedInAGivenSocialDistance(String idPerson, Long n_hops, Long validityTimeMillis) {
+    public static Long infectedInAGivenSocialDistance(String idPerson, Long n_hops, Long validityTimeMillis) {
         if (!connected) {
             return -1L;
         }
@@ -430,9 +421,9 @@ public class Neo4JManager_singleton {
      * @param idPerson the start person
      * @param validityTimeMillis the interval of time on which each visit
      * relationships in the path are relevant
-     * @return length of the path to the closest infected person, -1 in case of errors.
+     * @return length of the path to the closest infected person
      */
-    public Long userRiskOfInfection(String idPerson, Long validityTimeMillis) {
+    public static Long userRiskOfInfection(String idPerson, Long validityTimeMillis) {
         if (!connected) {
             return -1L;
         }
@@ -473,9 +464,9 @@ public class Neo4JManager_singleton {
      * the top "numberOfNodes" places)
      * @param validityTimeMillis interval of time on which relationships are
      * relevant
-     * @return list of the most riskful places for the given user, null in case of errors.
+     * @return list of the most riskful places for the given user
      */
-    public ArrayList<Place> userMostRiskfulPlace(String idPerson, Long numberOfNodes, Long validityTimeMillis) {
+    public static ArrayList<Place> userMostRiskfulPlace(String idPerson, Long numberOfNodes, Long validityTimeMillis) {
         if (!connected) {
             return null;
         }
@@ -510,9 +501,9 @@ public class Neo4JManager_singleton {
      * Retrieve risk of infection of a given place
      *
      * @param idPlace place on which the query must be performed
-     * @return risk index of the given place, -1.0 in case of errors.
+     * @return risk index of the given place
      */
-    public Double riskOfInfectionIndex(Long idPlace) {
+    public static Double riskOfInfectionIndex(Long idPlace) {
         if (!connected) {
             return null;
         }
@@ -541,9 +532,9 @@ public class Neo4JManager_singleton {
      * Find the most riskful places in the overall database
      *
      * @param max the top "max" places are retrieved
-     * @return list of the most riskful places in the overall database, null in case of errors.
+     * @return list of the most riskful places in the overall database
      */
-    public ArrayList<Place> mostCriticalPlace(Long max) {
+    public static ArrayList<Place> mostCriticalPlace(Long max) {
         if (!connected) {
             return null;
         }
@@ -576,7 +567,7 @@ public class Neo4JManager_singleton {
      * recognized as infected
      * @return true on success, false otherwise
      */
-    public Boolean userUpdateStatus_infected(String idPerson, Long timestampInfectedMills) {
+    public static Boolean userUpdateStatus_infected(String idPerson, Long timestampInfectedMills) {
         if (!connected) {
             return false;
         }
@@ -604,7 +595,7 @@ public class Neo4JManager_singleton {
      * as healed
      * @return true on success, false otherwise
      */
-    public Boolean userUpdateStatus_healed(String idPerson, Long timestampHealedMills) {
+    public static boolean userUpdateStatus_healed(String idPerson, Long timestampHealedMills) {
         if (!connected) {
             return false;
         }
@@ -630,9 +621,9 @@ public class Neo4JManager_singleton {
      * @param idPlace
      * @param validityTimeMills interval of time on which relationship entering
      * the Place node are relevant
-     * @return infection risk index of the given place, -1.0 in case of errors.
+     * @return infection risk index of the given place
      */
-    public Double computeRiskInfection(Long idPlace, Long validityTimeMills) {
+    public static Double computeRiskInfection(Long idPlace, Long validityTimeMills) {
         if (!connected) {
             return -1.0;
         }
@@ -678,9 +669,9 @@ public class Neo4JManager_singleton {
     /**
      * Count the number of healed people
      *
-     * @return number of healed people, -1 in case of errors.
+     * @return number of healed people
      */
-    public Long numberOfHealed() {
+    public static Long numberOfHealed() {
         if (!connected) {
             return -1L;
         }
