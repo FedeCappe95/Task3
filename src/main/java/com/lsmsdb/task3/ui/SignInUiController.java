@@ -114,7 +114,7 @@ public class SignInUiController implements Initializable {
             );
             return;
         }
-        Person person = Neo4JManager.login(userId);
+        Person person = Neo4JManager.getIstance().login(userId);
         if(person == null) {
             Utils.showErrorAlert(
                     "Error: failed to log in",
@@ -136,7 +136,7 @@ public class SignInUiController implements Initializable {
             );
             return;
         }
-        if(Neo4JManager.login(userId) != null) {
+        if(Neo4JManager.getIstance().login(userId) != null) {
             Utils.showErrorAlert(
                     "Error: can not sign up",
                     "This user ID is already in use!"
@@ -144,7 +144,7 @@ public class SignInUiController implements Initializable {
             return;
         }
         Person person = new Person(userId, name, surname);
-        Neo4JManager.addPerson(person);
+        Neo4JManager.getIstance().addPerson(person);
         showUserWorkspace(person);
     }
     

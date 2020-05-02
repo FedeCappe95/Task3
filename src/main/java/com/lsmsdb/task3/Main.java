@@ -2,7 +2,6 @@ package com.lsmsdb.task3;
 
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.ui.SplashScreen;
-import com.lsmsdb.task3.ui.UserUiMapController;
 import com.lsmsdb.task3.utils.Utils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,9 +83,9 @@ public class Main extends Application {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
-                Neo4JManager.init();
+                Neo4JManager.getIstance().connect();
                 
-                if(!Neo4JManager.isConnected()) {
+                if(!Neo4JManager.getIstance().isConnected()) {
                     Platform.runLater(() -> {
                         primaryStage.close();
                         Utils.showErrorAlert(
@@ -205,7 +204,7 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        Neo4JManager.close();
+        Neo4JManager.getIstance().close();
         System.out.println("Goodbye! :)");
         super.stop();
     }
