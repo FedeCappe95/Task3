@@ -20,8 +20,9 @@
                   <Label layoutX="39.0" layoutY="45.0" prefHeight="32.0" prefWidth="232.0" text="Change a user current status:" />
                   <TableView id="tableView" fx:id="tableViewUsers" layoutX="41.0" layoutY="215.0" prefHeight="382.0" prefWidth="553.0">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="C1" />
-                      <TableColumn prefWidth="75.0" text="C2" />
+                      <TableColumn prefWidth="75.0" text="User ID" />
+                      <TableColumn prefWidth="129.0" text="Infection timestamp" />
+                        <TableColumn prefWidth="110.0" text="Heal timestamp" />
                     </columns>
                   </TableView>
                   <Label layoutX="41.0" layoutY="99.0" prefHeight="14.0" prefWidth="46.0" text="User ID" />

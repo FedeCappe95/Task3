@@ -47,6 +47,7 @@ public class AdminUiController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         tableViewMostCriticalPlaces.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableViewUsers.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         for(TableColumn tc : tableViewMostCriticalPlaces.getColumns()) {
             switch(tc.getText()) {
                 case "ID":
@@ -69,6 +70,19 @@ public class AdminUiController implements Initializable {
                     break;
                 case "Area":
                     tc.setCellValueFactory(new PropertyValueFactory("area"));
+                    break;
+            }
+        }
+        for(TableColumn tc : tableViewUsers.getColumns()) {
+            switch(tc.getText()) {
+                case "User ID":
+                    tc.setCellValueFactory(new PropertyValueFactory("id"));
+                    break;
+                case "Infection timestamp":
+                    tc.setCellValueFactory(new PropertyValueFactory("formattedInfectionDate"));
+                    break;
+                case "Heal timestamp":
+                    tc.setCellValueFactory(new PropertyValueFactory("formattedHealedDate"));
                     break;
             }
         }

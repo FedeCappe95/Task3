@@ -1,17 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.lsmsdb.task3.beans;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 /**
- *
- * @author Alberto-Surface
+ * Bean class that contains the User (Person) information.
+ * It represents a type "Person" node.
  */
 public class Person {
+    
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd:MM:hhhh");
     
     private String id;
     private String name;
@@ -24,9 +23,8 @@ public class Person {
         this.id = id;
         this.name = name;
         this.surname = surname;
-        this.timestampInfected = (long)0; 
-        this.timestampHealed = (long)0;
-                     
+        this.timestampInfected = 0L; 
+        this.timestampHealed = 0L;
     } 
 
     public String getSurname() {
@@ -76,4 +74,19 @@ public class Person {
         this.timestampInfected = (Long)map.get("timestampInfected");
         this.timestampHealed = (Long)map.get("timestampHealed");
     }
+    
+    
+    
+    /*
+     * Other "getters" useful to display information
+    */
+    
+    public String getFormattedInfectionDate() {
+        return formatter.format(new Date(timestampInfected));
+    }
+    
+    public String getFormattedHealedDate() {
+        return formatter.format(new Date(timestampHealed));
+    }
+    
 }

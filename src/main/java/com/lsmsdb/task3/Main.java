@@ -138,7 +138,7 @@ public class Main extends Application {
             case "User":
                 showUserSignIn();
                 break;
-            case "Admin":
+            case "Admin (Delegated person)":
                 showAdminWorkspace();
                 break;
             default:
@@ -155,7 +155,7 @@ public class Main extends Application {
             Parent root = FXMLLoader.load(Main.class.getResource("/fxml/UserUiSignIn.fxml"));
             Scene scene = new Scene(root);
             Stage stage = new Stage();
-            stage.setTitle("Task 3: SignIn");
+            stage.setTitle("Sign in");
             stage.setScene(scene);
             stage.getIcons().add(getProgramIcon());
             stage.setResizable(false);
@@ -179,7 +179,7 @@ public class Main extends Application {
             UserUiMapController mapController = (UserUiMapController) fxmlLoader.getController();
             Scene mapScene = new Scene(mapRoot);
             Stage mapStage = new Stage();
-            mapStage.setTitle("Task 3: Map View");
+            mapStage.setTitle("Map View");
             mapStage.setScene(mapScene);
             mapStage.setOnCloseRequest((event) -> {
                 Platform.exit();
@@ -211,7 +211,21 @@ public class Main extends Application {
      * It will show the stage for the admin.
      */
     private static void showAdminWorkspace() {
-        throw new UnsupportedOperationException("WIP");
+        try {
+            Parent root = FXMLLoader.load(Main.class.getResource("/fxml/AdminUi.fxml"));
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setTitle("Admin panel");
+            stage.setScene(scene);
+            stage.getIcons().add(getProgramIcon());
+            stage.setResizable(false);
+            stage.show();
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+            showErrorAlertJarCorrupted();
+            System.exit(1);
+        }
     }
     
     /**
