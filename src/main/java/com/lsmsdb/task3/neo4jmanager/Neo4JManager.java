@@ -70,7 +70,13 @@ public class Neo4JManager implements AutoCloseable {
         String password = "password4j";        
         return init(host, port, user, password);
     }
-
+    
+    /**
+     * @return true if it is connected, false otherwise
+     */
+    public static boolean isConnected() {
+        return connected;
+    }
     
     /**
      * Get the host bolt uri
@@ -111,6 +117,36 @@ public class Neo4JManager implements AutoCloseable {
     }
 
     /**
+     * 
+     * @param idPerson the id of the person which want to login
+     * @return the Person object, null if there are no person in the system
+     * with the idPerson specified
+     */
+    public static Person login(String idPerson) {
+        if (!connected) {
+            return null;
+        }        
+        try (Session session = driver.session()) {
+            return session.readTransaction(new TransactionWork<Person>() {
+                @Override
+                public Person execute(Transaction tx) {
+                    HashMap<String, Object> map = new HashMap<>();
+                    String query = "MATCH (a:Person { id: $id})"
+                            + " RETURN a as person";
+                    map.put("id", idPerson);
+                    Result result = tx.run(query, map);
+                    if (!result.hasNext()) {
+                        return null;
+                    } else {
+                        return new Person(result.next().get("person").asMap());
+                    }
+                }
+
+            });
+        }
+    }
+    
+    /**
      * Add a Person node to the database
      *
      * @param p the person to be added
@@ -119,13 +155,7 @@ public class Neo4JManager implements AutoCloseable {
         if (!connected) {
             return false;
         }
-        /*
-        MERGE (a:Person { id: '20' })
-        ON CREATE SET a.name = "creato"
-        ON MATCH SET a.name = "mergeto"
-        RETURN a.name
         
-         */
         try (Session session = driver.session()) {
             return session.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
@@ -134,11 +164,13 @@ public class Neo4JManager implements AutoCloseable {
                     String query = "MERGE (a:Person { id: $id})"
                             + " ON CREATE SET a.id = $id, "
                             + " a.name = $name, "
+                            + " a.surname = $surname, "
                             + " a.timestampInfected = $timestampInfected, "
                             + " a.timestampHealed = $timestampHealed "
                             + " RETURN a.id";
                     map.put("id", p.getId());
                     map.put("name", p.getName());
+                    map.put("surname", p.getSurname());
                     map.put("timestampInfected", p.getTimestampInfected());
                     map.put("timestampHealed", p.getTimestampHealed());
                     Result result = tx.run(query, map);
@@ -603,7 +635,7 @@ public class Neo4JManager implements AutoCloseable {
                         Long timestamp = listTimestamp.get(i);
                         Person person = listPerson.get(i);
                         boolean isInfected = false;
-                        if (timestamp > person.timestampInfected - validityTimeMills && timestamp < person.timestampHealed) {
+                        if (timestamp > person.getTimestampInfected() - validityTimeMills && timestamp < person.getTimestampHealed()) {
                             isInfected = true;
                         }
                         calculator.addIncomingArc(isInfected, timestamp);

@@ -13,19 +13,29 @@ import java.util.Map;
  */
 public class Person {
     
-    public String id;
-    public String name;
-    public Long timestampInfected;
-    public Long timestampHealed;
+    private String id;
+    private String name;
+    private String surname;
+    private Long timestampInfected;
+    private Long timestampHealed;
     
 
-    public Person(String name, String id) {
+    public Person(String id, String name, String surname) {
         this.id = id;
         this.name = name;
+        this.surname = surname;
         this.timestampInfected = (long)0; 
         this.timestampHealed = (long)0;
                      
     } 
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
 
     public String getId() {
         return id;
@@ -59,14 +69,10 @@ public class Person {
         this.timestampHealed = timestampHealed;
     }
     
-    
-    
-    
-    
-    
     public Person(Map<String, Object> map){
         this.id = (String)map.get("id");
-        this.name = (String)map.get("name");        
+        this.name = (String)map.get("name");   
+        this.surname = (String)map.get("surname");
         this.timestampInfected = (Long)map.get("timestampInfected");
         this.timestampHealed = (Long)map.get("timestampHealed");
     }
