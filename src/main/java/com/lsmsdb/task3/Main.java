@@ -97,7 +97,7 @@ public class Main extends Application {
                     if(workingMode == WorkingMode.ADMIN_MODE)
                         showAdminWorkspace();
                     else if(workingMode == WorkingMode.USER_MODE)
-                        showUserWorkspace();
+                        showUserSignIn();
                     else
                         showLogin();
                 });
@@ -121,15 +121,15 @@ public class Main extends Application {
      * Show the login prompt.
      * When a working mode is selected, the corresponding workspace is shown.
      */
-    private void showLogin() {
-        String options[] = {"User","Admin"}; 
+    private static void showLogin() {
+        String options[] = {"User","Admin (Delegated person)"}; 
         ChoiceDialog choiseDialog = new ChoiceDialog(options[0], options);
         choiseDialog.setHeaderText("Login: please select your role");
         choiseDialog.showAndWait();
         String selected = (String)choiseDialog.getSelectedItem();
         switch(selected) {
             case "User":
-                showUserWorkspace();
+                showUserSignIn();
                 break;
             case "Admin":
                 showAdminWorkspace();
@@ -141,13 +141,34 @@ public class Main extends Application {
     
     /**
      * After the spash screen and the various checks you can call this function.
-     * It will show the stages for the user.
+     * It will show the stage for the user.
      */
-    private void showUserWorkspace() {
+    private static void showUserSignIn() {
+        try {
+            Parent root = FXMLLoader.load(Main.class.getResource("/fxml/UserUiSignIn.fxml"));
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setTitle("Task 3: SignIn");
+            stage.setScene(scene);
+            stage.getIcons().add(getProgramIcon());
+            stage.setResizable(false);
+            stage.show();
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+            showErrorAler();
+            System.exit(1);
+        }
+    }
+    
+    /**
+     * After the sign in phase, this function show the user workspace
+     */
+    private static void showUserWorkspace() {
         try {
             //Map stage
             FXMLLoader fxmlLoader = new FXMLLoader();
-            Parent mapRoot = fxmlLoader.load(getClass().getResource("/fxml/UserUiMap.fxml").openStream());
+            Parent mapRoot = fxmlLoader.load(Main.class.getResource("/fxml/UserUiMap.fxml").openStream());
             UserUiMapController mapController = (UserUiMapController) fxmlLoader.getController();
             Scene mapScene = new Scene(mapRoot);
             Stage mapStage = new Stage();
@@ -173,15 +194,7 @@ public class Main extends Application {
         }
         catch(Exception ex) {
             ex.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Warning: can not procede");
-            alert.setContentText(
-                "It seems that some important file are missing.\n" + 
-                "Maybe you have a corrupted program (jar) or you are using an unsupported version of Java.\n" +
-                "The program will now be closed..."
-            );
-            alert.showAndWait();
+            showErrorAler();
             System.exit(1);
         }
     }
@@ -190,8 +203,24 @@ public class Main extends Application {
      * After the spash screen and the various checks you can call this function.
      * It will show the stage for the admin.
      */
-    private void showAdminWorkspace() {
+    private static void showAdminWorkspace() {
         throw new UnsupportedOperationException("WIP");
+    }
+    
+    /**
+     * Show an arror alert that inform the user that an eror occured during
+     * the loading phase
+     */
+    private static void showErrorAler() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Warning: can not procede");
+        alert.setContentText(
+            "It seems that some important file are missing.\n" + 
+            "Maybe you have a corrupted program (jar) or you are using an unsupported version of Java.\n" +
+            "The program will now be closed..."
+        );
+        alert.showAndWait();
     }
     
 }

@@ -1,0 +1,10 @@
+1. General
+At APPNAME, we respect your privacy rights, so we have prepared this privacy policy to explain how we collect, use and share your data. By using or accessing the Service (APPNAME application) you agree to the terms of this Privacy Policy. We may update our Privacy Policy to reflect changes to our information practices.
+2. Information we collect
+When you register in the service and you enter the APPNAME application, we collect your username and password in order to identify you and provide you the access to our service.
+We store your location information for two months in order to give input to our services. After the two months all your information will be deleted from our system. We do not make a backup and we do not share your personal information with third-parties.
+3. Use of information obtained by APPNAME
+Your information will be used in the system in order to compute some aggregation indexes and make a network composed by contacts between users . This will helps to provide information about the users risks of contagion and the level of places security.
+4. Contact us
+To understand more about our Privacy Policy, access your information, or ask questions about our privacy practices or issue a complaint, please contact us at info@APPNAME.com
+
