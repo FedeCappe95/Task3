@@ -3,6 +3,7 @@ package com.lsmsdb.task3;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.ui.SplashScreen;
 import com.lsmsdb.task3.ui.UserUiMapController;
+import com.lsmsdb.task3.utils.Utils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -10,7 +11,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -89,7 +89,7 @@ public class Main extends Application {
                 if(!Neo4JManager.isConnected()) {
                     Platform.runLater(() -> {
                         primaryStage.close();
-                        showErrorAlert(
+                        Utils.showErrorAlert(
                             "Error: can not procede",
                             "Error initializind Neo4J connection.\n" +
                             "Please, verify if the database is reachable."
@@ -152,7 +152,7 @@ public class Main extends Application {
      */
     private static void showUserSignIn() {
         try {
-            Parent root = FXMLLoader.load(Main.class.getResource("/fxml/UserUiSignIn.fxml"));
+            Parent root = FXMLLoader.load(Main.class.getResource("/fxml/SignInUi.fxml"));
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.setTitle("Sign in");
@@ -160,44 +160,6 @@ public class Main extends Application {
             stage.getIcons().add(getProgramIcon());
             stage.setResizable(false);
             stage.show();
-        }
-        catch(Exception ex) {
-            ex.printStackTrace();
-            showErrorAlertJarCorrupted();
-            System.exit(1);
-        }
-    }
-    
-    /**
-     * After the sign in phase, this function show the user workspace
-     */
-    private static void showUserWorkspace() {
-        try {
-            //Map stage
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            Parent mapRoot = fxmlLoader.load(Main.class.getResource("/fxml/UserUiMap.fxml").openStream());
-            UserUiMapController mapController = (UserUiMapController) fxmlLoader.getController();
-            Scene mapScene = new Scene(mapRoot);
-            Stage mapStage = new Stage();
-            mapStage.setTitle("Map View");
-            mapStage.setScene(mapScene);
-            mapStage.setOnCloseRequest((event) -> {
-                Platform.exit();
-            });
-            mapStage.getIcons().add(getProgramIcon());
-            mapStage.show();
-
-            //Controls tage
-            /*Parent ctrlsRoot = FXMLLoader.load(getClass().getResource("/fxml/UserUiControls.fxml"));
-            Scene ctrlsScene = new Scene(ctrlsRoot);
-            Stage ctrlsStage = new Stage();
-            ctrlsStage.setTitle("Task 3: Controllers");
-            ctrlsStage.setScene(ctrlsScene);
-            ctrlsStage.setOnCloseRequest((event) -> {
-                Platform.exit();
-            });
-            ctrlsStage.getIcons().add(getProgramIcon());
-            ctrlsStage.show();*/
         }
         catch(Exception ex) {
             ex.printStackTrace();
@@ -233,7 +195,7 @@ public class Main extends Application {
      * the loading phase
      */
     private static void showErrorAlertJarCorrupted() {
-        showErrorAlert(
+        Utils.showErrorAlert(
             "Error: can not procede",
             "It seems that some important file are missing.\n" + 
             "Maybe you have a corrupted program (jar) or you are using an unsupported version of Java.\n" +
@@ -241,12 +203,6 @@ public class Main extends Application {
         );
     }
     
-    private static void showErrorAlert(String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
+    
     
 }

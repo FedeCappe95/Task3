@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="649.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiControlPanelController">
+   <children>
+      <Button id="refreshButton" layoutX="307.0" layoutY="80.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="60.0" text="Refresh">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Button>
+      <TextField id="userRiskTextArea" layoutX="182.0" layoutY="78.0" prefHeight="26.0" prefWidth="91.0" />
+      <Label layoutX="24.0" layoutY="78.0" prefHeight="26.0" prefWidth="158.0" text="My risk of infection:">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="labelUserName" alignment="CENTER" layoutX="23.0" layoutY="21.0" prefHeight="35.0" prefWidth="595.0" text="User A" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label layoutX="24.0" layoutY="148.0" prefHeight="26.0" prefWidth="282.0" text="Find infected users at the given distance:" />
+      <Button id="findButton" layoutX="487.0" layoutY="145.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="60.0" text="Find">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <SplitMenuButton id="distanceSplitMenu" layoutX="306.0" layoutY="148.0" mnemonicParsing="false" text="Very close">
+        <items>
+          <MenuItem mnemonicParsing="false" text="Very close" />
+            <MenuItem mnemonicParsing="false" text="Close" />
+          <MenuItem mnemonicParsing="false" text="Medium" />
+            <MenuItem mnemonicParsing="false" text="Distant" />
+            <MenuItem mnemonicParsing="false" text="Very distant" />
+        </items>
+      </SplitMenuButton>
+      <TextField id="placeTextArea" layoutX="139.0" layoutY="220.0" prefHeight="26.0" prefWidth="178.0" promptText="None" />
+      <Label layoutX="24.0" layoutY="225.0" text="Selected place:" />
+      <Label layoutX="353.0" layoutY="225.0" text="Risk of infection:" />
+      <TextField id="placeRiskTextArea" layoutX="478.0" layoutY="220.0" prefHeight="26.0" prefWidth="139.0" promptText="None" />
+      <TableView id="placesTable" layoutX="213.0" layoutY="295.0" prefHeight="257.0" prefWidth="228.0">
+        <columns>
+          <TableColumn prefWidth="75.0" text="Place" />
+          <TableColumn prefWidth="152.0" text="Risk of infection" />
+        </columns>
+      </TableView>
+      <Label layoutX="24.0" layoutY="295.0" prefHeight="26.0" prefWidth="178.0" text="Top 5 most riskful places:" />
+   </children>
+</AnchorPane>

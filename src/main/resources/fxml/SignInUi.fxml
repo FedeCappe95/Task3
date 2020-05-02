@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane id="AnchorPane" prefHeight="436.0" prefWidth="781.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.1" fx:controller="com.lsmsdb.task3.ui.UserUiSignInController">
+<AnchorPane id="AnchorPane" prefHeight="436.0" prefWidth="781.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.1" fx:controller="com.lsmsdb.task3.ui.SignInUiController">
    <children>
       <AnchorPane layoutX="63.0" layoutY="105.0" prefWidth="344.0" style="-fx-background-color: #0840ff;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
