@@ -81,8 +81,13 @@ public class UserUiControlPanelController implements Initializable {
         }
         
         splitMenuDistance.getItems().clear();
-        for(String menuItemText : Configuration.getDistanceLookupTable().keySet())
-            splitMenuDistance.getItems().add(new MenuItem(menuItemText));
+        for(String menuItemText : Configuration.getDistanceLookupTable().keySet()) {
+            MenuItem menuItem = new MenuItem(menuItemText);
+            menuItem.setOnAction((event) -> {
+                splitMenuDistance.setText(menuItemText);
+            });
+            splitMenuDistance.getItems().add(menuItem);
+        }
         
         buttonRefreshRiskOfInfection.setOnAction((event) -> {
             labelRiskOfInfection.setText(
@@ -93,9 +98,14 @@ public class UserUiControlPanelController implements Initializable {
         });
         
         buttonFind.setOnAction((event) -> {
+            Integer hopNumber = Configuration.getDistanceLookupTable().get(splitMenuDistance.getText());
+            if(hopNumber == null) {
+                Utils.showErrorAlert("Error", "Before continue, select a valid distance");
+                return;
+            }
             Long inagsd = Neo4JManager.getIstance().infectedInAGivenSocialDistance(
                     person.getId(),
-                    Configuration.getDistanceLookupTable().get(splitMenuDistance.getText()).longValue(),
+                    hopNumber.longValue(),
                     Configuration.getValidityPeriod()
             );
             Utils.showInfoAlert("Result", "I found " + inagsd + (inagsd == 1 ? " person" : " people"));
