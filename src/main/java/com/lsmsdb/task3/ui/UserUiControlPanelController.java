@@ -1,7 +1,6 @@
 package com.lsmsdb.task3.ui;
 
 import com.lsmsdb.task3.Main;
-import static com.lsmsdb.task3.Main.getProgramIcon;
 import com.lsmsdb.task3.beans.Person;
 import java.io.IOException;
 import java.net.URL;
@@ -14,7 +13,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitMenuButton;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
@@ -27,6 +30,18 @@ public class UserUiControlPanelController implements Initializable {
     */
     @FXML
     private Label labelUserName;
+    @FXML
+    private Button buttonRefreshRiskOfInfection;
+    @FXML
+    private Button buttonFind;
+    @FXML
+    private SplitMenuButton splitMenuDistance;
+    @FXML
+    private TextField textFieldSelectedPlaceRiskOfInfection;
+    @FXML
+    private TableView<?> tablePlaces;
+    @FXML
+    private Label labelRiskOfInfection;
     
     
     /*
@@ -54,7 +69,7 @@ public class UserUiControlPanelController implements Initializable {
             mapStage.setOnCloseRequest((event) -> {
                 Platform.exit();
             });
-            mapStage.getIcons().add(getProgramIcon());
+            mapStage.getIcons().add(Main.getProgramIcon());
             mapStage.show();
         } catch (IOException ex) {
             Logger.getLogger(UserUiControlPanelController.class.getName()).log(Level.SEVERE, null, ex);

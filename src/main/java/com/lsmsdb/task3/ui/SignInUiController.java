@@ -173,7 +173,7 @@ public class SignInUiController implements Initializable {
             Parent root = FXMLLoader.load(SignInUiController.class.getResource("/fxml/UserUiControlPanel.fxml"),resourceBundle);
             Scene scene = new Scene(root);
             Stage stage = new Stage();
-            stage.setTitle("Sign in");
+            stage.setTitle("User panel");
             stage.setScene(scene);
             stage.getIcons().add(getProgramIcon());
             stage.setResizable(false);
