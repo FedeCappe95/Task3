@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class Person {
     
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd:MM:hhhh");
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd:MM:hhhh hh:mm");
     
     private String id;
     private String name;
@@ -82,10 +82,14 @@ public class Person {
     */
     
     public String getFormattedInfectionDate() {
+        if(timestampInfected == null || timestampInfected == 0L)
+            return "N/D";
         return formatter.format(new Date(timestampInfected));
     }
     
     public String getFormattedHealedDate() {
+        if(timestampHealed == null || timestampHealed == 0L)
+            return "N/D";
         return formatter.format(new Date(timestampHealed));
     }
     

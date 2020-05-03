@@ -18,13 +18,6 @@
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="657.0" prefWidth="634.0">
                <children>
                   <Label layoutX="39.0" layoutY="45.0" prefHeight="32.0" prefWidth="232.0" text="Change a user current status:" />
-                  <TableView id="tableView" fx:id="tableViewUsers" layoutX="41.0" layoutY="215.0" prefHeight="382.0" prefWidth="553.0">
-                    <columns>
-                      <TableColumn prefWidth="75.0" text="User ID" />
-                      <TableColumn prefWidth="129.0" text="Infection timestamp" />
-                        <TableColumn prefWidth="110.0" text="Heal timestamp" />
-                    </columns>
-                  </TableView>
                   <Label layoutX="41.0" layoutY="99.0" prefHeight="14.0" prefWidth="46.0" text="User ID" />
                   <Button id="updateButton" fx:id="buttonNewStatusUpdate" layoutX="460.0" layoutY="144.0" mnemonicParsing="false" text="Update" />
                   <TextField id="userTextField" fx:id="textFieldSelectUserUserId" layoutX="97.0" layoutY="95.0" />
@@ -33,6 +26,7 @@
                   <DatePicker id="datePicker" fx:id="datePickerNewStatus" layoutX="268.0" layoutY="144.0" prefHeight="23.0" prefWidth="159.0" />
                   <RadioButton id="infectedRadioButton" fx:id="radioButtonNewStatusInfected" layoutX="114.0" layoutY="148.0" mnemonicParsing="false" text="Infected" />
                   <RadioButton id="healedRadioButton" fx:id="radioButtonNewStatusHealed" layoutX="114.0" layoutY="171.0" mnemonicParsing="false" text="Healed" />
+                  <Button id="updateButton" fx:id="buttonUserShow" layoutX="280.0" layoutY="95.0" mnemonicParsing="false" text="Show" />
                </children></AnchorPane>
       </content>
     </Tab>

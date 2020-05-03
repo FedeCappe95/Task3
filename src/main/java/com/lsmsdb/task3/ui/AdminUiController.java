@@ -1,6 +1,9 @@
 package com.lsmsdb.task3.ui;
 
+import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.beans.Place;
+import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
+import com.lsmsdb.task3.utils.Utils;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -12,6 +15,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 
 /**
  * FXML Controller class for the delegated person panel
@@ -21,8 +25,6 @@ public class AdminUiController implements Initializable {
     /*
      * FXML private data members
     */
-    @FXML
-    private TableView<?> tableViewUsers;
     @FXML
     private Button buttonNewStatusUpdate;
     @FXML
@@ -39,6 +41,8 @@ public class AdminUiController implements Initializable {
     private Button buttonMostCriticalPlacesCompute;
     @FXML
     private TableView<Place> tableViewMostCriticalPlaces;
+    @FXML
+    private Button buttonUserShow;
     
     
     /**
@@ -47,7 +51,6 @@ public class AdminUiController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         tableViewMostCriticalPlaces.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tableViewUsers.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         for(TableColumn tc : tableViewMostCriticalPlaces.getColumns()) {
             switch(tc.getText()) {
                 case "ID":
@@ -73,19 +76,34 @@ public class AdminUiController implements Initializable {
                     break;
             }
         }
-        for(TableColumn tc : tableViewUsers.getColumns()) {
-            switch(tc.getText()) {
-                case "User ID":
-                    tc.setCellValueFactory(new PropertyValueFactory("id"));
-                    break;
-                case "Infection timestamp":
-                    tc.setCellValueFactory(new PropertyValueFactory("formattedInfectionDate"));
-                    break;
-                case "Heal timestamp":
-                    tc.setCellValueFactory(new PropertyValueFactory("formattedHealedDate"));
-                    break;
-            }
+        
+        buttonUserShow.setOnAction((event) -> {
+            showUserInfo(textFieldSelectUserUserId.getText());
+        });
+        
+        textFieldSelectUserUserId.setOnKeyPressed((event) -> {
+            if(event.getCode().equals(KeyCode.ENTER))
+                showUserInfo(textFieldSelectUserUserId.getText());
+        });
+    }
+    
+    public static void showUserInfo(String userId) {
+        if(userId.isEmpty()) {
+            Utils.showErrorAlert("Error", "To procede, insert a user id");
+            return;
         }
+        Person person = Neo4JManager.getIstance().login(userId);
+        if(person == null) {
+            Utils.showErrorAlert("Person not found", userId + " does not correspond to any person in the database");
+            return;
+        }
+        Utils.showInfoAlert(
+                "User info",
+                "Name: " + person.getName() +
+                "\nSurname: " + person.getSurname() +
+                "\nInfection timestamp: " + person.getFormattedInfectionDate() +
+                "\nHealed timestamp: " + person.getFormattedHealedDate()
+        );
     }
     
 }
