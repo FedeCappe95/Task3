@@ -3,10 +3,10 @@ Bar Vittoria,bar tabacchi,43.7198169,10.9461742,15
 Azienda Usl Toscana Centro,sanitario,43.7111843,10.9461809,30
 I.S.I.S "il Pontormo",istruzione,43.7156804,10.9317144,80
 Stadio "Carlo Castellani",struttura sportiva,43.7264902,10.9525913,100
-LINK Fitness Club,43.7308092,struttura sportiva,10.9197516,40
+LINK Fitness Club,struttura sportiva,43.7308092,10.9197516,40
 Ospedale San Giuseppe,sanitario,43.7219727,10.9319763,300
 Cinema Teatro Excelsior,ludico,43.720783,10.9455954,15
-Spizzometro,43.7226026,ristorante,10.9423265,10
+Spizzometro,ristorante,43.7226026,10.9423265,10
 Stazione di Empoli,stazione,43.7164707,10.9505863,150
 Bibilioteca comunale "Renato Fucini",istruzione,43.718790,10.946500,200
 Penny Market,supermercato,43.7318148,10.9162933,50

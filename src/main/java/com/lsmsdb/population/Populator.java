@@ -19,8 +19,8 @@ public class Populator {
     /**
      * @param args the command line arguments
      */
-    private static String personDir = "C:\\Users\\susin\\Documents\\GitHub\\datasetTask3\\datasetTask3\\datasetTask3" ;
-    private static String placeDir = "C:\\Users\\susin\\Documents\\GitHub\\datasetTask3\\datasetTask3\\datasetTask3";
+    private static String personDir = "C:\\Users\\susin\\Documents\\GitHub\\Task3\\datasetTask3\\datasetTask3\\people_dataset.txt" ;
+    private static String placeDir = "C:\\Users\\susin\\Documents\\GitHub\\Task3\\datasetTask3\\datasetTask3\\places.txt";
     
     public static void main(String[] args) {
         
@@ -29,7 +29,6 @@ public class Populator {
         try(BufferedReader reader = new BufferedReader(new FileReader(personDir))){
             String line = reader.readLine();
             while(line!=null) {
-                line = reader.readLine();
                 String[] toInsert = line.split(",");
                 Person p = new Person(toInsert[0], toInsert[1], toInsert[2]);
                 Neo4JManager_static.addPerson(p);
@@ -39,17 +38,17 @@ public class Populator {
             e.printStackTrace();
         }
         
-        try(BufferedReader reader = new BufferedReader(new FileReader("places.txt"))){
+        try(BufferedReader reader = new BufferedReader(new FileReader(placeDir))){
             String line = reader.readLine();
             Long id = 0L;
             while(line!=null) {
-                line = reader.readLine();
                 String[] toInsert = line.split(",");
                 Place p = new Place(toInsert[0], id);
-                p.setLatitude(Double.parseDouble(toInsert[1]));
-                p.setLongitude(Double.parseDouble(toInsert[2]));
+                p.setLatitude(Double.parseDouble(toInsert[2]));
+                p.setLongitude(Double.parseDouble(toInsert[3]));
                 Neo4JManager_static.addPlace(p);
                 ++id;
+                line = reader.readLine(); 
             }
         }catch(Exception e){
             e.printStackTrace();
