@@ -21,6 +21,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -95,6 +97,13 @@ public class SignInUiController implements Initializable {
         
         buttonLogIn.setOnAction((event) -> {
             signIn(textFieldLoginUserId.getText());
+        });
+        
+        textFieldLoginUserId.setOnKeyPressed((event) -> {
+            if(event.getCode().equals(KeyCode.ENTER)) {
+                signIn(textFieldLoginUserId.getText());
+                event.consume();
+            }
         });
         
         buttonSignUpAndLogin.setOnAction((event) -> {
