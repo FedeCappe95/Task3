@@ -132,6 +132,9 @@ public class Main extends Application {
         ChoiceDialog choiseDialog = new ChoiceDialog(options[0], options);
         choiseDialog.setHeaderText("Login: please select your role");
         choiseDialog.showAndWait();
+        if(choiseDialog.getResult().equals("Annulla")) {
+            System.exit(1);
+        }
         String selected = (String)choiseDialog.getSelectedItem();
         switch(selected) {
             case "User":
