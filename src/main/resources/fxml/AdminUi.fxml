@@ -19,7 +19,7 @@
                <children>
                   <Label layoutX="39.0" layoutY="45.0" prefHeight="32.0" prefWidth="232.0" text="Change a user current status:" />
                   <Label layoutX="41.0" layoutY="99.0" prefHeight="14.0" prefWidth="46.0" text="User ID" />
-                  <Button id="updateButton" fx:id="buttonNewStatusUpdate" layoutX="460.0" layoutY="144.0" mnemonicParsing="false" text="Update" />
+                  <Button id="updateButton" fx:id="buttonUserUpdate" layoutX="460.0" layoutY="144.0" mnemonicParsing="false" text="Update" />
                   <TextField id="userTextField" fx:id="textFieldSelectUserUserId" layoutX="97.0" layoutY="95.0" />
                   <Label layoutX="205.0" layoutY="148.0" text="Pick date" />
                   <Label layoutX="39.0" layoutY="148.0" text="New status" />

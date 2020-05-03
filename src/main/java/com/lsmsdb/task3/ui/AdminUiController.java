@@ -5,6 +5,8 @@ import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.utils.Utils;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,7 +28,7 @@ public class AdminUiController implements Initializable {
      * FXML private data members
     */
     @FXML
-    private Button buttonNewStatusUpdate;
+    private Button buttonUserUpdate;
     @FXML
     private TextField textFieldSelectUserUserId;
     @FXML
@@ -85,9 +87,13 @@ public class AdminUiController implements Initializable {
             if(event.getCode().equals(KeyCode.ENTER))
                 showUserInfo(textFieldSelectUserUserId.getText());
         });
+        
+        buttonUserUpdate.setOnAction((event) -> {
+            updateUser();
+        });
     }
     
-    public static void showUserInfo(String userId) {
+    private static void showUserInfo(String userId) {
         if(userId.isEmpty()) {
             Utils.showErrorAlert("Error", "To procede, insert a user id");
             return;
@@ -104,6 +110,47 @@ public class AdminUiController implements Initializable {
                 "\nInfection timestamp: " + person.getFormattedInfectionDate() +
                 "\nHealed timestamp: " + person.getFormattedHealedDate()
         );
+    }
+    
+    private void updateUser() {
+        String userId = textFieldSelectUserUserId.getText();
+        if(userId.isEmpty()) {
+            Utils.showErrorAlert("Error", "To procede, insert a user id");
+            return;
+        }
+        Person person = Neo4JManager.getIstance().login(userId);
+        if(person == null) {
+            Utils.showErrorAlert("Person not found", userId + " does not correspond to any person in the database");
+            return;
+        }
+        if(!radioButtonNewStatusInfected.isSelected() && !radioButtonNewStatusHealed.isSelected()) {
+            Utils.showErrorAlert("Error", "To procede, chose the new status type (infected or healed)");
+            return;
+        }
+        long timestamp = 0L;
+        try {
+            SimpleDateFormat parser = new SimpleDateFormat("dd/MM/yyyy");
+            timestamp = parser.parse(datePickerNewStatus.getEditor().getText()).getTime();
+        }
+        catch(ParseException e) {
+            Utils.showErrorAlert("Error", "Please, insert a valid date");
+            return;
+        }
+        if(radioButtonNewStatusInfected.isSelected()) {
+            Neo4JManager.getIstance().userUpdateStatus_infected(userId, timestamp);
+            Neo4JManager.getIstance().userUpdateStatus_healed(userId, 0L);
+        } else {
+            if(person.getTimestampInfected() == null || person.getTimestampInfected() == 0L) {
+                Utils.showErrorAlert("Error", "You are trying to set a person as healed while he/she was never been infected");
+                return;
+            }
+            if(person.getTimestampHealed() < person.getTimestampInfected()) {
+                Utils.showErrorAlert("Error", "You are trying to set a person as healed in a date before his/her infection date");
+                return;
+            }
+            Neo4JManager.getIstance().userUpdateStatus_healed(userId, timestamp);
+        }
+        showUserInfo(userId);
     }
     
 }
