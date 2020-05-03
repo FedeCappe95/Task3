@@ -74,14 +74,8 @@ public class Main extends Application {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    splashScreen.setJob("Initializing...");
+                    splashScreen.setJob("Initializing Neo4J manager...");
                 });
-                
-                try {
-                    Thread.sleep(600);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
                 
                 Neo4JManager.getIstance().connect();
                 
@@ -132,8 +126,9 @@ public class Main extends Application {
         ChoiceDialog choiseDialog = new ChoiceDialog(options[0], options);
         choiseDialog.setHeaderText("Login: please select your role");
         choiseDialog.showAndWait();
-        if(choiseDialog.getResult().equals("Annulla")) {
+        if(choiseDialog.getResult() == null) {
             Platform.exit();
+            return;
         }
         String selected = (String)choiseDialog.getSelectedItem();
         switch(selected) {

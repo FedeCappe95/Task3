@@ -48,9 +48,8 @@ public class UserUiMapController implements Initializable {
     /*
      * Constants
     */
-    private static final double initialMapPositionLatitude = 43.713390;
-    private static final double initialMapPositionLongitude = 10.776210;
-    private static final double initialRadius = 1000;
+    private static final double initialMapPositionLatitude = 43.718609D;
+    private static final double initialMapPositionLongitude = 10.942520D;
     
     /*
      * Other objects
@@ -140,20 +139,6 @@ public class UserUiMapController implements Initializable {
                 map.addUIEventHandler(UIEventType.click, (JSObject obj) -> {
                     LatLong ll = new LatLong((JSObject) obj.getMember("latLng"));
                     centerMap(ll);
-                });
-                
-                //The circle in the map
-                CircleOptions cOpts = new CircleOptions()
-                        .center(new LatLong(initialMapPositionLatitude, initialMapPositionLongitude))
-                        .radius(initialRadius)
-                        .strokeColor("green")
-                        .strokeWeight(2)
-                        .fillColor("orange")
-                        .fillOpacity(0.3);
-                circle = new Circle(cOpts);
-                map.addMapShape(circle);
-                map.addUIEventHandler(circle, UIEventType.click, (JSObject obj) -> {
-                    circle.setEditable(!circle.getEditable());
                 });
                 
                 //Next initialization step
@@ -268,25 +253,6 @@ public class UserUiMapController implements Initializable {
      */
     public void centerMap(Coordinate coordinate) {
         centerMap(new LatLong(coordinate.getLatitude(), coordinate.getLongitude()));
-    }
-    
-    /**
-     * Set the radius of the circle on the map
-     * @param radius radius expressed in meters
-     */
-    public void setRadius(double radius) {
-        circle.setRadius(radius);
-        lblRadius.setText(
-                radius < 1000 ? (radius + " m") : (radius / 1000 + " Km")
-        );
-    }
-    
-    /**
-     * Retrieve the current set radius
-     * @return the radius expressed in meters
-     */
-    public double getRadius() {
-        return (double)circle.getRadius();
     }
     
     /**

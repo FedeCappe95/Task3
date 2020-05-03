@@ -132,6 +132,15 @@ public class UserUiControlPanelController implements Initializable {
         buttonMostCriticalPlacesRefresh.setOnAction((event) -> {
             retriveAndShowMostCriticalPlaces();
         });
+        
+        tablePlaces.setOnMouseClicked((event) -> {
+            Place selectedPlace = tablePlaces.getSelectionModel().getSelectedItem();
+            if(selectedPlace == null)
+                return;
+            mapController.centerMap(
+                    new Coordinate(selectedPlace.getLatitude(), selectedPlace.getLongitude())
+            );
+        });
     }
     
     public void retriveAndShowMostCriticalPlaces() {
