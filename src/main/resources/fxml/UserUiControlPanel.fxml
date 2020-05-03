@@ -33,19 +33,10 @@
             <Font size="16.0" />
          </font>
       </Button>
-      <SplitMenuButton id="distanceSplitMenu" fx:id="splitMenuDistance" layoutX="306.0" layoutY="148.0" mnemonicParsing="false" text="Very close">
-        <items>
-          <MenuItem mnemonicParsing="false" text="Very close" />
-            <MenuItem mnemonicParsing="false" text="Close" />
-          <MenuItem mnemonicParsing="false" text="Medium" />
-            <MenuItem mnemonicParsing="false" text="Distant" />
-            <MenuItem mnemonicParsing="false" text="Very distant" />
-        </items>
-      </SplitMenuButton>
-      <TextField id="placeTextArea" layoutX="139.0" layoutY="220.0" prefHeight="26.0" prefWidth="178.0" promptText="None" />
+      <TextField id="placeTextArea" fx:id="textFieldSelectedPlaceName" editable="false" layoutX="139.0" layoutY="220.0" prefHeight="26.0" prefWidth="178.0" promptText="None" />
       <Label layoutX="24.0" layoutY="225.0" text="Selected place:" />
       <Label layoutX="353.0" layoutY="225.0" text="Risk of infection:" />
-      <TextField id="placeRiskTextArea" fx:id="textFieldSelectedPlaceRiskOfInfection" layoutX="478.0" layoutY="220.0" prefHeight="26.0" prefWidth="139.0" promptText="None" />
+      <TextField id="placeRiskTextArea" fx:id="textFieldSelectedPlaceRiskOfInfection" editable="false" layoutX="478.0" layoutY="220.0" prefHeight="26.0" prefWidth="139.0" promptText="None" />
       <TableView id="placesTable" fx:id="tablePlaces" layoutX="24.0" layoutY="334.0" prefHeight="322.0" prefWidth="601.0">
         <columns>
           <TableColumn prefWidth="75.0" text="Place" />
@@ -58,5 +49,12 @@
             <Font size="15.0" />
          </font>
       </Label>
+      <SplitMenuButton fx:id="splitMenuDistance" layoutX="302.0" layoutY="151.0" mnemonicParsing="false" prefWidth="150.0" text="Select a distance">
+        <items>
+          <MenuItem mnemonicParsing="false" text="Action 1" />
+          <MenuItem mnemonicParsing="false" text="Action 2" />
+        </items>
+      </SplitMenuButton>
+      <Button fx:id="buttonMostCriticalPlacesRefresh" layoutX="569.0" layoutY="296.0" mnemonicParsing="false" text="Refresh" />
    </children>
 </AnchorPane>
