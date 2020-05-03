@@ -9,6 +9,10 @@ import java.io.*;
 import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager_static;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -25,7 +29,7 @@ public class Populator {
     public static void main(String[] args) {
         
         Neo4JManager_static.init();
-        
+        /*
         try(BufferedReader reader = new BufferedReader(new FileReader(personDir))){
             String line = reader.readLine();
             while(line!=null) {
@@ -51,6 +55,43 @@ public class Populator {
                 line = reader.readLine(); 
             }
         }catch(Exception e){
+            e.printStackTrace();
+        }*/
+        
+        Map <String, Long> map = new HashMap<>();
+        try(BufferedReader reader = new BufferedReader(new FileReader(placeDir))){
+            
+            String movements = "C:\\Users\\susin\\Documents\\GitHub\\Task3\\datasetTask3\\movements\\";
+            
+            String line = reader.readLine();
+            Long id = 0L;
+            while(line!=null) {
+                String[] forMap = line.split(",");
+                map.put(forMap[0], id);
+                ++id;
+                line = reader.readLine();
+            }
+            for(id = 1L; id <= 100; ++id) {
+                String s = Long.toString(id);
+                if(s.length() > 1){
+                    s = "0" + s;
+                }
+                else {
+                    s = "00" + s;
+                }
+                BufferedReader secRead = new BufferedReader(new FileReader(movements + s));
+                String secLine = secRead.readLine();
+                while(secLine!=null) {
+                    String[] splitted = secLine.split(",");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy HH:mm");
+                    Date date = sdf.parse(splitted[0]);
+                    Long ts = date.getTime();
+                    Neo4JManager_static.visit(s, map.get(splitted[1]), ts);
+                    secLine = secRead.readLine();
+                }
+            }
+        }
+        catch(Exception e){
             e.printStackTrace();
         }
         
