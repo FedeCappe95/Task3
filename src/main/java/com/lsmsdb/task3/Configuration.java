@@ -1,4 +1,7 @@
-package com.lsmsdb.task3.computation;
+package com.lsmsdb.task3;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class that contains all the configurable parameter
@@ -6,6 +9,16 @@ package com.lsmsdb.task3.computation;
 public class Configuration {
     
     private static long VALIDITY_PERIOD = 2*7*24*60*60*1000; //2 weeks
+    private static final Map<String,Integer> DISTANCE_LOOKUP_TABLE;
+    
+    static {
+        DISTANCE_LOOKUP_TABLE = new HashMap<>();
+        DISTANCE_LOOKUP_TABLE.put("Very close", 2);
+        DISTANCE_LOOKUP_TABLE.put("Close", 4);
+        DISTANCE_LOOKUP_TABLE.put("Medium", 6);
+        DISTANCE_LOOKUP_TABLE.put("Distant", 8);
+        DISTANCE_LOOKUP_TABLE.put("Very distant", 10);
+    }
     
     /**
      * Return the current timestamp.
@@ -32,6 +45,10 @@ public class Configuration {
      */
     public static long getValidityPeriod() {
         return VALIDITY_PERIOD;
+    }
+    
+    public static Map<String,Integer> getDistanceLookupTable() {
+        return DISTANCE_LOOKUP_TABLE;
     }
     
 }

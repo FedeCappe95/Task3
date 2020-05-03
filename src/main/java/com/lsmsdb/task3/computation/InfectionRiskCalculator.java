@@ -1,5 +1,6 @@
 package com.lsmsdb.task3.computation;
 
+import com.lsmsdb.task3.Configuration;
 import java.util.Date;
 
 /**
