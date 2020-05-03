@@ -55,5 +55,6 @@
           <MenuItem mnemonicParsing="false" text="Action 2" />
         </items>
       </SplitMenuButton>
+      <Button fx:id="buttonMostCriticalPlacesRefresh" layoutX="569.0" layoutY="296.0" mnemonicParsing="false" text="Refresh" />
    </children>
 </AnchorPane>

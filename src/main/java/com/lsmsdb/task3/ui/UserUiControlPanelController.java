@@ -3,10 +3,12 @@ package com.lsmsdb.task3.ui;
 import com.lsmsdb.task3.Configuration;
 import com.lsmsdb.task3.Main;
 import com.lsmsdb.task3.beans.Person;
+import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.utils.Utils;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,8 +22,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 /**
@@ -43,9 +47,11 @@ public class UserUiControlPanelController implements Initializable {
     @FXML
     private TextField textFieldSelectedPlaceRiskOfInfection;
     @FXML
-    private TableView<?> tablePlaces;
+    private TableView<Place> tablePlaces;
     @FXML
     private Label labelRiskOfInfection;
+    @FXML
+    private Button buttonMostCriticalPlacesRefresh;
     
     
     /*
@@ -60,6 +66,18 @@ public class UserUiControlPanelController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        tablePlaces.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        for(TableColumn tc : tablePlaces.getColumns()) {
+            switch(tc.getText()) {
+                case "Place":
+                    tc.setCellValueFactory(new PropertyValueFactory("name"));
+                    break;
+                case "Risk of infection":
+                    tc.setCellValueFactory(new PropertyValueFactory("infectionRisk"));
+                    break;
+            }
+        }
+        
         person = (Person)rb.getObject("person");
         labelUserName.setText(person.getName() + " " + person.getSurname());
         try {
@@ -110,6 +128,32 @@ public class UserUiControlPanelController implements Initializable {
             );
             Utils.showInfoAlert("Result", "I found " + inagsd + (inagsd == 1 ? " person" : " people"));
         });
+        
+        buttonMostCriticalPlacesRefresh.setOnAction((event) -> {
+            retriveAndShowMostCriticalPlaces();
+        });
+    }
+    
+    public void retriveAndShowMostCriticalPlaces() {
+        try {
+            mapController.clearMarkers();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            tablePlaces.getItems().clear();
+            return;
+        }
+        List<Place> places = Neo4JManager.getIstance().userMostRiskfulPlace(
+                person.getId(),
+                Configuration.getUserMostCriticalPlacesNumber(),
+                Configuration.getValidityPeriod()
+        );
+        tablePlaces.getItems().setAll(places);
+        for(Place place : places) {
+            mapController.createAndAddMarker(
+                    new Coordinate(place.getName(), place.getLatitude(), place.getLongitude())
+            );
+        }
     }
     
 }

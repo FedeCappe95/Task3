@@ -9,6 +9,7 @@ import java.util.Map;
 public class Configuration {
     
     private static long VALIDITY_PERIOD = 2*7*24*60*60*1000; //2 weeks
+    private static long USER_MOST_CRITICAL_PLACES_NUMBER = 5;
     private static final Map<String,Integer> DISTANCE_LOOKUP_TABLE;
     
     static {
@@ -49,6 +50,10 @@ public class Configuration {
     
     public static Map<String,Integer> getDistanceLookupTable() {
         return DISTANCE_LOOKUP_TABLE;
+    }
+
+    public static long getUserMostCriticalPlacesNumber() {
+        return USER_MOST_CRITICAL_PLACES_NUMBER;
     }
     
 }
