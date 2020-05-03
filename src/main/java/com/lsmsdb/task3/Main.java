@@ -133,7 +133,7 @@ public class Main extends Application {
         choiseDialog.setHeaderText("Login: please select your role");
         choiseDialog.showAndWait();
         if(choiseDialog.getResult().equals("Annulla")) {
-            System.exit(1);
+            Platform.exit();
         }
         String selected = (String)choiseDialog.getSelectedItem();
         switch(selected) {
