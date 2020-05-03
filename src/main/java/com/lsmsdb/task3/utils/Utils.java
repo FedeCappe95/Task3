@@ -37,4 +37,13 @@ public class Utils {
         alert.showAndWait();
     }
     
+    public static void showInfoAlert(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        ((Stage)(alert.getDialogPane().getScene().getWindow())).getIcons().add(Main.getProgramIcon());
+        alert.setTitle("Info");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    
 }

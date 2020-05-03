@@ -1,7 +1,10 @@
 package com.lsmsdb.task3.ui;
 
+import com.lsmsdb.task3.Configuration;
 import com.lsmsdb.task3.Main;
 import com.lsmsdb.task3.beans.Person;
+import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
+import com.lsmsdb.task3.utils.Utils;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,6 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -75,6 +79,27 @@ public class UserUiControlPanelController implements Initializable {
             Logger.getLogger(UserUiControlPanelController.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
+        
+        splitMenuDistance.getItems().clear();
+        for(String menuItemText : Configuration.getDistanceLookupTable().keySet())
+            splitMenuDistance.getItems().add(new MenuItem(menuItemText));
+        
+        buttonRefreshRiskOfInfection.setOnAction((event) -> {
+            labelRiskOfInfection.setText(
+                Neo4JManager.getIstance().userRiskOfInfection(
+                    person.getId(), Configuration.getValidityPeriod()
+                ).toString()
+            );
+        });
+        
+        buttonFind.setOnAction((event) -> {
+            Long inagsd = Neo4JManager.getIstance().infectedInAGivenSocialDistance(
+                    person.getId(),
+                    Configuration.getDistanceLookupTable().get(splitMenuDistance.getText()).longValue(),
+                    Configuration.getValidityPeriod()
+            );
+            Utils.showInfoAlert("Result", "I found " + inagsd + (inagsd == 1 ? " person" : " people"));
+        });
     }
     
 }
