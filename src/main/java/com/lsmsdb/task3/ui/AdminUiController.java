@@ -80,20 +80,25 @@ public class AdminUiController implements Initializable {
         }
         
         buttonUserShow.setOnAction((event) -> {
-            showUserInfo(textFieldSelectUserUserId.getText());
+            showUserInfo();
         });
         
         textFieldSelectUserUserId.setOnKeyPressed((event) -> {
             if(event.getCode().equals(KeyCode.ENTER))
-                showUserInfo(textFieldSelectUserUserId.getText());
+                showUserInfo();
         });
         
         buttonUserUpdate.setOnAction((event) -> {
             updateUser();
         });
+        
+        buttonMostCriticalPlacesCompute.setOnAction((event) -> {
+            showMostCriticalPlaces();
+        });
     }
     
-    private static void showUserInfo(String userId) {
+    private void showUserInfo() {
+        String userId = textFieldSelectUserUserId.getText();
         if(userId.isEmpty()) {
             Utils.showErrorAlert("Error", "To procede, insert a user id");
             return;
@@ -127,7 +132,7 @@ public class AdminUiController implements Initializable {
             Utils.showErrorAlert("Error", "To procede, chose the new status type (infected or healed)");
             return;
         }
-        long timestamp = 0L;
+        long timestamp;
         try {
             SimpleDateFormat parser = new SimpleDateFormat("dd/MM/yyyy");
             timestamp = parser.parse(datePickerNewStatus.getEditor().getText()).getTime();
@@ -150,7 +155,30 @@ public class AdminUiController implements Initializable {
             }
             Neo4JManager.getIstance().userUpdateStatus_healed(userId, timestamp);
         }
-        showUserInfo(userId);
+        showUserInfo();
+    }
+    
+    private void showMostCriticalPlaces() {
+        long placeNumber;
+        try {
+            placeNumber = Long.parseLong(textFieldMostCriticalPlacesNumber.getText());
+        }
+        catch(NumberFormatException e) {
+            Utils.showErrorAlert("Error", "Please, insert a valid number of place to show");
+            return;
+        }
+        if(placeNumber == 0L) {
+            tableViewMostCriticalPlaces.getItems().clear();
+            return;
+        }
+        if(placeNumber > 200)
+            Utils.showInfoAlert(
+                    "Warning",
+                    "You are requesting a large amount of places, this could take a while"
+            );
+        tableViewMostCriticalPlaces.getItems().setAll(
+                Neo4JManager.getIstance().mostCriticalPlace(placeNumber)
+        );
     }
     
 }
