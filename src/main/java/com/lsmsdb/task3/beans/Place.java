@@ -33,6 +33,7 @@ public class Place {
         this.longitude = 0.0;
         this.type = "type1";
         this.area = area;
+	this.city = city;
     }
 
     public Place(Long id, String name, String city, Long area, Double risk) {
@@ -42,6 +43,18 @@ public class Place {
         this.latitude = 0.0;
         this.longitude = 0.0;
         this.type = "type1";
+        this.area = area;
+	this.city = city;
+    }
+
+    //constructor for the Populator
+    public Place(Long id, String name, String city, String type, Long area) {
+        this.id = id;
+        this.name = name;
+        this.infectionRisk = 0.0;
+        this.latitude = 0.0;
+        this.longitude = 0.0;
+        this.type = type;
         this.area = area;
     }
 

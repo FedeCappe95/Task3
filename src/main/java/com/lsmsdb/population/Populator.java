@@ -29,7 +29,7 @@ public class Populator {
     public static void main(String[] args) {
         
         Neo4JManager_static.init();
-        /*
+        
         try(BufferedReader reader = new BufferedReader(new FileReader(personDir))){
             String line = reader.readLine();
             while(line!=null) {
@@ -47,7 +47,7 @@ public class Populator {
             Long id = 0L;
             while(line!=null) {
                 String[] toInsert = line.split(",");
-                Place p = new Place(toInsert[0], id);
+                Place p = new Place(id, toInsert[0], toInsert[5], toInsert[1], toInsert[4]);
                 p.setLatitude(Double.parseDouble(toInsert[2]));
                 p.setLongitude(Double.parseDouble(toInsert[3]));
                 Neo4JManager_static.addPlace(p);
@@ -56,7 +56,7 @@ public class Populator {
             }
         }catch(Exception e){
             e.printStackTrace();
-        }*/
+        }
         
         Map <String, Long> map = new HashMap<>();
         try(BufferedReader reader = new BufferedReader(new FileReader(placeDir))){
