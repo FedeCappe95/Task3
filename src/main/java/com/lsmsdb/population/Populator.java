@@ -76,7 +76,7 @@ public class Populator {
                 if(s.length() > 1){
                     s = "0" + s;
                 }
-                else {
+                else if(s.length() == 1) {
                     s = "00" + s;
                 }
                 BufferedReader secRead = new BufferedReader(new FileReader(movements + s));
