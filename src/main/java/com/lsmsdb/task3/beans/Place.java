@@ -6,6 +6,10 @@
 package com.lsmsdb.task3.beans;
 
 import java.util.Map;
+    
+import java.math.BigInteger; 
+import java.security.MessageDigest; 
+import java.security.NoSuchAlgorithmException; 
 
 /**
  *
@@ -22,6 +26,8 @@ public class Place {
     private Long area;
     private String city;
     
+    
+    //at the end of the file there is the getId() private method.
     public Place(Long id, String name, String city, Long area) {
         this.id = id;
         this.name = name;
@@ -32,7 +38,7 @@ public class Place {
         this.area = area;
     }
     
-     public Place(Long id, String name, String city, Long area, Double risk) {
+    public Place(Long id, String name, String city, Long area, Double risk) {
         this.id = id;
         this.name = name;
         this.infectionRisk = risk;
@@ -117,5 +123,42 @@ public class Place {
         this.area = (Long)map.get("area");
         this.city = (String)map.get("city");
     }
+        
+    private String getId(Long _latitute, Long _longitude) {
+        String input = _latitute.toString() + _longitude.toString();
+        String hashtext;
+        try { 
+            // getInstance() method is called with algorithm SHA-512 
+            MessageDigest md = MessageDigest.getInstance("SHA-512"); 
+  
+            // digest() method is called 
+            // to calculate message digest of the input string 
+            // returned as array of byte 
+            byte[] messageDigest = md.digest(input.getBytes()); 
+  
+            // Convert byte array into signum representation 
+            BigInteger no = new BigInteger(1, messageDigest); 
+  
+            // Convert message digest into hex value 
+            hashtext = no.toString(16); 
+  
+            // Add preceding 0s to make it 32 bit 
+            while (hashtext.length() < 32) { 
+                hashtext = "0" + hashtext; 
+            } 
+        } 
+  
+        // For specifying wrong message digest algorithms 
+        catch (NoSuchAlgorithmException e) { 
+            e.printStackTrace();
+            return null;            
+        } 
+        
+        return hashtext;
+    }
+    
+    
+
+ 
     
 }

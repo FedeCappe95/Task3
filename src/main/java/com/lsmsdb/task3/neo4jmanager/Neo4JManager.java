@@ -182,6 +182,36 @@ public class Neo4JManager {
             });
         }
     }
+    
+    /**
+     * Return the place by id
+     * @param idPlace th id of the place
+     * @return the place
+     */
+    public Place getPlace(String idPlace) {
+        if (!connected) {
+            return null;
+        }
+        try (Session session = driver.session()) {
+            return session.writeTransaction(new TransactionWork<Place>() {
+                @Override
+                public Place execute(Transaction tx) {
+                    Place place = null;
+                    HashMap<String, Object> map = new HashMap<>();
+                    String query = "MATCH (a:Place { id: $id})"
+                            + " RETURN a as place";
+                    map.put("id", idPlace);                    
+                    Result result = tx.run(query, map);
+                    
+                    if (result.hasNext()) {
+                        Record r = result.next();
+                        place = new Place(r.get("place").asMap());
+                    }
+                    return place;
+                }
+            });
+        }
+    }
 
     /**
      * Add a Person node to the database
@@ -246,7 +276,7 @@ public class Neo4JManager {
                             + " a.longitude = $longitude, "
                             + " a.type = $type, "
                             + " a.area = $area, "
-                            + " a.city = $city, "
+                            + " a.city = $city "
                             + " RETURN a.id";
                     map.put("id", p.getId());
                     map.put("name", p.getName());
