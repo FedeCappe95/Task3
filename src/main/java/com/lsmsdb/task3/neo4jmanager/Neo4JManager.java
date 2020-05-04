@@ -188,7 +188,7 @@ public class Neo4JManager {
      * @param idPlace th id of the place
      * @return the place
      */
-    public Place getPlace(String idPlace) {
+    public Place getPlace(Long idPlace) {
         if (!connected) {
             return null;
         }
@@ -336,7 +336,7 @@ public class Neo4JManager {
      * @param idPlace id of the Place to be removed
      * @return true on success, false otherwise
      */
-    public Boolean removePlace(String idPlace) {
+    public Boolean removePlace(Long idPlace) {
         if (!connected) {
             return false;
         }
