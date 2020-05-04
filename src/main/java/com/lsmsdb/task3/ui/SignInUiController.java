@@ -1,9 +1,12 @@
 package com.lsmsdb.task3.ui;
 
+import com.lsmsdb.task3.Main;
 import static com.lsmsdb.task3.Main.getProgramIcon;
 import com.lsmsdb.task3.beans.Person;
+import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.utils.Utils;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -19,10 +22,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -152,8 +155,52 @@ public class SignInUiController implements Initializable {
             );
             return;
         }
+        
+        Place house = null;
+        final String OPTION_0 = "Add a new house";
+        final String OPTION_1 = "Select an exisitng house";
+        String options[] = {OPTION_0,OPTION_1}; 
+        ChoiceDialog choiseDialog = new ChoiceDialog(options[0], options);
+        choiseDialog.setHeaderText("Please select an option");
+        choiseDialog.showAndWait();
+        if(choiseDialog.getResult() == null) {
+            return;
+        }
+        String selected = (String)choiseDialog.getSelectedItem();
+        switch(selected) {
+            case OPTION_0:
+                house = new Place(0L, name + "'s house", "N/D", 0L, 0.0D);
+                break;
+            case OPTION_1:
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader();
+                    Parent mapRoot = fxmlLoader.load(SignInUiController.class.getResource("/fxml/UserUiAddHouse.fxml").openStream());
+                    UserUiAddHouseController controller = (UserUiAddHouseController)fxmlLoader.getController();
+                    Scene scene = new Scene(mapRoot);
+                    Stage stage = new Stage();
+                    stage.setTitle("Add an house");
+                    stage.setScene(scene);
+                    stage.getIcons().add(Main.getProgramIcon());
+                    stage.setResizable(false);
+                    stage.showAndWait();
+                    house = controller.getHouse();
+                    if(house == null)
+                        return;
+                } catch (IOException ex) {
+                    Logger.getLogger(SignInUiController.class.getName()).log(Level.SEVERE, null, ex);
+                    System.exit(1);
+                }
+                break;
+            default:
+                break;
+        }
+        
+        //SETTARE ID CASA!!!
+        
         Person person = new Person(userId, name, surname);
-        Neo4JManager.getIstance().addPerson(person);
+        
+        Neo4JManager.getIstance().registerPersonAndCreateItsHouse(person, house);
+
         showUserWorkspace(person);
     }
     
