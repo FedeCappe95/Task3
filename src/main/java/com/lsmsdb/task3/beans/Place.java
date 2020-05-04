@@ -6,17 +6,17 @@
 package com.lsmsdb.task3.beans;
 
 import java.util.Map;
-    
-import java.math.BigInteger; 
-import java.security.MessageDigest; 
-import java.security.NoSuchAlgorithmException; 
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  *
  * @author Alberto-Surface
  */
 public class Place {
-    
+
     private Long id;
     private String name;
     private Double infectionRisk;
@@ -25,8 +25,7 @@ public class Place {
     private String type;
     private Long area;
     private String city;
-    
-    
+
     //at the end of the file there is the getId() private method.
     public Place(Long id, String name, String city, Long area) {
         this.id = id;
@@ -37,7 +36,7 @@ public class Place {
         this.type = "type1";
         this.area = area;
     }
-    
+
     public Place(Long id, String name, String city, Long area, Double risk) {
         this.id = id;
         this.name = name;
@@ -54,8 +53,8 @@ public class Place {
 
     public void setCity(String city) {
         this.city = city;
-    }     
-     
+    }
+
     public Long getId() {
         return id;
     }
@@ -111,54 +110,27 @@ public class Place {
     public void setArea(Long area) {
         this.area = area;
     }
-    
-    
-    public Place(Map<String, Object> map){
-        this.id = (Long)map.get("id");
-        this.name = (String)map.get("name");
-        this.infectionRisk = (Double)map.get("infectionRisk");
-        this.latitude = (Double)map.get("latitude");
-        this.longitude = (Double)map.get("longitude");
-        this.type = (String)map.get("type");
-        this.area = (Long)map.get("area");
-        this.city = (String)map.get("city");
-    }
-        
-    private String getId(Long _latitute, Long _longitude) {
-        String input = _latitute.toString() + _longitude.toString();
-        String hashtext;
-        try { 
-            // getInstance() method is called with algorithm SHA-512 
-            MessageDigest md = MessageDigest.getInstance("SHA-512"); 
-  
-            // digest() method is called 
-            // to calculate message digest of the input string 
-            // returned as array of byte 
-            byte[] messageDigest = md.digest(input.getBytes()); 
-  
-            // Convert byte array into signum representation 
-            BigInteger no = new BigInteger(1, messageDigest); 
-  
-            // Convert message digest into hex value 
-            hashtext = no.toString(16); 
-  
-            // Add preceding 0s to make it 32 bit 
-            while (hashtext.length() < 32) { 
-                hashtext = "0" + hashtext; 
-            } 
-        } 
-  
-        // For specifying wrong message digest algorithms 
-        catch (NoSuchAlgorithmException e) { 
-            e.printStackTrace();
-            return null;            
-        } 
-        
-        return hashtext;
-    }
-    
-    
 
- 
-    
+    public Place(Map<String, Object> map) {
+        this.id = (Long) map.get("id");
+        this.name = (String) map.get("name");
+        this.infectionRisk = (Double) map.get("infectionRisk");
+        this.latitude = (Double) map.get("latitude");
+        this.longitude = (Double) map.get("longitude");
+        this.type = (String) map.get("type");
+        this.area = (Long) map.get("area");
+        this.city = (String) map.get("city");
+    }
+
+    private Long getId(Long _latitute, Long _longitude) {
+        String input = _latitute.toString() + _longitude.toString();
+        Long h = 1125899906842597L; // prime
+        int len = input.length();
+
+        for (int i = 0; i < len; ++i) {
+            h = 31 * h + input.charAt(i);
+        }
+        return h;
+    }
+
 }
