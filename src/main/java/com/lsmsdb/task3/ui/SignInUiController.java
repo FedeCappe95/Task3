@@ -169,9 +169,6 @@ public class SignInUiController implements Initializable {
         String selected = (String)choiseDialog.getSelectedItem();
         switch(selected) {
             case OPTION_0:
-                house = new Place(0L, name + "'s house", "N/D", 0L, 0.0D);
-                break;
-            case OPTION_1:
                 try {
                     FXMLLoader fxmlLoader = new FXMLLoader();
                     Parent mapRoot = fxmlLoader.load(SignInUiController.class.getResource("/fxml/UserUiAddHouse.fxml").openStream());
@@ -190,12 +187,31 @@ public class SignInUiController implements Initializable {
                     Logger.getLogger(SignInUiController.class.getName()).log(Level.SEVERE, null, ex);
                     System.exit(1);
                 }
+                house.setName(surname + "'s house");
+                break;
+            case OPTION_1:
+                try {
+                    FXMLLoader fxmlLoader = new FXMLLoader();
+                    Parent mapRoot = fxmlLoader.load(SignInUiController.class.getResource("/fxml/UserUiSelectExistingHouse.fxml").openStream());
+                    UserUiSelectExistingHouseController controller = (UserUiSelectExistingHouseController)fxmlLoader.getController();
+                    Scene scene = new Scene(mapRoot);
+                    Stage stage = new Stage();
+                    stage.setTitle("Add an house");
+                    stage.setScene(scene);
+                    stage.getIcons().add(Main.getProgramIcon());
+                    stage.setResizable(false);
+                    stage.showAndWait();
+                    house = controller.getHouse();
+                    if(house == null)
+                        return;
+                } catch (IOException ex) {
+                    Logger.getLogger(SignInUiController.class.getName()).log(Level.SEVERE, null, ex);
+                    System.exit(1);
+                }
                 break;
             default:
                 break;
         }
-        
-        //SETTARE ID CASA!!!
         
         Person person = new Person(userId, name, surname);
         

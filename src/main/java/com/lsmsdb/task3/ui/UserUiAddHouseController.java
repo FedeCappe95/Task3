@@ -28,6 +28,8 @@ public class UserUiAddHouseController implements Initializable {
     private Button buttonAdd;
     @FXML
     private TextField textFieldCity;
+    @FXML
+    private TextField textFieldId;
     
     /*
      * Other private data members
@@ -44,21 +46,26 @@ public class UserUiAddHouseController implements Initializable {
             long area;
             double latitude;
             double longitude;
+            long placeId;
             try {
                 area = Long.parseLong(textFieldArea.getText());
                 latitude = Double.parseDouble(textFieldLatitude.getText());
                 longitude = Double.parseDouble(textFieldLongitude.getText());
+                placeId = Long.parseLong(textFieldId.getText());
             }
             catch(NumberFormatException ex) {
                 ex.printStackTrace();
-                Utils.showErrorAlert("Error, can not procede", "Can not parse the data you inserted. Please check all text field.");
+                Utils.showErrorAlert("Error, can not procede", "Can not parse the data you inserted. Please check all text fields.");
                 return;
             }
             if(textFieldCity.getText().isEmpty()) {
                 Utils.showErrorAlert("Error, can not procede", "Please, do not leave the city field empty");
                 return;
             }
-            house = new Place(0L, "", textFieldCity.getText(), area);
+            
+            //CONTROLLARE CASA GIA' PRESENTE
+            
+            house = new Place(placeId, "", textFieldCity.getText(), area);
             house.setLatitude(latitude);
             house.setLongitude(longitude);
             ((Stage)buttonAdd.getScene().getWindow()).close();
