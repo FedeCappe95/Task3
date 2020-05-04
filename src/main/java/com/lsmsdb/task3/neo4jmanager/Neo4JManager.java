@@ -6,6 +6,8 @@ import com.lsmsdb.task3.computation.InfectionRiskCalculator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import static org.neo4j.driver.SessionConfig.builder;
+import org.neo4j.driver.AccessMode;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Bookmark;
 import org.neo4j.driver.Driver;
@@ -185,6 +187,7 @@ public class Neo4JManager {
      * Add a Person node to the database
      *
      * @param p the person to be added
+     * @return 
      */
     public Boolean addPerson(Person p) {
         if (!connected) {
@@ -224,6 +227,7 @@ public class Neo4JManager {
      * Add a Place node to the database
      *
      * @param p the place to be added
+     * @return 
      */
     public Boolean addPlace(Place p) {
         if (!connected) {
@@ -345,7 +349,7 @@ public class Neo4JManager {
         // To collect the session bookmarks
         List<Bookmark> savedBookmarks = new ArrayList<>();
 
-        try (Session session1 = driver.session()) {
+        try (Session session1 = driver.session(builder().withDefaultAccessMode( AccessMode.WRITE ).build())) {
             session1.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
@@ -374,7 +378,7 @@ public class Neo4JManager {
             savedBookmarks.add(session1.lastBookmark());
         }
 
-        try (Session session2 = driver.session()) {
+        try (Session session2 = driver.session(builder().withDefaultAccessMode( AccessMode.WRITE ).build())) {
             session2.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
@@ -411,7 +415,7 @@ public class Neo4JManager {
             savedBookmarks.add(session2.lastBookmark());
         }
 
-        try (Session session = driver.session()) {
+        try (Session session = driver.session(builder().withDefaultAccessMode( AccessMode.WRITE ).withBookmarks( savedBookmarks ).build())) {
             return session.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
@@ -502,8 +506,8 @@ public class Neo4JManager {
     }
 
     /**
-     * Function used to delete all nodes and relationships from the databse.
-     * Used only for testing.
+     * Function used to delete all nodes and relationships from the databse.Used only for testing.
+     * @return
      */
     public Boolean clearDB() {
         if (!connected) {

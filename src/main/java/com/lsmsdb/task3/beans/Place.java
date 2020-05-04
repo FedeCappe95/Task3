@@ -22,26 +22,24 @@ public class Place {
     private Long area;
     private String city;
     
-        
-    
-    public Place(String name, Long id, String city) {
+    public Place(Long id, String name, String city, Long area) {
         this.id = id;
         this.name = name;
         this.infectionRisk = 0.0;
         this.latitude = 0.0;
         this.longitude = 0.0;
         this.type = "type1";
-        this.area = (long)100;
+        this.area = area;
     }
     
-     public Place(String name, Long id, String city, Double risk) {
+     public Place(Long id, String name, String city, Long area, Double risk) {
         this.id = id;
         this.name = name;
         this.infectionRisk = risk;
         this.latitude = 0.0;
         this.longitude = 0.0;
         this.type = "type1";
-        this.area = (long)100;
+        this.area = area;
     }
 
     public String getCity() {
