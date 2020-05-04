@@ -415,8 +415,8 @@ public class Neo4JManager {
             savedBookmarks.add(session2.lastBookmark());
         }
 
-        try (Session session = driver.session(builder().withDefaultAccessMode( AccessMode.WRITE ).withBookmarks( savedBookmarks ).build())) {
-            return session.writeTransaction(new TransactionWork<Boolean>() {
+        try (Session session3 = driver.session(builder().withDefaultAccessMode( AccessMode.WRITE ).withBookmarks( savedBookmarks ).build())) {
+            return session3.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
                     String query = "MATCH (a:Person), (b:Place) "
