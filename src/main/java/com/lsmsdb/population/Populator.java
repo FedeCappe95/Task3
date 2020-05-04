@@ -30,7 +30,7 @@ public class Populator {
         
         Neo4JManager_static.init();
         
-        try(BufferedReader reader = new BufferedReader(new FileReader(personDir))){
+        /*try(BufferedReader reader = new BufferedReader(new FileReader(personDir))){
             String line = reader.readLine();
             while(line!=null) {
                 String[] toInsert = line.split(",");
@@ -93,7 +93,7 @@ public class Populator {
         }
         catch(Exception e){
             e.printStackTrace();
-        }
+        }*/
         
         Neo4JManager_static.close();
     }
