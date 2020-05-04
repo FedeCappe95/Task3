@@ -45,7 +45,7 @@ public class UserUiSelectExistingHouseController implements Initializable {
                 Utils.showErrorAlert("Error, can not procede", "Can not parse the data you inserted. Please check the text field.");
                 return;
             }
-            Place maybeAnHouse = Neo4JManager.getIstance().getPlaceById(placeId);
+            Place maybeAnHouse = Neo4JManager.getIstance().getPlace(placeId);
             if(house == null) {
                 Utils.showErrorAlert("Error: house not found", "Can not find a place with that id");
                 return;

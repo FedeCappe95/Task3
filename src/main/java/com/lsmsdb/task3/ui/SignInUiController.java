@@ -156,6 +156,8 @@ public class SignInUiController implements Initializable {
             return;
         }
         
+        Person person = new Person(userId, name, surname);
+        
         Place house = null;
         final String OPTION_0 = "Add a new house";
         final String OPTION_1 = "Select an exisitng house";
@@ -170,7 +172,28 @@ public class SignInUiController implements Initializable {
         switch(selected) {
             case OPTION_0:
                 try {
+                    ResourceBundle resourceBundle = new ResourceBundle() {
+                        @Override
+                        protected Object handleGetObject(String key) {
+                            if(key.equals("person"))
+                                return person;
+                            return null;
+                        }
+
+                        @Override
+                        protected Set<String> handleKeySet() {
+                            Set<String> set = new HashSet<>();
+                            set.add("person");
+                            return set;
+                        }
+
+                        @Override
+                        public Enumeration<String> getKeys() {
+                            return Collections.enumeration(keySet());
+                        }
+                    };
                     FXMLLoader fxmlLoader = new FXMLLoader();
+                    fxmlLoader.setResources(resourceBundle);
                     Parent mapRoot = fxmlLoader.load(SignInUiController.class.getResource("/fxml/UserUiAddHouse.fxml").openStream());
                     UserUiAddHouseController controller = (UserUiAddHouseController)fxmlLoader.getController();
                     Scene scene = new Scene(mapRoot);
@@ -187,7 +210,6 @@ public class SignInUiController implements Initializable {
                     Logger.getLogger(SignInUiController.class.getName()).log(Level.SEVERE, null, ex);
                     System.exit(1);
                 }
-                house.setName(surname + "'s house");
                 Utils.showInfoAlert(
                         "House info",
                         "Your house is generated with id: " + house.getId() + ".\n" + 
@@ -217,8 +239,6 @@ public class SignInUiController implements Initializable {
             default:
                 break;
         }
-        
-        Person person = new Person(userId, name, surname);
         
         Neo4JManager.getIstance().registerPersonAndCreateItsHouse(person, house);
 

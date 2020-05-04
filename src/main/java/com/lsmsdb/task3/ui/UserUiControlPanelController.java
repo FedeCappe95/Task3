@@ -2,14 +2,19 @@ package com.lsmsdb.task3.ui;
 
 import com.lsmsdb.task3.Configuration;
 import com.lsmsdb.task3.Main;
+import static com.lsmsdb.task3.Main.getProgramIcon;
 import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.utils.Utils;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -52,6 +57,8 @@ public class UserUiControlPanelController implements Initializable {
     private Label labelRiskOfInfection;
     @FXML
     private Button buttonMostCriticalPlacesRefresh;
+    @FXML
+    private Button buttonAddANewVisit;
     
     
     /*
@@ -141,6 +148,43 @@ public class UserUiControlPanelController implements Initializable {
                     new Coordinate(selectedPlace.getLatitude(), selectedPlace.getLongitude())
             );
         });
+        
+        buttonAddANewVisit.setOnAction((event) -> {
+            try {
+                ResourceBundle resourceBundle = new ResourceBundle() {
+                    @Override
+                    protected Object handleGetObject(String key) {
+                        if(key.equals("person"))
+                            return person;
+                        return null;
+                    }
+
+                    @Override
+                    protected Set<String> handleKeySet() {
+                        Set<String> set = new HashSet<>();
+                        set.add("person");
+                        return set;
+                    }
+
+                    @Override
+                    public Enumeration<String> getKeys() {
+                        return Collections.enumeration(keySet());
+                    }
+                };
+                Parent root = FXMLLoader.load(SignInUiController.class.getResource("/fxml/UserUiNewVisit.fxml"),resourceBundle);
+                Scene scene = new Scene(root);
+                Stage stage = new Stage();
+                stage.setTitle("Add a new visit");
+                stage.setScene(scene);
+                stage.getIcons().add(getProgramIcon());
+                stage.setResizable(true);
+                stage.showAndWait();
+            }
+            catch(Exception ex) {
+                ex.printStackTrace();
+                System.exit(1);
+            }
+        });
     }
     
     public void retriveAndShowMostCriticalPlaces() {
@@ -163,6 +207,16 @@ public class UserUiControlPanelController implements Initializable {
                     new Coordinate(place.getName(), place.getLatitude(), place.getLongitude())
             );
         }
+    }
+    
+    
+    
+    
+    /*
+     * Private functions
+    */
+    private Stage getStage() {
+        return (Stage)buttonRefreshRiskOfInfection.getScene().getWindow();
     }
     
 }

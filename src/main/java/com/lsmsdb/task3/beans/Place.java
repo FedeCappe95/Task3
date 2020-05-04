@@ -24,7 +24,7 @@ public class Place {
     private Long area;
     private String city;
 
-    //at the end of the file there is the getId() private method.
+    //at the end of the file there is the getId() method.
     public Place(Long id, String name, String city, Long area) {
         this.id = id;
         this.name = name;
@@ -133,8 +133,8 @@ public class Place {
         this.city = (String) map.get("city");
     }
 
-    private Long getId(Long _latitute, Long _longitude) {
-        String input = _latitute.toString() + _longitude.toString();
+    public static Long getId(Double _latitute, Double _longitude, String _userId) {
+        String input = _latitute.toString() + _longitude.toString() + _userId;
         Long h = 1125899906842597L; // prime
         int len = input.length();
 

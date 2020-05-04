@@ -12,7 +12,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="688.0" prefWidth="649.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiControlPanelController">
    <children>
-      <Button id="refreshButton" fx:id="buttonRefreshRiskOfInfection" layoutX="307.0" layoutY="80.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="60.0" text="Refresh">
+      <Button id="refreshButton" fx:id="buttonRefreshRiskOfInfection" layoutX="306.0" layoutY="81.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="60.0" text="Refresh">
          <font>
             <Font size="10.0" />
          </font>
@@ -28,7 +28,7 @@
          </font>
       </Label>
       <Label layoutX="24.0" layoutY="148.0" prefHeight="26.0" prefWidth="282.0" text="Find infected users at the given distance:" />
-      <Button id="findButton" fx:id="buttonFind" layoutX="487.0" layoutY="145.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="60.0" text="Find">
+      <Button id="findButton" fx:id="buttonFind" layoutX="565.0" layoutY="145.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="60.0" text="Find">
          <font>
             <Font size="16.0" />
          </font>
@@ -56,5 +56,6 @@
         </items>
       </SplitMenuButton>
       <Button fx:id="buttonMostCriticalPlacesRefresh" layoutX="569.0" layoutY="296.0" mnemonicParsing="false" text="Refresh" />
+      <Button fx:id="buttonAddANewVisit" layoutX="528.0" layoutY="80.0" mnemonicParsing="false" text="Add a new visit" />
    </children>
 </AnchorPane>

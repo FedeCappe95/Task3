@@ -1,6 +1,8 @@
 package com.lsmsdb.task3.ui;
 
+import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.beans.Place;
+import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.utils.Utils;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -25,16 +27,17 @@ public class UserUiAddHouseController implements Initializable {
     @FXML
     private TextField textFieldLongitude;
     @FXML
-    private Button buttonAdd;
-    @FXML
     private TextField textFieldCity;
     @FXML
     private TextField textFieldId;
+    @FXML
+    private Button buttonAdd;
     
     /*
      * Other private data members
     */
     private Place house;
+    private Person person;
     
     /**
      * Initializes the controller class.
@@ -42,6 +45,9 @@ public class UserUiAddHouseController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         house = null;
+        
+        person = (Person)rb.getObject("person");
+        
         buttonAdd.setOnAction((event) -> {
             long area;
             double latitude;
@@ -63,17 +69,63 @@ public class UserUiAddHouseController implements Initializable {
                 return;
             }
             
-            //CONTROLLARE CASA GIA' PRESENTE
+            if(Neo4JManager.getIstance().getPlace(placeId) != null) {
+                Utils.showErrorAlert(
+                        "Error, can not procede",
+                        "The current id is already in use, please try with different (better if more accurate) coordinates"
+                );
+                return;
+            }
             
-            house = new Place(placeId, "", textFieldCity.getText(), area);
+            house = new Place(placeId, person.getId() + "'s house", textFieldCity.getText(), area);
             house.setLatitude(latitude);
             house.setLongitude(longitude);
             ((Stage)buttonAdd.getScene().getWindow()).close();
+        });
+        
+        textFieldArea.setOnKeyReleased((event) -> {
+            recalcId();
+        });
+
+        textFieldLatitude.setOnKeyReleased((event) -> {
+            recalcId();
+        });
+        textFieldLongitude.setOnKeyReleased((event) -> {
+            recalcId();
+        });
+        textFieldCity.setOnKeyReleased((event) -> {
+            recalcId();
+        });
+        textFieldId.setOnKeyReleased((event) -> {
+            recalcId();
         });
     }
     
     public Place getHouse() {
         return house;
+    }
+    
+    
+    
+    
+    /*
+     * Other private functions
+    */
+    
+    private void recalcId() {
+        try {
+            textFieldId.setText(
+                    Place.getId(
+                        Double.parseDouble(textFieldLatitude.getText()),
+                        Double.parseDouble(textFieldLongitude.getText()),
+                        person.getId()
+                    ).toString()
+            );
+        }
+        catch(NumberFormatException ex) {
+            ex.printStackTrace();
+            textFieldId.setText("");
+        }
     }
     
 }
