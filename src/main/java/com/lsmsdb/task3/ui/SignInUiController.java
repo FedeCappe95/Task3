@@ -188,6 +188,11 @@ public class SignInUiController implements Initializable {
                     System.exit(1);
                 }
                 house.setName(surname + "'s house");
+                Utils.showInfoAlert(
+                        "House info",
+                        "Your house is generated with id: " + house.getId() + ".\n" + 
+                        "Keep this id in a safe place."
+                );
                 break;
             case OPTION_1:
                 try {
@@ -196,7 +201,7 @@ public class SignInUiController implements Initializable {
                     UserUiSelectExistingHouseController controller = (UserUiSelectExistingHouseController)fxmlLoader.getController();
                     Scene scene = new Scene(mapRoot);
                     Stage stage = new Stage();
-                    stage.setTitle("Add an house");
+                    stage.setTitle("Select an house");
                     stage.setScene(scene);
                     stage.getIcons().add(Main.getProgramIcon());
                     stage.setResizable(false);
