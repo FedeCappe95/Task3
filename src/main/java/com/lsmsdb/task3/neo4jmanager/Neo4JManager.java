@@ -5,7 +5,9 @@ import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.computation.InfectionRiskCalculator;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.Bookmark;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Record;
@@ -26,14 +28,14 @@ public class Neo4JManager {
     private static Boolean connected = false;
     private static Integer port_;
     private static String hostname_;
-    
-    
+
     /**
      * This function return the istance of Neo4JManager
+     *
      * @return the Neo4JManager istance
      */
     public static Neo4JManager getIstance() {
-        if(istance == null) {
+        if (istance == null) {
             istance = new Neo4JManager();
         }
         return istance;
@@ -48,9 +50,9 @@ public class Neo4JManager {
      * @param password the password for the Neo4J graph connection
      * @return true if the connection is opened successfully, false otherwise
      */
-    public Boolean connect(String hostname, Integer port, String user, String password) {  
+    public Boolean connect(String hostname, Integer port, String user, String password) {
         String uri = "bolt://" + hostname + ":" + port + "/";
-        driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));       
+        driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
         try {
             driver.verifyConnectivity();
         } catch (Exception e) {
@@ -73,26 +75,29 @@ public class Neo4JManager {
     }
 
     /**
-     * This function must be used to initiate a connection to the database with standard parameter
+     * This function must be used to initiate a connection to the database with
+     * standard parameter
+     *
      * @return true if the connection is opened successfully, false otherwise
      */
     public Boolean connect() {
         String host = "localhost";
         Integer port = 7687;
         String user = "neo4j";
-        String password = "password4j";        
+        String password = "password4j";
         return connect(host, port, user, password);
     }
-    
+
     /**
      * @return true if it is connected, false otherwise
      */
     public Boolean isConnected() {
         return connected;
     }
-    
+
     /**
      * Get the host bolt uri
+     *
      * @return the host bolt uri
      */
     public String getUri() {
@@ -105,6 +110,7 @@ public class Neo4JManager {
 
     /**
      * Get the hostname
+     *
      * @return the hostname if the database is connected, null otherwise
      */
     public String getHostname() {
@@ -113,9 +119,10 @@ public class Neo4JManager {
         }
         return hostname_;
     }
-    
+
     /**
      * Get the port
+     *
      * @return the port if the database is connected, -1 otherwise
      */
     public Integer getPort() {
@@ -124,7 +131,7 @@ public class Neo4JManager {
         }
         return port_;
     }
-    
+
     /**
      * Explicit close function for the Neo4J driver
      *
@@ -145,15 +152,15 @@ public class Neo4JManager {
     }
 
     /**
-     * 
+     *
      * @param idPerson the id of the person which want to login
-     * @return the Person object, null if there are no person in the system
-     * with the idPerson specified
+     * @return the Person object, null if there are no person in the system with
+     * the idPerson specified
      */
     public Person login(String idPerson) {
         if (!connected) {
             return null;
-        }        
+        }
         try (Session session = driver.session()) {
             return session.readTransaction(new TransactionWork<Person>() {
                 @Override
@@ -173,7 +180,7 @@ public class Neo4JManager {
             });
         }
     }
-    
+
     /**
      * Add a Person node to the database
      *
@@ -183,7 +190,7 @@ public class Neo4JManager {
         if (!connected) {
             return false;
         }
-        
+
         try (Session session = driver.session()) {
             return session.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
@@ -234,7 +241,8 @@ public class Neo4JManager {
                             + " a.latitude = $latitude, "
                             + " a.longitude = $longitude, "
                             + " a.type = $type, "
-                            + " a.area = $area "
+                            + " a.area = $area, "
+                            + " a.city = $city, "
                             + " RETURN a.id";
                     map.put("id", p.getId());
                     map.put("name", p.getName());
@@ -243,6 +251,7 @@ public class Neo4JManager {
                     map.put("longitude", p.getLongitude());
                     map.put("type", p.getType());
                     map.put("area", p.getArea());
+                    map.put("city", p.getCity());
 
                     Result result = tx.run(query, map);
                     if (!result.hasNext()) {
@@ -274,7 +283,8 @@ public class Neo4JManager {
                     String query = "MATCH (a:Person "
                             + "{ "
                             + "id: $id"
-                            + "})";
+                            + "}) "
+                            + "DETACH DELETE a";
                     HashMap<String, Object> map = new HashMap<>();
                     map.put("id", idPerson);
 
@@ -303,7 +313,8 @@ public class Neo4JManager {
                     String query = "MATCH (a:Place "
                             + "{ "
                             + "id: $id"
-                            + "})";
+                            + "}) "
+                            + "DETACH DELETE a";
                     HashMap<String, Object> map = new HashMap<>();
                     map.put("id", idPlace);
 
@@ -313,6 +324,181 @@ public class Neo4JManager {
                 }
             });
         }
+    }
+
+    /**
+     * Create a Person node, a house Place node, and the Person and a relation
+     * lives_in between them.
+     *
+     * @param person the person
+     * @param place the place
+     * @return
+     */
+    public Boolean registerPersonAndCreateItsHouse(Person person, Place place) {
+        if (!connected) {
+            return false;
+        }
+        if (place.getType().compareTo("house") != 0) {
+            return false;
+        }
+
+        // To collect the session bookmarks
+        List<Bookmark> savedBookmarks = new ArrayList<>();
+
+        try (Session session1 = driver.session()) {
+            session1.writeTransaction(new TransactionWork<Boolean>() {
+                @Override
+                public Boolean execute(Transaction tx) {
+                    HashMap<String, Object> map = new HashMap<>();
+                    String query = "MERGE (a:Person { id: $id})"
+                            + " ON CREATE SET a.id = $id, "
+                            + " a.name = $name, "
+                            + " a.surname = $surname, "
+                            + " a.timestampInfected = $timestampInfected, "
+                            + " a.timestampHealed = $timestampHealed "
+                            + " RETURN a.id";
+                    map.put("id", person.getId());
+                    map.put("name", person.getName());
+                    map.put("surname", person.getSurname());
+                    map.put("timestampInfected", person.getTimestampInfected());
+                    map.put("timestampHealed", person.getTimestampHealed());
+                    Result result = tx.run(query, map);
+                    if (!result.hasNext()) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+
+            });
+            savedBookmarks.add(session1.lastBookmark());
+        }
+
+        try (Session session2 = driver.session()) {
+            session2.writeTransaction(new TransactionWork<Boolean>() {
+                @Override
+                public Boolean execute(Transaction tx) {
+                    HashMap<String, Object> map = new HashMap<>();
+                    String query = "MERGE (a:Place { id: $id})"
+                            + " ON CREATE SET a.id = $id, "
+                            + " a.name = $name, "
+                            + " a.infectionRisk = $infectionRisk, "
+                            + " a.latitude = $latitude, "
+                            + " a.longitude = $longitude, "
+                            + " a.type = $type, "
+                            + " a.area = $area, "
+                            + " a.city = $city, "
+                            + " RETURN a.id";
+                    map.put("id", place.getId());
+                    map.put("name", place.getName());
+                    map.put("infectionRisk", place.getInfectionRisk());
+                    map.put("latitude", place.getLatitude());
+                    map.put("longitude", place.getLongitude());
+                    map.put("type", place.getType());
+                    map.put("area", place.getArea());
+                    map.put("city", place.getCity());
+
+                    Result result = tx.run(query, map);
+                    if (!result.hasNext()) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+
+                }
+
+            });
+            savedBookmarks.add(session2.lastBookmark());
+        }
+
+        try (Session session = driver.session()) {
+            return session.writeTransaction(new TransactionWork<Boolean>() {
+                @Override
+                public Boolean execute(Transaction tx) {
+                    String query = "MATCH (a:Person), (b:Place) "
+                            + "WHERE a.id = $idPerson AND b.id = $idPlace "
+                            + "CREATE (a)-[ r:lives_in {timestamp: $timestamp} ] ->(b)";
+                    HashMap<String, Object> map = new HashMap<String, Object>();
+                    map.put("idPerson", person.getId());
+                    map.put("idPlace", place.getId());
+                    map.put("timestamp", System.currentTimeMillis());
+
+                    tx.run(query, map);
+                    return true;
+                }
+
+            });
+        }
+
+    }
+
+    /**
+     * Return all place by city
+     *
+     * @param city the specified city.
+     * @return all the places by the city parameter.
+     */
+    public ArrayList<Place> getAllPlaceByCity(String city) {
+        if (!connected) {
+            return null;
+        }
+        try (Session session = driver.session()) {
+            return session.readTransaction(new TransactionWork<ArrayList<Place>>() {
+                @Override
+                public ArrayList<Place> execute(Transaction tx) {
+                    ArrayList<Place> list = new ArrayList<>();
+                    String query = "MATCH (a:Place) "
+                            + "WHERE a.city = $city AND b.type <> 'house' "
+                            + "RETURN b AS place "
+                            + "ORDER BY b.name";
+                    HashMap<String, Object> map = new HashMap<String, Object>();
+                    map.put("city", city);
+
+                    Result result = tx.run(query, map);
+                    while (result.hasNext()) {
+                        Record r = result.next();
+                        list.add(new Place(r.get("place").asMap()));
+                    }
+
+                    return list;
+                }
+            });
+        }
+
+    }
+
+    /**
+     * Return the house by idPerson
+     *
+     * @param idPerson the id of the owner.
+     * @return the house.
+     */
+    public Place getHouse(String idPerson) {
+        if (!connected) {
+            return null;
+        }
+        try (Session session = driver.session()) {
+            return session.readTransaction(new TransactionWork<Place>() {
+                @Override
+                public Place execute(Transaction tx) {
+                    Place house = null;
+                    String query = "MATCH (a:Person)-[k:lives_in]->(b:Place) "
+                            + "WHERE a.id = $id AND b.type <> 'house' "
+                            + "RETURN b AS place";
+                    HashMap<String, Object> map = new HashMap<String, Object>();
+                    map.put("id", idPerson);
+
+                    Result result = tx.run(query, map);
+                    if (result.hasNext()) {
+                        Record r = result.next();
+                        house = new Place(r.get("place").asMap());
+                    }
+
+                    return house;
+                }
+            });
+        }
+
     }
 
     /**
@@ -341,10 +527,10 @@ public class Neo4JManager {
      *
      * @param idPerson id of the person that has visited the place
      * @param idPlace id of the place that was visited
-     * @param testTimestamp timestamp on which the visit occurred
+     * @param timestamp timestamp on which the visit occurred
      * @return
      */
-    public Boolean visit(String idPerson, Long idPlace, Long testTimestamp) {
+    public Boolean visit(String idPerson, Long idPlace, Long timestamp) {
         if (!connected) {
             return false;
         }
@@ -359,7 +545,7 @@ public class Neo4JManager {
                     //map.put("timestamp", System.currentTimeMillis());
                     map.put("idPerson", idPerson);
                     map.put("idPlace", idPlace);
-                    map.put("timestamp", testTimestamp);
+                    map.put("timestamp", timestamp);
 
                     tx.run(query, map);
                     return true;
@@ -368,6 +554,39 @@ public class Neo4JManager {
             });
         }
 
+    }
+
+    /**
+     * Insert a lives_in between a Person and a house Place
+     *
+     * @param idPerson id of the person that lives in the house
+     * @param idPlace id of the place that was visited
+     * @param timestamp timestamp on which the visit occurred
+     * @return
+     */
+    public Boolean lives_in(String idPerson, Long idPlace, Long timestamp) {
+        if (!connected) {
+            return false;
+        }
+        try (Session session = driver.session()) {
+            return session.writeTransaction(new TransactionWork<Boolean>() {
+                @Override
+                public Boolean execute(Transaction tx) {
+                    String query = "MATCH (a:Person), (b:Place) "
+                            + "WHERE a.id = $idPerson AND b.id = $idPlace "
+                            + "CREATE (a)-[ r:lives_in {timestamp: $timestamp} ] ->(b)";
+                    HashMap<String, Object> map = new HashMap<String, Object>();
+                    //map.put("timestamp", System.currentTimeMillis());
+                    map.put("idPerson", idPerson);
+                    map.put("idPlace", idPlace);
+                    map.put("timestamp", timestamp);
+
+                    tx.run(query, map);
+                    return true;
+                }
+
+            });
+        }
     }
 
     /* ################################### QUERY ########################################## */
@@ -386,23 +605,13 @@ public class Neo4JManager {
             return -1L;
         }
 
-        /*
-        
-        MATCH (a:Person {id: "3"}), p=(a)-[*2]-(c:Person)
-        WHERE c.id <> a.id
-        AND all(rel in relationships(p) WHERE rel.timestamp > 50)
-        AND (last(relationships(p)).timestamp > c.timestampInfected AND c.timestampInfected <> 0)
-        AND (last(relationships(p)).timestamp < c.timestampHealed OR c.timestampHealed = 0)
-        RETURN c
-        
-         */
         try (Session session = driver.session()) {
             return session.writeTransaction(new TransactionWork<Long>() {
                 @Override
                 public Long execute(Transaction tx) {
                     Long infectedNumber = 0L;
                     String query = "MATCH (a:Person {id: $id}), "
-                            + " p=(a)-[*1.." + n_hops + "]-(c:Person) "
+                            + " p=(a)-[r:visited*1.." + n_hops + "]-(c:Person) "
                             + " WHERE c.id <> a.id "
                             + " AND all(rel in relationships(p) WHERE rel.timestamp > $time1) "
                             + " AND (last(relationships(p)).timestamp > c.timestampInfected AND c.timestampInfected <> 0) "
@@ -430,7 +639,8 @@ public class Neo4JManager {
      * @param idPerson the start person
      * @param validityTimeMillis the interval of time on which each visit
      * relationships in the path are relevant
-     * @return length of the path to the closest infected person, -1 in case of errors.
+     * @return length of the path to the closest infected person, -1 in case of
+     * errors.
      */
     public Long userRiskOfInfection(String idPerson, Long validityTimeMillis) {
         if (!connected) {
@@ -473,7 +683,8 @@ public class Neo4JManager {
      * the top "numberOfNodes" places)
      * @param validityTimeMillis interval of time on which relationships are
      * relevant
-     * @return list of the most riskful places for the given user, null in case of errors.
+     * @return list of the most riskful places for the given user, null in case
+     * of errors.
      */
     public ArrayList<Place> userMostRiskfulPlace(String idPerson, Long numberOfNodes, Long validityTimeMillis) {
         if (!connected) {
@@ -485,7 +696,7 @@ public class Neo4JManager {
                 public ArrayList<Place> execute(Transaction tx) {
                     ArrayList<Place> list = new ArrayList<>();
                     String query = "MATCH (a:Person)-[k:visited]->(b:Place) "
-                            + "WHERE a.id = $id AND k.timestamp > $val1 "
+                            + "WHERE a.id = $id AND k.timestamp > $val1 AND b.type <> 'house' "
                             + "RETURN b AS place "
                             + "ORDER BY b.infectionRisk "
                             + "LIMIT $numb";
@@ -541,7 +752,8 @@ public class Neo4JManager {
      * Find the most riskful places in the overall database
      *
      * @param max the top "max" places are retrieved
-     * @return list of the most riskful places in the overall database, null in case of errors.
+     * @return list of the most riskful places in the overall database, null in
+     * case of errors.
      */
     public ArrayList<Place> mostCriticalPlace(Long max) {
         if (!connected) {
@@ -552,7 +764,7 @@ public class Neo4JManager {
                 @Override
                 public ArrayList<Place> execute(Transaction tx) {
                     ArrayList<Place> list = new ArrayList<>();
-                    String query = "MATCH (a:Place) RETURN a AS place ORDER BY a.infectionRisk LIMIT $max";
+                    String query = "MATCH (a:Place) WHERE a.type <> 'house' RETURN a AS place ORDER BY a.infectionRisk LIMIT $max";
                     HashMap<String, Object> map = new HashMap<>();
                     map.put("max", max);
                     Result result = tx.run(query, map);

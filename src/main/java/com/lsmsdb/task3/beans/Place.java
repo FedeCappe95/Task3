@@ -13,16 +13,18 @@ import java.util.Map;
  */
 public class Place {
     
-    public Long id;
-    public String name;
-    public Double infectionRisk;
-    public Double longitude;
-    public Double latitude;
-    public String type;
-    public Long area;
+    private Long id;
+    private String name;
+    private Double infectionRisk;
+    private Double longitude;
+    private Double latitude;
+    private String type;
+    private Long area;
+    private String city;
+    
         
     
-    public Place(String name, Long id) {
+    public Place(String name, Long id, String city) {
         this.id = id;
         this.name = name;
         this.infectionRisk = 0.0;
@@ -32,7 +34,7 @@ public class Place {
         this.area = (long)100;
     }
     
-     public Place(String name, Long id, Double risk) {
+     public Place(String name, Long id, String city, Double risk) {
         this.id = id;
         this.name = name;
         this.infectionRisk = risk;
@@ -42,6 +44,14 @@ public class Place {
         this.area = (long)100;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }     
+     
     public Long getId() {
         return id;
     }
@@ -107,6 +117,7 @@ public class Place {
         this.longitude = (Double)map.get("longitude");
         this.type = (String)map.get("type");
         this.area = (Long)map.get("area");
+        this.city = (String)map.get("city");
     }
     
 }
