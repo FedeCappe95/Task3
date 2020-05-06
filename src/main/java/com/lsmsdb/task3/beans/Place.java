@@ -144,7 +144,7 @@ public class Place {
         this.city = (String) map.get("city");
     }
 
-    public static Long getId(Double _latitute, Double _longitude, String _userId) {
+    /*public static Long getId(Double _latitute, Double _longitude, String _userId) {
         String input = _latitute.toString() + _longitude.toString() + _userId;
         Long h = 1125899906842597L; // prime
         int len = input.length();
@@ -153,6 +153,6 @@ public class Place {
             h = 31 * h + input.charAt(i);
         }
         return h;
-    }
+    }*/
 
 }

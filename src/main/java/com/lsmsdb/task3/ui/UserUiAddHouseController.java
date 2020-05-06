@@ -29,8 +29,6 @@ public class UserUiAddHouseController implements Initializable {
     @FXML
     private TextField textFieldCity;
     @FXML
-    private TextField textFieldId;
-    @FXML
     private Button buttonAdd;
     
     /*
@@ -52,12 +50,10 @@ public class UserUiAddHouseController implements Initializable {
             long area;
             double latitude;
             double longitude;
-            long placeId;
             try {
                 area = Long.parseLong(textFieldArea.getText());
                 latitude = Double.parseDouble(textFieldLatitude.getText());
                 longitude = Double.parseDouble(textFieldLongitude.getText());
-                placeId = Long.parseLong(textFieldId.getText());
             }
             catch(NumberFormatException ex) {
                 ex.printStackTrace();
@@ -69,63 +65,16 @@ public class UserUiAddHouseController implements Initializable {
                 return;
             }
             
-            if(Neo4JManager.getIstance().getPlace(placeId) != null) {
-                Utils.showErrorAlert(
-                        "Error, can not procede",
-                        "The current id is already in use, please try with different (better if more accurate) coordinates"
-                );
-                return;
-            }
-            
-            house = new Place(placeId, person.getId() + "'s house", textFieldCity.getText(), area);
+            house = new Place(person.getId() + "'s house", textFieldCity.getText(), area);
             house.setLatitude(latitude);
             house.setLongitude(longitude);
             ((Stage)buttonAdd.getScene().getWindow()).close();
         });
         
-        textFieldArea.setOnKeyReleased((event) -> {
-            recalcId();
-        });
-
-        textFieldLatitude.setOnKeyReleased((event) -> {
-            recalcId();
-        });
-        textFieldLongitude.setOnKeyReleased((event) -> {
-            recalcId();
-        });
-        textFieldCity.setOnKeyReleased((event) -> {
-            recalcId();
-        });
-        textFieldId.setOnKeyReleased((event) -> {
-            recalcId();
-        });
     }
     
     public Place getHouse() {
         return house;
-    }
-    
-    
-    
-    
-    /*
-     * Other private functions
-    */
-    
-    private void recalcId() {
-        try {
-            textFieldId.setText(
-                    Place.getId(
-                        Double.parseDouble(textFieldLatitude.getText()),
-                        Double.parseDouble(textFieldLongitude.getText()),
-                        person.getId()
-                    ).toString()
-            );
-        }
-        catch(NumberFormatException ex) {
-            ex.printStackTrace();
-            textFieldId.setText("");
-        }
     }
     
 }

@@ -240,9 +240,15 @@ public class SignInUiController implements Initializable {
                 break;
         }
         
-        Neo4JManager.getIstance().registerPersonAndCreateItsHouse(person, house);
-
-        showUserWorkspace(person);
+        if(Neo4JManager.getIstance().registerPersonAndCreateItsHouse(person, house, System.currentTimeMillis())) {
+            showUserWorkspace(person);
+        } else {
+            Utils.showErrorAlert(
+                    "Error connecting to the database",
+                    "There was an error trying to connect to the database.\n" +
+                    "Please, check your internet connection."
+            );
+        }
     }
     
     private void showUserWorkspace(Person person) {
