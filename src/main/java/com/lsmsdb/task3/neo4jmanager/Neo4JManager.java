@@ -182,9 +182,10 @@ public class Neo4JManager {
             });
         }
     }
-    
+
     /**
      * Return the place by id
+     *
      * @param idPlace th id of the place
      * @return the place
      */
@@ -200,9 +201,9 @@ public class Neo4JManager {
                     HashMap<String, Object> map = new HashMap<>();
                     String query = "MATCH (a:Place { id: $id})"
                             + " RETURN a as place";
-                    map.put("id", idPlace);                    
+                    map.put("id", idPlace);
                     Result result = tx.run(query, map);
-                    
+
                     if (result.hasNext()) {
                         Record r = result.next();
                         place = new Place(r.get("place").asMap());
@@ -217,7 +218,7 @@ public class Neo4JManager {
      * Add a Person node to the database
      *
      * @param p the person to be added
-     * @return 
+     * @return
      */
     public Boolean addPerson(Person p) {
         if (!connected) {
@@ -230,12 +231,12 @@ public class Neo4JManager {
                 public Boolean execute(Transaction tx) {
                     HashMap<String, Object> map = new HashMap<>();
                     String query = "MERGE (a:Person { id: $id})"
-                            + " ON CREATE SET a.id = $id, "
+                            + " ON CREATE SET a.id: $id, "
                             + " a.name = $name, "
                             + " a.surname = $surname, "
                             + " a.timestampInfected = $timestampInfected, "
                             + " a.timestampHealed = $timestampHealed "
-                            + " RETURN a.id";
+                            + " RETURN a.id as idperson";
                     map.put("id", p.getId());
                     map.put("name", p.getName());
                     map.put("surname", p.getSurname());
@@ -248,7 +249,6 @@ public class Neo4JManager {
                         return true;
                     }
                 }
-
             });
         }
     }
@@ -257,19 +257,22 @@ public class Neo4JManager {
      * Add a Place node to the database
      *
      * @param p the place to be added
-     * @return 
+     * @return the place updated with the id
      */
-    public Boolean addPlace(Place p) {
+    public Place addPlace(Place p) {
         if (!connected) {
-            return false;
+            return p;
+        }
+        if (p.getId() != -1L && p.getId() != null) {
+            return p;
         }
         try (Session session = driver.session()) {
-            return session.writeTransaction(new TransactionWork<Boolean>() {
+            return session.writeTransaction(new TransactionWork<Place>() {
                 @Override
-                public Boolean execute(Transaction tx) {
+                public Place execute(Transaction tx) {
                     HashMap<String, Object> map = new HashMap<>();
                     String query = "MERGE (a:Place { id: $id})"
-                            + " ON CREATE SET a.id = $id, "
+                            + " ON CREATE SET a.id = id(a) "
                             + " a.name = $name, "
                             + " a.infectionRisk = $infectionRisk, "
                             + " a.latitude = $latitude, "
@@ -277,7 +280,7 @@ public class Neo4JManager {
                             + " a.type = $type, "
                             + " a.area = $area, "
                             + " a.city = $city "
-                            + " RETURN a.id";
+                            + " RETURN a.id as idplace";
                     map.put("id", p.getId());
                     map.put("name", p.getName());
                     map.put("infectionRisk", p.getInfectionRisk());
@@ -289,9 +292,11 @@ public class Neo4JManager {
 
                     Result result = tx.run(query, map);
                     if (!result.hasNext()) {
-                        return false;
+                        return p;
                     } else {
-                        return true;
+                        Long idplace = result.next().get("idplace").asLong();
+                        p.setId(idplace);
+                        return p;
                     }
 
                 }
@@ -360,6 +365,7 @@ public class Neo4JManager {
         }
     }
 
+    
     /**
      * Create a Person node, a house Place node, and the Person and a relation
      * lives_in between them.
@@ -368,7 +374,7 @@ public class Neo4JManager {
      * @param place the place
      * @return
      */
-    public Boolean registerPersonAndCreateItsHouse(Person person, Place place) {
+    public Boolean registerPersonAndCreateItsHouse_old(Person person, Place place) {
         if (!connected) {
             return false;
         }
@@ -379,7 +385,7 @@ public class Neo4JManager {
         // To collect the session bookmarks
         List<Bookmark> savedBookmarks = new ArrayList<>();
 
-        try (Session session1 = driver.session(builder().withDefaultAccessMode( AccessMode.WRITE ).build())) {
+        try (Session session1 = driver.session(builder().withDefaultAccessMode(AccessMode.WRITE).build())) {
             session1.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
@@ -408,7 +414,7 @@ public class Neo4JManager {
             savedBookmarks.add(session1.lastBookmark());
         }
 
-        try (Session session2 = driver.session(builder().withDefaultAccessMode( AccessMode.WRITE ).build())) {
+        try (Session session2 = driver.session(builder().withDefaultAccessMode(AccessMode.WRITE).build())) {
             session2.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
@@ -445,7 +451,7 @@ public class Neo4JManager {
             savedBookmarks.add(session2.lastBookmark());
         }
 
-        try (Session session3 = driver.session(builder().withDefaultAccessMode( AccessMode.WRITE ).withBookmarks( savedBookmarks ).build())) {
+        try (Session session3 = driver.session(builder().withDefaultAccessMode(AccessMode.WRITE).withBookmarks(savedBookmarks).build())) {
             return session3.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
@@ -464,6 +470,93 @@ public class Neo4JManager {
             });
         }
 
+    }
+
+    /**
+     * Create a Person node, a house Place node, and the Person and a relation
+     * lives_in between them.
+     *
+     * @param person the person
+     * @param place the place
+     * @return true if the db is updated
+     */
+    public Boolean registerPersonAndCreateItsHouse(Person person, Place place, Long timestamp) {
+        if (!connected) {
+            return false;
+        }
+        if (place.getType().compareTo("house") != 0) {
+            return false;
+        }
+        try (Session session = driver.session()) {
+            Transaction tx = null;
+            try {
+                tx = session.beginTransaction();
+
+                /* CREATE PERSON */
+                HashMap<String, Object> map = new HashMap<>();
+                String query = "MERGE (a:Person { id: $id})"
+                        + " ON CREATE SET a.id: $id, "
+                        + " a.name = $name, "
+                        + " a.surname = $surname, "
+                        + " a.timestampInfected = $timestampInfected, "
+                        + " a.timestampHealed = $timestampHealed "
+                        + " RETURN a.id as idperson";
+                map.put("id", person.getId());
+                map.put("name", person.getName());
+                map.put("surname", person.getSurname());
+                map.put("timestampInfected", person.getTimestampInfected());
+                map.put("timestampHealed", person.getTimestampHealed());
+                tx.run(query, map);
+
+                /* CREATE house PLACE */
+                if (place.getId() == -1L || place.getId() == null) {
+                    map = new HashMap<>();
+                    query = "MERGE (a:Place { id: $id}) "
+                            + " ON CREATE SET a.id = id(a) "
+                            + " a.name = $name, "
+                            + " a.infectionRisk = $infectionRisk, "
+                            + " a.latitude = $latitude, "
+                            + " a.longitude = $longitude, "
+                            + " a.type = $type, "
+                            + " a.area = $area, "
+                            + " a.city = $city "
+                            + " RETURN a.id as idplace";
+                    map.put("id", -1L);
+                    map.put("name", place.getName());
+                    map.put("infectionRisk", place.getInfectionRisk());
+                    map.put("latitude", place.getLatitude());
+                    map.put("longitude", place.getLongitude());
+                    map.put("type", place.getType());
+                    map.put("area", place.getArea());
+                    map.put("city", place.getCity());
+                    Result result = tx.run(query, map);
+                    Long idplace = result.next().get("idplace").asLong();
+                    place.setId(idplace);
+                }
+
+                /* LIVES_IN  */
+                query = "MATCH (a:Person), (b:Place) "
+                        + "WHERE a.id = $idPerson AND b.id = $idPlace "
+                        + "CREATE (a)-[ r:lives_in {timestamp: $timestamp} ] ->(b)";
+                map = new HashMap<String, Object>();
+                //map.put("timestamp", System.currentTimeMillis());
+                map.put("idPerson", person.getId());
+                map.put("idPlace", place.getId());
+                map.put("timestamp", timestamp);
+                tx.run(query, map);
+
+                tx.commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (tx != null) {
+                    tx.rollback();
+                    return false;
+                }
+            }
+
+        }
+        return true;
+        
     }
 
     /**
@@ -536,7 +629,9 @@ public class Neo4JManager {
     }
 
     /**
-     * Function used to delete all nodes and relationships from the databse.Used only for testing.
+     * Function used to delete all nodes and relationships from the databse.Used
+     * only for testing.
+     *
      * @return
      */
     public Boolean clearDB() {

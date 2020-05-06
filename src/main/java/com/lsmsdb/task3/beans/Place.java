@@ -35,6 +35,17 @@ public class Place {
         this.area = area;
 	this.city = city;
     }
+    
+    public Place(String name, String city, Long area) {
+        this.id = -1L;
+        this.name = name;
+        this.infectionRisk = 0.0;
+        this.latitude = 0.0;
+        this.longitude = 0.0;
+        this.type = "type1";
+        this.area = area;
+	this.city = city;
+    }
 
     public Place(Long id, String name, String city, Long area, Double risk) {
         this.id = id;
