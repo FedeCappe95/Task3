@@ -568,6 +568,7 @@ public class Neo4JManager {
     }
 
     /* ################################### QUERY ########################################## */
+    
     /**
      * Retrieve the number of people who are linked with a path to a given
      * person within a given social distance (number of hops).
