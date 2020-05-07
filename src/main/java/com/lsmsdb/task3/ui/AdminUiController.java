@@ -55,9 +55,6 @@ public class AdminUiController implements Initializable {
         tableViewMostCriticalPlaces.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         for(TableColumn tc : tableViewMostCriticalPlaces.getColumns()) {
             switch(tc.getText()) {
-                case "ID":
-                    tc.setCellValueFactory(new PropertyValueFactory("id"));
-                    break;
                 case "Name":
                     tc.setCellValueFactory(new PropertyValueFactory("name"));
                     break;

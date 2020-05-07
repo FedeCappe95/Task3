@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -10,6 +11,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 
 <TabPane id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="694.0" prefWidth="634.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.AdminUiController">
   <tabs>
@@ -18,15 +20,51 @@
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="657.0" prefWidth="634.0">
                <children>
                   <Label layoutX="39.0" layoutY="45.0" prefHeight="32.0" prefWidth="232.0" text="Change a user current status:" />
-                  <Label layoutX="41.0" layoutY="99.0" prefHeight="14.0" prefWidth="46.0" text="User ID" />
-                  <Button id="updateButton" fx:id="buttonUserUpdate" layoutX="460.0" layoutY="144.0" mnemonicParsing="false" text="Update" />
-                  <TextField id="userTextField" fx:id="textFieldSelectUserUserId" layoutX="97.0" layoutY="95.0" />
-                  <Label layoutX="205.0" layoutY="148.0" text="Pick date" />
-                  <Label layoutX="39.0" layoutY="148.0" text="New status" />
-                  <DatePicker id="datePicker" fx:id="datePickerNewStatus" layoutX="268.0" layoutY="144.0" prefHeight="23.0" prefWidth="159.0" />
-                  <RadioButton id="infectedRadioButton" fx:id="radioButtonNewStatusInfected" layoutX="114.0" layoutY="148.0" mnemonicParsing="false" text="Infected" />
-                  <RadioButton id="healedRadioButton" fx:id="radioButtonNewStatusHealed" layoutX="114.0" layoutY="171.0" mnemonicParsing="false" text="Healed" />
-                  <Button id="updateButton" fx:id="buttonUserShow" layoutX="280.0" layoutY="95.0" mnemonicParsing="false" text="Show" />
+                  <HBox alignment="CENTER_LEFT" layoutX="41.0" layoutY="95.0" prefHeight="25.0" prefWidth="323.0">
+                     <children>
+                        <Label prefHeight="14.0" text="Fiscal code:">
+                           <HBox.margin>
+                              <Insets right="20.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField id="userTextField" fx:id="textFieldSelectUserUserId" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets right="20.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Button id="updateButton" fx:id="buttonUserShow" mnemonicParsing="false" text="Show" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" layoutX="39.0" layoutY="181.0" prefHeight="25.0" prefWidth="428.0">
+                     <children>
+                        <Label text="Pick date:">
+                           <padding>
+                              <Insets right="20.0" />
+                           </padding>
+                        </Label>
+                        <DatePicker id="datePicker" fx:id="datePickerNewStatus" prefHeight="25.0" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets right="20.0" />
+                           </HBox.margin>
+                        </DatePicker>
+                        <Button id="updateButton" fx:id="buttonUserUpdate" mnemonicParsing="false" text="Update" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" layoutX="39.0" layoutY="148.0">
+                     <children>
+                        <Label text="New status:">
+                           <padding>
+                              <Insets right="20.0" />
+                           </padding>
+                        </Label>
+                        <RadioButton id="infectedRadioButton" fx:id="radioButtonNewStatusInfected" mnemonicParsing="false" text="Infected">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </RadioButton>
+                        <RadioButton id="healedRadioButton" fx:id="radioButtonNewStatusHealed" mnemonicParsing="false" text="Healed" />
+                     </children>
+                  </HBox>
                </children></AnchorPane>
       </content>
     </Tab>
@@ -35,12 +73,23 @@
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
                   <Label layoutX="47.0" layoutY="46.0" text="View Most Critical Places" />
-                  <Label layoutX="47.0" layoutY="83.0" text="Number of places to show" />
-                  <TextField id="numberOfPlacesTextField" fx:id="textFieldMostCriticalPlacesNumber" layoutX="199.0" layoutY="79.0" prefHeight="25.0" prefWidth="55.0" />
-                  <Button fx:id="buttonMostCriticalPlacesCompute" layoutX="273.0" layoutY="79.0" mnemonicParsing="false" text="Compute" />
+                  <HBox alignment="CENTER_LEFT" layoutX="47.0" layoutY="79.0" prefHeight="25.0" prefWidth="405.0">
+                     <children>
+                        <Label text="Number of places to show:">
+                           <HBox.margin>
+                              <Insets right="20.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField id="numberOfPlacesTextField" fx:id="textFieldMostCriticalPlacesNumber" prefHeight="25.0" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets right="20.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Button fx:id="buttonMostCriticalPlacesCompute" mnemonicParsing="false" text="Compute" />
+                     </children>
+                  </HBox>
                   <TableView id="tableViewMostCriticalPlaces" fx:id="tableViewMostCriticalPlaces" layoutX="48.0" layoutY="163.0" prefHeight="466.0" prefWidth="541.0">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="ID" />
                       <TableColumn prefWidth="75.0" text="Name" />
                         <TableColumn prefWidth="96.0" text="Infection Risk" />
                         <TableColumn prefWidth="75.0" text="Latitude" />
