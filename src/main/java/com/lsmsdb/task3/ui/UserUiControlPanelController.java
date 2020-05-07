@@ -59,6 +59,8 @@ public class UserUiControlPanelController implements Initializable {
     private Button buttonMostCriticalPlacesRefresh;
     @FXML
     private Button buttonAddANewVisit;
+    @FXML
+    private Button buttonShowHouseInfo;
     
     
     /*
@@ -184,6 +186,24 @@ public class UserUiControlPanelController implements Initializable {
                 ex.printStackTrace();
                 System.exit(1);
             }
+        });
+        
+        buttonShowHouseInfo.setOnAction((event) -> {
+            Place house = Neo4JManager.getIstance().getHouse(person.getId());
+            if(house == null) {
+                Utils.showErrorAlert(
+                        "Error: house not found",
+                        "Your house was not found inside the database"
+                );
+                return;
+            }
+            Utils.showInfoAlert(
+                    "House info",
+                    String.format(
+                            "Latitude x longitude: %dx%d\nArea: %d\nId: %d",
+                            house.getLatitude(), house.getLongitude(), house.getArea(), house.getId()
+                    )
+            );
         });
     }
     

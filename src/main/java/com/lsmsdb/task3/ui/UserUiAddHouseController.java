@@ -2,7 +2,6 @@ package com.lsmsdb.task3.ui;
 
 import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.beans.Place;
-import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.utils.Utils;
 import java.net.URL;
 import java.util.ResourceBundle;
