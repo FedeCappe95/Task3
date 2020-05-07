@@ -2,6 +2,7 @@ package com.lsmsdb.task3.ui;
 
 import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.beans.Place;
+import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.utils.Utils;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -51,6 +52,16 @@ public class UserUiAddHouseController implements Initializable {
             long area;
             double latitude;
             double longitude;
+            String name = textFieldName.getText();
+            String city = textFieldCity.getText();
+            if(name.isEmpty()) {
+                Utils.showErrorAlert("Error, can not procede", "Please, do not leave the name field empty");
+                return;
+            }
+            if(city.isEmpty()) {
+                Utils.showErrorAlert("Error, can not procede", "Please, do not leave the city field empty");
+                return;
+            }
             try {
                 area = Long.parseLong(textFieldArea.getText());
                 latitude = Double.parseDouble(textFieldLatitude.getText());
@@ -61,12 +72,17 @@ public class UserUiAddHouseController implements Initializable {
                 Utils.showErrorAlert("Error, can not procede", "Can not parse the data you inserted. Please check all text fields.");
                 return;
             }
-            if(textFieldCity.getText().isEmpty()) {
-                Utils.showErrorAlert("Error, can not procede", "Please, do not leave the city field empty");
+            
+            if(Neo4JManager.getIstance().getPlace(name) != null) {
+                Utils.showErrorAlert(
+                        "Error: can not procede",
+                        "A place named " + name + " already exists in the system.\n" +
+                        "Plase, choose another name, maybe something with your surname or a easy to remember name."
+                );
                 return;
             }
             
-            house = new Place("house" + person.getSurname(), textFieldCity.getText(), area, Place.HOUSE_TYPE_IDENTIFICATOR);
+            house = new Place(name, city, area, Place.HOUSE_TYPE_IDENTIFICATOR);
             house.setLatitude(latitude);
             house.setLongitude(longitude);
             ((Stage)buttonAdd.getScene().getWindow()).close();

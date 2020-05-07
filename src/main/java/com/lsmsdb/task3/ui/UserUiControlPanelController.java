@@ -119,7 +119,7 @@ public class UserUiControlPanelController implements Initializable {
         buttonRefreshRiskOfInfection.setOnAction((event) -> {
             labelRiskOfInfection.setText(
                 Neo4JManager.getIstance().userRiskOfInfection(
-                    person.getId(), Configuration.getValidityPeriod()
+                    person.getFiscalCode(), Configuration.getValidityPeriod(), System.currentTimeMillis()
                 ).toString()
             );
         });
@@ -131,9 +131,10 @@ public class UserUiControlPanelController implements Initializable {
                 return;
             }
             Long inagsd = Neo4JManager.getIstance().infectedInAGivenSocialDistance(
-                    person.getId(),
+                    person.getFiscalCode(),
                     hopNumber.longValue(),
-                    Configuration.getValidityPeriod()
+                    Configuration.getValidityPeriod(),
+                    System.currentTimeMillis()
             );
             Utils.showInfoAlert("Result", "I found " + inagsd + (inagsd == 1 ? " person" : " people"));
         });
@@ -189,7 +190,7 @@ public class UserUiControlPanelController implements Initializable {
         });
         
         buttonShowHouseInfo.setOnAction((event) -> {
-            Place house = Neo4JManager.getIstance().getHouse(person.getId());
+            Place house = Neo4JManager.getIstance().getHouse(person.getFiscalCode());
             if(house == null) {
                 Utils.showErrorAlert(
                         "Error: house not found",
@@ -200,8 +201,8 @@ public class UserUiControlPanelController implements Initializable {
             Utils.showInfoAlert(
                     "House info",
                     String.format(
-                            "Latitude x longitude: %fx%f\nArea: %d\nId: %d",
-                            house.getLatitude(), house.getLongitude(), house.getArea(), house.getId()
+                            "Latitude x longitude: %fx%f\nArea: %d\nName: %s",
+                            house.getLatitude(), house.getLongitude(), house.getArea(), house.getName()
                     )
             );
         });
@@ -217,9 +218,10 @@ public class UserUiControlPanelController implements Initializable {
             return;
         }
         List<Place> places = Neo4JManager.getIstance().userMostRiskfulPlace(
-                person.getId(),
+                person.getFiscalCode(),
                 Configuration.getUserMostCriticalPlacesNumber(),
-                Configuration.getValidityPeriod()
+                Configuration.getValidityPeriod(),
+                System.currentTimeMillis()
         );
         tablePlaces.getItems().setAll(places);
         for(Place place : places) {
