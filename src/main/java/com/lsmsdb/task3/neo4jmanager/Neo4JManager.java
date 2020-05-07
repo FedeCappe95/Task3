@@ -671,7 +671,7 @@ public class Neo4JManager {
                             + "(b:Person { "
                             + "}), "
                             + "p = shortestPath((a)-[r:visited*..30]-(b)) "
-                            + "WHERE a.id <> b.id AND b.timestampInfected >$val1 AND b.timestampHealed < $val2 AND all(rel in relationships(p) WHERE rel.timestamp > $val1) "
+                            + "WHERE a.fiscalCode <> b.fiscalCode AND b.timestampInfected >$val1 AND b.timestampHealed < $val2 AND all(rel in relationships(p) WHERE rel.timestamp > $val1) "
                             + "RETURN length(p) AS length ORDER BY length(p) LIMIT 1";
                     HashMap<String, Object> map = new HashMap<String, Object>();
                     map.put("fiscalCode", fiscalCode);

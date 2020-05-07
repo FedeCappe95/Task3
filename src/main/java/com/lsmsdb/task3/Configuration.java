@@ -16,6 +16,7 @@ public class Configuration {
     private static long USER_MOST_CRITICAL_PLACES_NUMBER = 5;
     
     private static final Map<String,Integer> DISTANCE_LOOKUP_TABLE;
+    private static final Map<Integer,String> INFECTION_RISK_LOOKUP_TABLE;
     private static final String configurationFilePath = "/otherResources/configuration.json";
     
     static {
@@ -25,6 +26,15 @@ public class Configuration {
         DISTANCE_LOOKUP_TABLE.put("Medium", 6);
         DISTANCE_LOOKUP_TABLE.put("Distant", 8);
         DISTANCE_LOOKUP_TABLE.put("Very distant", 10);
+    }
+    
+    static {
+        INFECTION_RISK_LOOKUP_TABLE = new HashMap<>();
+        INFECTION_RISK_LOOKUP_TABLE.put(3, "Very high");
+        INFECTION_RISK_LOOKUP_TABLE.put(7, "High");
+        INFECTION_RISK_LOOKUP_TABLE.put(12, "Moderate");
+        INFECTION_RISK_LOOKUP_TABLE.put(18, "Low");
+        INFECTION_RISK_LOOKUP_TABLE.put(20, "Very Low");
     }
     
     public static void loadFromClasspath() {
@@ -72,6 +82,10 @@ public class Configuration {
     
     public static Map<String,Integer> getDistanceLookupTable() {
         return DISTANCE_LOOKUP_TABLE;
+    }
+    
+    public static Map<Integer, String> getInfectionRiskLookupTable() {
+        return INFECTION_RISK_LOOKUP_TABLE;
     }
 
     public static long getUserMostCriticalPlacesNumber() {

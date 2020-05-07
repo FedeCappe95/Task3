@@ -10,6 +10,7 @@ import com.lsmsdb.task3.utils.Utils;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -117,11 +118,27 @@ public class UserUiControlPanelController implements Initializable {
         }
         
         buttonRefreshRiskOfInfection.setOnAction((event) -> {
-            labelRiskOfInfection.setText(
-                Neo4JManager.getIstance().userRiskOfInfection(
+            Long numberOfHops = Neo4JManager.getIstance().userRiskOfInfection(
                     person.getFiscalCode(), Configuration.getValidityPeriod(), System.currentTimeMillis()
-                ).toString()
-            );
+                );
+            System.out.println("----------------------------" + numberOfHops);
+            //List<Integer> list = ArrayList.newArrayList(Configuration.getInfectionRiskLookupTable().keySet());
+            //int key = list.stream().min(Comparator.comparingInt((k->Math.abs(k - numberOfHops))));
+            if(numberOfHops == 2L || numberOfHops == 4L) {
+                labelRiskOfInfection.setText("Very high");
+            }
+            else if(numberOfHops == 6L || numberOfHops == 8L) {
+                labelRiskOfInfection.setText("High");
+            }
+            else if(numberOfHops == 10L || numberOfHops == 12L) {
+                labelRiskOfInfection.setText("Moderate");
+            }
+            else if(numberOfHops >= 20L) {
+                labelRiskOfInfection.setText("Very low");
+            }
+            else {
+                labelRiskOfInfection.setText("Low");
+            }
         });
         
         buttonFind.setOnAction((event) -> {
