@@ -37,7 +37,7 @@ public class Populator {
             String line = reader.readLine();
             while(line!=null) {
                 String[] toInsert = line.split(",");
-                Person p = new Person(toInsert[0], toInsert[1], toInsert[2]);
+                Person p = new Person(toInsert[0], toInsert[2], toInsert[1]);
                 Neo4JManager.getIstance().addPerson(p);
                 line = reader.readLine();
         }
