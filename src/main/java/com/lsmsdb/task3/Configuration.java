@@ -42,6 +42,10 @@ public class Configuration {
         INFECTION_RISK_LOOKUP_TABLE.put(Long.MAX_VALUE, "Very Low");
     }
     
+    /**
+     * Load the configuration from the JSON file inside the classpath
+     * specified by the private static final varibale CONFIGURATION_FILE_PATH
+     */
     public static void loadFromClasspath() {
         try {
             JSONObject jsonObject = new JSONObject(
@@ -49,6 +53,9 @@ public class Configuration {
             );
             VALIDITY_PERIOD = Long.parseLong(jsonObject.getString("VALIDITY_PERIOD"));
             USER_MOST_CRITICAL_PLACES_NUMBER = Long.parseLong(jsonObject.getString("USER_MOST_CRITICAL_PLACES_NUMBER"));
+            /*
+             * TO-DO PRENDERE DA FILE ANCHE LE ALTRE VARIABILI
+            */
         }
         catch(Exception ex) {
             Logger.getLogger(Configuration.class.getName()).log(
@@ -85,18 +92,31 @@ public class Configuration {
         return VALIDITY_PERIOD;
     }
     
+    /**
+     * Return a lookup table (Map) that associates a string like "Very distant",
+     * "Close", etc to an integer that represent the corresponding number of
+     * hops
+     * @return
+     */
     public static Map<String,Integer> getDistanceLookupTable() {
         return DISTANCE_LOOKUP_TABLE;
     }
-    
-    public static Map<Long, String> getInfectionRiskLookupTable() {
-        return INFECTION_RISK_LOOKUP_TABLE;
-    }
 
+    /**
+     * Return the configuration parameter USER_MOST_CRITICAL_PLACES_NUMBER
+     * @return 
+     */
     public static long getUserMostCriticalPlacesNumber() {
         return USER_MOST_CRITICAL_PLACES_NUMBER;
     }
     
+    /**
+     * Given a distance (hop count), this function return a String the represent
+     * a "quantification" of that hop count. For example, considering the
+     * default configuration, getInfectionRiskByHopCount(4) returns "Close".
+     * @param distance
+     * @return 
+     */
     public static String getInfectionRiskByHopCount(Long distance) {
         if(distance == 0L)
             return UNDETERMINATED_INFECTION_RISK_STRING;
@@ -109,6 +129,11 @@ public class Configuration {
         return INFECTION_RISK_LOOKUP_TABLE.get(keySet.get(keySet.size()-1));
     }
     
+    /**
+     * Return all the possible String distance, for example {Very close, Close 
+     * Medium, etc...}
+     * @return 
+     */
     public static List<String> getDistances() {
         return DISTANCE_LOOKUP_TABLE.keySet().stream().collect(Collectors.toCollection(ArrayList::new));
     }
