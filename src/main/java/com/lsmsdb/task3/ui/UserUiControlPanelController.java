@@ -50,8 +50,6 @@ public class UserUiControlPanelController implements Initializable {
     @FXML
     private SplitMenuButton splitMenuDistance;
     @FXML
-    private TextField textFieldSelectedPlaceRiskOfInfection;
-    @FXML
     private TableView<Place> tablePlaces;
     @FXML
     private Label labelRiskOfInfection;
@@ -61,6 +59,10 @@ public class UserUiControlPanelController implements Initializable {
     private Button buttonAddANewVisit;
     @FXML
     private Button buttonShowHouseInfo;
+    @FXML
+    private TextField textFieldShowByCityCity;
+    @FXML
+    private Button buttonShowByCityGo;
     
     
     /*
@@ -205,6 +207,16 @@ public class UserUiControlPanelController implements Initializable {
                             house.getLatitude(), house.getLongitude(), house.getArea(), house.getName()
                     )
             );
+        });
+        
+        buttonShowByCityGo.setOnAction((event) -> {
+            String city = textFieldShowByCityCity.getText();
+            if(city.isEmpty()) {
+                Utils.showErrorAlert(
+                        "Error, can not precede",
+                        "Please, insert a valid city name"
+                );
+            }
         });
     }
     
