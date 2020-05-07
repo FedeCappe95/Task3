@@ -149,8 +149,37 @@ public class Neo4JManager {
         return false;
     }
 
+    
+    /* ####################### other methods ################# */
+    
     /**
-     *
+     * 
+     * @return the number of Place in the database
+     */
+    public Long countPlace() {
+        if (!connected) {
+            return -1L;
+        }
+        try (Session session = driver.session()) {
+            return session.readTransaction(new TransactionWork<Long>() {
+                @Override
+                public Long execute(Transaction tx) {
+                    String query = "MATCH (a:Place) "
+                            + " RETURN COUNT(a) as howmuch";
+                    Result result = tx.run(query);
+                    if (!result.hasNext()) {
+                        return -1L;
+                    } else {
+                        return result.next().get("howmuch").asLong();
+                    }
+                }
+
+            });
+        }
+    }    
+    
+    /**
+     * the person login function
      * @param fiscalCode the fiscalCode of the person which want to login
      * @return the Person object, null if there are no person in the system with
      * the idPerson specified
@@ -226,12 +255,14 @@ public class Neo4JManager {
                 @Override
                 public Boolean execute(Transaction tx) {
                     HashMap<String, Object> map = new HashMap<>();
-                    String query = "MERGE (a:Person { name: $name})"
-                            + " ON CREATE SET a.name = $name, "
+                    String query = "MERGE (a:Person { fiscalCode: $fiscalCode})"
+                            + " ON CREATE SET a.fiscalCode = $fiscalCode, "
+                            + " a.name = $name, "
                             + " a.surname = $surname, "
                             + " a.timestampInfected = $timestampInfected, "
                             + " a.timestampHealed = $timestampHealed "
                             + " RETURN a.id as idperson";
+                    map.put("fiscalCode", p.getFiscalCode());
                     map.put("name", p.getName());
                     map.put("surname", p.getSurname());
                     map.put("timestampInfected", p.getTimestampInfected());
@@ -294,12 +325,12 @@ public class Neo4JManager {
     }
 
     /**
-     * Remove a Person from the database by name
+     * Remove a Person from the database by fiscalCode
      *
-     * @param name the person name 
+     * @param fiscalCode the person fiscalCode 
      * @return true on success, false otherwise
      */
-    public Boolean removePerson(String name) {
+    public Boolean removePerson(String fiscalCode) {
         if (!connected) {
             return false;
         }
@@ -309,11 +340,11 @@ public class Neo4JManager {
                 public Boolean execute(Transaction tx) {
                     String query = "MATCH (a:Person "
                             + "{ "
-                            + "name: $name"
+                            + "fiscalCode: $fiscalCode"
                             + "}) "
                             + "DETACH DELETE a";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("name", name);
+                    map.put("fiscalCode", fiscalCode);
 
                     tx.run(query, map);
                     return true;
@@ -376,11 +407,13 @@ public class Neo4JManager {
 
                 /* CREATE PERSON */
                 HashMap<String, Object> map = new HashMap<>();
-                String query = "MERGE (a:Person { name: $name})"
-                        + " ON CREATE SET a.name = $name, "
+                String query = "MERGE (a:Person { fiscalCode: $fiscalCode})"
+                        + " ON CREATE SET a.fiscalCode = $fiscalCode, "
+                        + " a.name = $name, "
                         + " a.surname = $surname, "
                         + " a.timestampInfected = $timestampInfected, "
                         + " a.timestampHealed = $timestampHealed";
+                map.put("fiscalCode", person.getFiscalCode());
                 map.put("name", person.getName());
                 map.put("surname", person.getSurname());
                 map.put("timestampInfected", person.getTimestampInfected());
@@ -408,12 +441,12 @@ public class Neo4JManager {
 
                 /* LIVES_IN  */
                 query = "MATCH (a:Person), (b:Place) "
-                        + "WHERE a.name = $namePerson AND b.name = $namePlace "
+                        + "WHERE a.fiscalCode = $fiscalCode AND b.name = $namePlace "
                         + "CREATE (a)-[ r:lives_in {timestamp: $timestamp} ] ->(b)";
                 map = new HashMap<String, Object>();
                 //map.put("timestamp", System.currentTimeMillis());
-                map.put("idPerson", person.getName());
-                map.put("idPlace", place.getName());
+                map.put("fiscalCode", person.getFiscalCode());
+                map.put("namePlace", place.getName());
                 map.put("timestamp", timestamp);
                 tx.run(query, map);
 
@@ -467,9 +500,9 @@ public class Neo4JManager {
     }
 
     /**
-     * Return the house by the person name
+     * Return the house by the person fiscalCode
      *
-     * @param name the person name
+     * @param fiscalCode the person name
      * @return the house.
      */
     public Place getHouse(String fiscalCode) {
@@ -503,7 +536,7 @@ public class Neo4JManager {
     /**
      * Insert a visit of a Person to a Place
      *
-     * @param namePerson the person name
+     * @param fiscalCode the person fiscalCode
      * @param namePlace the place name
      * @param timestamp timestamp on which the visit occurred
      * @return
@@ -537,7 +570,7 @@ public class Neo4JManager {
     /**
      * Insert a lives_in between a Person and a house Place
      *
-     * @param namePerson the person name
+     * @param fiscalCode the person fiscal code
      * @param namePlace the place name
      * @param timestamp timestamp on which the visit occurred
      * @return
@@ -573,7 +606,7 @@ public class Neo4JManager {
      * Retrieve the number of people who are linked with a path to a given
      * person within a given social distance (number of hops).
      *
-     * @param name the starting person name
+     * @param fiscalCode the starting person name
      * @param n_hops maximum number of hops
      * @param timestamp the starting timestamp
      * @param validityTimeMillis interval of time on which each visit
@@ -592,7 +625,7 @@ public class Neo4JManager {
                     Long infectedNumber = 0L;
                     String query = "MATCH (a:Person {fiscalCode: $fiscalCode}), "
                             + " p=(a)-[r:visited*1.." + n_hops + "]-(c:Person) "
-                            + " WHERE c.name <> a.name "
+                            + " WHERE c.fiscalCode <> a.fiscalCode "
                             + " AND all(rel in relationships(p) WHERE rel.timestamp > $time1) "
                             + " AND (last(relationships(p)).timestamp > c.timestampInfected AND c.timestampInfected <> 0) "
                             + " AND (last(relationships(p)).timestamp < c.timestampHealed OR c.timestampHealed = 0) "
@@ -616,7 +649,7 @@ public class Neo4JManager {
     /**
      * Find the closest infected person starting from a given person
      *
-     * @param name the starting person name
+     * @param fiscalCode starting person fiscal code
      * @param timestamp the starting timestamp
      * @param validityTimeMillis the interval of time on which each visit
      * relationships in the path are relevant from the starting timestamp
@@ -640,7 +673,7 @@ public class Neo4JManager {
                             + "WHERE a.id <> b.id AND b.timestampInfected >$val1 AND b.timestampHealed < $val2 AND all(rel in relationships(p) WHERE rel.timestamp > $val1) "
                             + "RETURN length(p) AS length ORDER BY length(p) LIMIT 1";
                     HashMap<String, Object> map = new HashMap<String, Object>();
-                    map.put("name", fiscalCode);
+                    map.put("fiscalCode", fiscalCode);
                     map.put("val1", timestamp - validityTimeMillis);
                     map.put("val2", timestamp);
                     Result result = tx.run(query, map);
@@ -659,7 +692,7 @@ public class Neo4JManager {
     /**
      * Find the top K most riskful place that a user has visited
      *
-     * @param name the starting person
+     * @param fiscalCode fiscal code of the starting person
      * @param numberOfNodes number of nodes to return (i.e the function retrieve
      * the top "numberOfNodes" places)
      * @param timestamp the starting timestamp
@@ -766,7 +799,7 @@ public class Neo4JManager {
     /**
      * Set to infected a person by name
      *
-     * @param name the person name
+     * @param fiscalCode the fiscal code of the starting person 
      * @param timestampInfectedMills timestamp on which the person was
      * recognized as infected
      * @return true on success, false otherwise
@@ -794,7 +827,7 @@ public class Neo4JManager {
     /**
      * Set to healed a person
      *
-     * @param name the person name
+     * @param fiscalCode the person fiscal code
      * @param timestampHealedMills timestamp on which the person was recognized
      * as healed
      * @return true on success, false otherwise
