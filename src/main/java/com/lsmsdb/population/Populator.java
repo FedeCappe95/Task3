@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -30,8 +32,10 @@ public class Populator {
     
     public static void main(String[] args) {
         
+        //connection to the database
         Neo4JManager.getIstance().connect();
         
+        //reading of the file containing the dataset of the people
         try(BufferedReader reader = new BufferedReader(new FileReader(personDir))){
             String line = reader.readLine();
             while(line!=null) {
@@ -39,20 +43,21 @@ public class Populator {
                 Person p = new Person(toInsert[0], toInsert[2], toInsert[1]);
                 Neo4JManager.getIstance().addPerson(p);
                 line = reader.readLine();
-        }
+            }
         }catch(Exception e){
             e.printStackTrace();
         }
         
+        //reading of the file containing the dataset of the places
         try(BufferedReader reader = new BufferedReader(new FileReader(placeDir))){
             String line = reader.readLine();
             Long id = 0L;
             while(line!=null) {
                 String[] toInsert = line.split(",");
-                Place p = new Place(id, toInsert[0], toInsert[5], toInsert[1], Long.parseLong(toInsert[4]));
+                Place p = new Place(toInsert[0], toInsert[5], Long.parseLong(toInsert[4]), toInsert[1]);
                 p.setLatitude(Double.parseDouble(toInsert[2]));
                 p.setLongitude(Double.parseDouble(toInsert[3]));
-                Neo4JManager.getIstance().importPlace(p);
+                Neo4JManager.getIstance().addPlace(p);
                 ++id;
                 line = reader.readLine(); 
             }
@@ -60,52 +65,42 @@ public class Populator {
             e.printStackTrace();
         }
         
-        Map <String, Long> map = new HashMap<>();
-        try(BufferedReader reader = new BufferedReader(new FileReader(placeDir))){
-            
-            String line = reader.readLine();
-            Long id = 0L;
-            while(line!=null) {
-                String[] forMap = line.split(",");
-                map.put(forMap[0], id);
-                ++id;
-                line = reader.readLine();
+        //reading of the file containing the dataset of the 'visited' relations
+        Long id = 0L;
+        for(id = 1L; id <= 100; ++id) {
+            String s = Long.toString(id);
+            if(s.length() == 2){
+                s = "0" + s;
             }
-            for(id = 1L; id <= 100; ++id) {
-                String s = Long.toString(id);
-                if(s.length() == 2){
-                    s = "0" + s;
-                }
-                else if(s.length() == 1) {
-                    s = "00" + s;
-                }
-                BufferedReader secRead = new BufferedReader(new FileReader(movements + s));
-                String secLine = secRead.readLine();
-                while(secLine!=null) {
-                    String[] splitted = secLine.split(",");
+            else if(s.length() == 1) {
+                s = "00" + s;
+            }
+
+            try(BufferedReader reader = new BufferedReader(new FileReader(movements + s))) {
+                String line = reader.readLine();
+                while(line!=null) {
+                    String[] splitted = line.split(",");
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy HH:mm");
                     Date date = sdf.parse(splitted[0]);
                     Long ts = date.getTime();
-                    Neo4JManager.getIstance().visit(s, map.get(splitted[1]), ts);
-                    secLine = secRead.readLine();
+                    Neo4JManager.getIstance().visit(s, splitted[1], ts);
+                    line = reader.readLine();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-        catch(Exception e){
-            e.printStackTrace();
-        }
         
+        //reading of the file containing the dataset of the 'lives_in' relations
         try(BufferedReader reader = new BufferedReader(new FileReader(livingDir))){
             String line = reader.readLine();
             while(line!=null) {
                 String[] splitted = line.split(",");
-                Long idHouse = Long.parseLong(splitted[0]);
+                String nameHouse = splitted[0];
                 String idUser = splitted[1];
-                Neo4JManager.getIstance().lives_in(idUser, idHouse, System.currentTimeMillis());
+                Neo4JManager.getIstance().lives_in(idUser, nameHouse, System.currentTimeMillis());
                 line = reader.readLine();
             }
-            
-        
         }catch(Exception e){
             e.printStackTrace();
         }

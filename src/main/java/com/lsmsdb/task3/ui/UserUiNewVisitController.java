@@ -52,7 +52,7 @@ public class UserUiNewVisitController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         person = (Person)rb.getObject("person");
-        house = Neo4JManager.getIstance().getHouse(person.getId());
+        house = Neo4JManager.getIstance().getHouse(person.getFiscalCode());
         if(house == null) {
             Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "house is null");
         }
@@ -108,7 +108,7 @@ public class UserUiNewVisitController implements Initializable {
                 );
                 return;
             }
-            Neo4JManager.getIstance().visit(person.getId(), place.getId(), timestamp);
+            Neo4JManager.getIstance().visit(person.getFiscalCode(), place.getName(), timestamp);
             getStage().close();
         });
     }
