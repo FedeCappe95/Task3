@@ -17,7 +17,6 @@ public class Place {
 
     public static final String HOUSE_TYPE_IDENTIFICATOR = "house";
     
-    private Long id;
     private String name;
     private Double infectionRisk;
     private Double longitude;
@@ -27,8 +26,7 @@ public class Place {
     private String city;
 
     //at the end of the file there is the getId() method.
-    public Place(Long id, String name, String city, Long area) {
-        this.id = id;
+    public Place(String name, String city, Long area) {
         this.name = name;
         this.infectionRisk = 0.0;
         this.latitude = 0.0;
@@ -39,7 +37,6 @@ public class Place {
     }
     
     public Place(String name, String city, Long area, String type) {
-        this.id = -1L;
         this.name = name;
         this.infectionRisk = 0.0;
         this.latitude = 0.0;
@@ -49,20 +46,9 @@ public class Place {
 	this.city = city;
     }
 
-    public Place(Long id, String name, String city, Long area, Double risk) {
-        this.id = id;
-        this.name = name;
-        this.infectionRisk = risk;
-        this.latitude = 0.0;
-        this.longitude = 0.0;
-        this.type = "type1";
-        this.area = area;
-	this.city = city;
-    }
 
     //constructor for the Populator
-    public Place(Long id, String name, String city, String type, Long area) {
-        this.id = id;
+    public Place(String name, String city, String type, Long area) {
         this.name = name;
         this.infectionRisk = 0.0;
         this.latitude = 0.0;
@@ -77,14 +63,6 @@ public class Place {
 
     public void setCity(String city) {
         this.city = city;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -136,7 +114,6 @@ public class Place {
     }
 
     public Place(Map<String, Object> map) {
-        this.id = (Long) map.get("id");
         this.name = (String) map.get("name");
         this.infectionRisk = (Double) map.get("infectionRisk");
         this.latitude = (Double) map.get("latitude");

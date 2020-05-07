@@ -155,11 +155,11 @@ public class Neo4JManager {
 
     /**
      *
-     * @param idPerson the id of the person which want to login
+     * @param fiscalCode the fiscalCode of the person which want to login
      * @return the Person object, null if there are no person in the system with
      * the idPerson specified
      */
-    public Person login(String idPerson) {
+    public Person login(String fiscalCode) {
         if (!connected) {
             return null;
         }
@@ -168,9 +168,9 @@ public class Neo4JManager {
                 @Override
                 public Person execute(Transaction tx) {
                     HashMap<String, Object> map = new HashMap<>();
-                    String query = "MATCH (a:Person { id: $id})"
+                    String query = "MATCH (a:Person { fiscalCode: $fiscalCode})"
                             + " RETURN a as person";
-                    map.put("id", idPerson);
+                    map.put("fiscalCode", fiscalCode);
                     Result result = tx.run(query, map);
                     if (!result.hasNext()) {
                         return null;
@@ -189,7 +189,7 @@ public class Neo4JManager {
      * @param idPlace th id of the place
      * @return the place
      */
-    public Place getPlace(Long idPlace) {
+    public Place getPlace(String name) {
         if (!connected) {
             return null;
         }
@@ -199,9 +199,9 @@ public class Neo4JManager {
                 public Place execute(Transaction tx) {
                     Place place = null;
                     HashMap<String, Object> map = new HashMap<>();
-                    String query = "MATCH (a:Place { id: $id})"
+                    String query = "MATCH (a:Place { name: $name})"
                             + " RETURN a as place";
-                    map.put("id", idPlace);
+                    map.put("name", name);
                     Result result = tx.run(query, map);
 
                     if (result.hasNext()) {
@@ -230,14 +230,12 @@ public class Neo4JManager {
                 @Override
                 public Boolean execute(Transaction tx) {
                     HashMap<String, Object> map = new HashMap<>();
-                    String query = "MERGE (a:Person { id: $id})"
-                            + " ON CREATE SET a.id = $id, "
-                            + " a.name = $name, "
+                    String query = "MERGE (a:Person { name: $name})"
+                            + " ON CREATE SET a.name = $name, "
                             + " a.surname = $surname, "
                             + " a.timestampInfected = $timestampInfected, "
                             + " a.timestampHealed = $timestampHealed "
                             + " RETURN a.id as idperson";
-                    map.put("id", p.getId());
                     map.put("name", p.getName());
                     map.put("surname", p.getSurname());
                     map.put("timestampInfected", p.getTimestampInfected());
@@ -259,29 +257,25 @@ public class Neo4JManager {
      * @param p the place to be added
      * @return the place updated with the id
      */
-    public Place addPlace(Place p) {
+    public Boolean addPlace(Place p) {
         if (!connected) {
-            return p;
+            return false;
         }
-        if (p.getId() != -1L && p.getId() != null) {
-            return p;
-        }
+
         try (Session session = driver.session()) {
-            return session.writeTransaction(new TransactionWork<Place>() {
+            return session.writeTransaction(new TransactionWork<Boolean>() {
                 @Override
-                public Place execute(Transaction tx) {
+                public Boolean execute(Transaction tx) {
                     HashMap<String, Object> map = new HashMap<>();
-                    String query = "MERGE (a:Place { id: $id})"
-                            + " ON CREATE SET a.id = id(a), "
-                            + " a.name = $name, "
+                    String query = "MERGE (a:Place { name: $name})"
+                            + " ON CREATE SET a.name = $name, "
                             + " a.infectionRisk = $infectionRisk, "
                             + " a.latitude = $latitude, "
                             + " a.longitude = $longitude, "
                             + " a.type = $type, "
                             + " a.area = $area, "
                             + " a.city = $city "
-                            + " RETURN a.id as idplace";
-                    map.put("id", p.getId());
+                            + " RETURN a as place";
                     map.put("name", p.getName());
                     map.put("infectionRisk", p.getInfectionRisk());
                     map.put("latitude", p.getLatitude());
@@ -292,56 +286,9 @@ public class Neo4JManager {
 
                     Result result = tx.run(query, map);
                     if (!result.hasNext()) {
-                        return p;
+                        return false;
                     } else {
-                        Long idplace = result.next().get("idplace").asLong();
-                        p.setId(idplace);
-                        return p;
-                    }
-
-                }
-
-            });
-        }
-    }
-/**
-Populator function
-*/
-public Place importPlace(Place p) {
-        if (!connected) {
-            return p;
-        }
-        try (Session session = driver.session()) {
-            return session.writeTransaction(new TransactionWork<Place>() {
-                @Override
-                public Place execute(Transaction tx) {
-                    HashMap<String, Object> map = new HashMap<>();
-                    String query = "MERGE (a:Place { id: $id})"
-                            + " ON CREATE SET a.id = $id, "
-                            + " a.name = $name, "
-                            + " a.infectionRisk = $infectionRisk, "
-                            + " a.latitude = $latitude, "
-                            + " a.longitude = $longitude, "
-                            + " a.type = $type, "
-                            + " a.area = $area, "
-                            + " a.city = $city "
-                            + " RETURN a.id as idplace";
-                    map.put("id", p.getId());
-                    map.put("name", p.getName());
-                    map.put("infectionRisk", p.getInfectionRisk());
-                    map.put("latitude", p.getLatitude());
-                    map.put("longitude", p.getLongitude());
-                    map.put("type", p.getType());
-                    map.put("area", p.getArea());
-                    map.put("city", p.getCity());
-
-                    Result result = tx.run(query, map);
-                    if (!result.hasNext()) {
-                        return p;
-                    } else {
-                        Long idplace = result.next().get("idplace").asLong();
-                        p.setId(idplace);
-                        return p;
+                        return true;
                     }
 
                 }
@@ -356,7 +303,7 @@ public Place importPlace(Place p) {
      * @param idPerson id of the Person to be removed
      * @return true on success, false otherwise
      */
-    public Boolean removePerson(String idPerson) {
+    public Boolean removePerson(String name) {
         if (!connected) {
             return false;
         }
@@ -366,11 +313,11 @@ public Place importPlace(Place p) {
                 public Boolean execute(Transaction tx) {
                     String query = "MATCH (a:Person "
                             + "{ "
-                            + "id: $id"
+                            + "name: $name"
                             + "}) "
                             + "DETACH DELETE a";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("id", idPerson);
+                    map.put("name", name);
 
                     tx.run(query, map);
                     return true;
@@ -386,7 +333,7 @@ public Place importPlace(Place p) {
      * @param idPlace id of the Place to be removed
      * @return true on success, false otherwise
      */
-    public Boolean removePlace(Long idPlace) {
+    public Boolean removePlace(String name) {
         if (!connected) {
             return false;
         }
@@ -396,11 +343,11 @@ public Place importPlace(Place p) {
                 public Boolean execute(Transaction tx) {
                     String query = "MATCH (a:Place "
                             + "{ "
-                            + "id: $id"
+                            + "name: $name"
                             + "}) "
                             + "DETACH DELETE a";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("id", idPlace);
+                    map.put("name", name);
 
                     tx.run(query, map);
                     return true;
@@ -408,113 +355,6 @@ public Place importPlace(Place p) {
                 }
             });
         }
-    }
-
-    
-    /**
-     * Create a Person node, a house Place node, and the Person and a relation
-     * lives_in between them.
-     *
-     * @param person the person
-     * @param place the place
-     * @return
-     */
-    public Boolean registerPersonAndCreateItsHouse_old(Person person, Place place) {
-        if (!connected) {
-            return false;
-        }
-        if (place.getType().compareTo("house") != 0) {
-            return false;
-        }
-
-        // To collect the session bookmarks
-        List<Bookmark> savedBookmarks = new ArrayList<>();
-
-        try (Session session1 = driver.session(builder().withDefaultAccessMode(AccessMode.WRITE).build())) {
-            session1.writeTransaction(new TransactionWork<Boolean>() {
-                @Override
-                public Boolean execute(Transaction tx) {
-                    HashMap<String, Object> map = new HashMap<>();
-                    String query = "MERGE (a:Person { id: $id})"
-                            + " ON CREATE SET a.id = $id, "
-                            + " a.name = $name, "
-                            + " a.surname = $surname, "
-                            + " a.timestampInfected = $timestampInfected, "
-                            + " a.timestampHealed = $timestampHealed "
-                            + " RETURN a.id";
-                    map.put("id", person.getId());
-                    map.put("name", person.getName());
-                    map.put("surname", person.getSurname());
-                    map.put("timestampInfected", person.getTimestampInfected());
-                    map.put("timestampHealed", person.getTimestampHealed());
-                    Result result = tx.run(query, map);
-                    if (!result.hasNext()) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }
-
-            });
-            savedBookmarks.add(session1.lastBookmark());
-        }
-
-        try (Session session2 = driver.session(builder().withDefaultAccessMode(AccessMode.WRITE).build())) {
-            session2.writeTransaction(new TransactionWork<Boolean>() {
-                @Override
-                public Boolean execute(Transaction tx) {
-                    HashMap<String, Object> map = new HashMap<>();
-                    String query = "MERGE (a:Place { id: $id})"
-                            + " ON CREATE SET a.id = $id, "
-                            + " a.name = $name, "
-                            + " a.infectionRisk = $infectionRisk, "
-                            + " a.latitude = $latitude, "
-                            + " a.longitude = $longitude, "
-                            + " a.type = $type, "
-                            + " a.area = $area, "
-                            + " a.city = $city, "
-                            + " RETURN a.id";
-                    map.put("id", place.getId());
-                    map.put("name", place.getName());
-                    map.put("infectionRisk", place.getInfectionRisk());
-                    map.put("latitude", place.getLatitude());
-                    map.put("longitude", place.getLongitude());
-                    map.put("type", place.getType());
-                    map.put("area", place.getArea());
-                    map.put("city", place.getCity());
-
-                    Result result = tx.run(query, map);
-                    if (!result.hasNext()) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-
-                }
-
-            });
-            savedBookmarks.add(session2.lastBookmark());
-        }
-
-        try (Session session3 = driver.session(builder().withDefaultAccessMode(AccessMode.WRITE).withBookmarks(savedBookmarks).build())) {
-            return session3.writeTransaction(new TransactionWork<Boolean>() {
-                @Override
-                public Boolean execute(Transaction tx) {
-                    String query = "MATCH (a:Person), (b:Place) "
-                            + "WHERE a.id = $idPerson AND b.id = $idPlace "
-                            + "CREATE (a)-[ r:lives_in {timestamp: $timestamp} ] ->(b)";
-                    HashMap<String, Object> map = new HashMap<String, Object>();
-                    map.put("idPerson", person.getId());
-                    map.put("idPlace", place.getId());
-                    map.put("timestamp", System.currentTimeMillis());
-
-                    tx.run(query, map);
-                    return true;
-                }
-
-            });
-        }
-
     }
 
     /**
@@ -539,14 +379,11 @@ public Place importPlace(Place p) {
 
                 /* CREATE PERSON */
                 HashMap<String, Object> map = new HashMap<>();
-                String query = "MERGE (a:Person { id: $id})"
-                        + " ON CREATE SET a.id = $id, "
-                        + " a.name = $name, "
+                String query = "MERGE (a:Person { name: $name})"
+                        + " ON CREATE SET a.name = $name, "
                         + " a.surname = $surname, "
                         + " a.timestampInfected = $timestampInfected, "
-                        + " a.timestampHealed = $timestampHealed "
-                        + " RETURN a.id as idperson";
-                map.put("id", person.getId());
+                        + " a.timestampHealed = $timestampHealed";
                 map.put("name", person.getName());
                 map.put("surname", person.getSurname());
                 map.put("timestampInfected", person.getTimestampInfected());
@@ -554,39 +391,32 @@ public Place importPlace(Place p) {
                 tx.run(query, map);
 
                 /* CREATE house PLACE */
-                if (place.getId() == -1L || place.getId() == null) {
-                    map = new HashMap<>();
-                    query = "MERGE (a:Place { id: $id}) "
-                            + " ON CREATE SET a.id = id(a), "
-                            + " a.name = $name, "
-                            + " a.infectionRisk = $infectionRisk, "
-                            + " a.latitude = $latitude, "
-                            + " a.longitude = $longitude, "
-                            + " a.type = $type, "
-                            + " a.area = $area, "
-                            + " a.city = $city "
-                            + " RETURN a.id as idplace";
-                    map.put("id", -1L);
-                    map.put("name", place.getName());
-                    map.put("infectionRisk", place.getInfectionRisk());
-                    map.put("latitude", place.getLatitude());
-                    map.put("longitude", place.getLongitude());
-                    map.put("type", place.getType());
-                    map.put("area", place.getArea());
-                    map.put("city", place.getCity());
-                    Result result = tx.run(query, map);
-                    Long idplace = result.next().get("idplace").asLong();
-                    place.setId(idplace);
-                }
+                map = new HashMap<>();
+                query = "MERGE (a:Place { name: $name}) "
+                        + " ON CREATE SET a.name = $name, "
+                        + " a.infectionRisk = $infectionRisk, "
+                        + " a.latitude = $latitude, "
+                        + " a.longitude = $longitude, "
+                        + " a.type = $type, "
+                        + " a.area = $area, "
+                        + " a.city = $city";
+
+                map.put("name", place.getName());
+                map.put("infectionRisk", place.getInfectionRisk());
+                map.put("latitude", place.getLatitude());
+                map.put("longitude", place.getLongitude());
+                map.put("type", place.getType());
+                map.put("area", place.getArea());
+                map.put("city", place.getCity());
 
                 /* LIVES_IN  */
                 query = "MATCH (a:Person), (b:Place) "
-                        + "WHERE a.id = $idPerson AND b.id = $idPlace "
+                        + "WHERE a.name = $namePerson AND b.name = $namePlace "
                         + "CREATE (a)-[ r:lives_in {timestamp: $timestamp} ] ->(b)";
                 map = new HashMap<String, Object>();
                 //map.put("timestamp", System.currentTimeMillis());
-                map.put("idPerson", person.getId());
-                map.put("idPlace", place.getId());
+                map.put("idPerson", person.getName());
+                map.put("idPlace", place.getName());
                 map.put("timestamp", timestamp);
                 tx.run(query, map);
 
@@ -601,7 +431,7 @@ public Place importPlace(Place p) {
 
         }
         return true;
-        
+
     }
 
     /**
@@ -645,7 +475,7 @@ public Place importPlace(Place p) {
      * @param idPerson the id of the owner.
      * @return the house.
      */
-    public Place getHouse(String idPerson) {
+    public Place getHouse(String name) {
         if (!connected) {
             return null;
         }
@@ -655,10 +485,10 @@ public Place importPlace(Place p) {
                 public Place execute(Transaction tx) {
                     Place house = null;
                     String query = "MATCH (a:Person)-[k:lives_in]->(b:Place) "
-                            + "WHERE a.id = $id AND b.type = $houseTypeIdentificator "
+                            + "WHERE a.name = $name AND b.type = $houseTypeIdentificator "
                             + "RETURN b AS place";
                     HashMap<String, Object> map = new HashMap<String, Object>();
-                    map.put("id", idPerson);
+                    map.put("name", name);
                     map.put("houseTypeIdentificator", Place.HOUSE_TYPE_IDENTIFICATOR);
                     Result result = tx.run(query, map);
                     if (result.hasNext()) {
@@ -674,29 +504,6 @@ public Place importPlace(Place p) {
     }
 
     /**
-     * Function used to delete all nodes and relationships from the databse.Used
-     * only for testing.
-     *
-     * @return
-     */
-    public Boolean clearDB() {
-        if (!connected) {
-            return false;
-        }
-        try (Session session = driver.session()) {
-            return session.writeTransaction(new TransactionWork<Boolean>() {
-                @Override
-                public Boolean execute(Transaction tx) {
-                    String query = "MATCH (n) DETACH DELETE n";
-                    tx.run(query);
-                    return true;
-                }
-            });
-        }
-
-    }
-
-    /**
      * Insert a visit of a Person to a Place
      *
      * @param idPerson id of the person that has visited the place
@@ -704,7 +511,7 @@ public Place importPlace(Place p) {
      * @param timestamp timestamp on which the visit occurred
      * @return
      */
-    public Boolean visit(String idPerson, Long idPlace, Long timestamp) {
+    public Boolean visit(String namePerson, String namePlace, Long timestamp) {
         if (!connected) {
             return false;
         }
@@ -713,12 +520,12 @@ public Place importPlace(Place p) {
                 @Override
                 public Boolean execute(Transaction tx) {
                     String query = "MATCH (a:Person), (b:Place) "
-                            + "WHERE a.id = $idPerson AND b.id = $idPlace "
+                            + "WHERE a.name = $namePerson AND b.name = $namePlace "
                             + "CREATE (a)-[ r:visited {timestamp: $timestamp} ] ->(b)";
                     HashMap<String, Object> map = new HashMap<String, Object>();
                     //map.put("timestamp", System.currentTimeMillis());
-                    map.put("idPerson", idPerson);
-                    map.put("idPlace", idPlace);
+                    map.put("namePerson", namePerson);
+                    map.put("namePlace", namePlace);
                     map.put("timestamp", timestamp);
 
                     tx.run(query, map);
@@ -738,7 +545,7 @@ public Place importPlace(Place p) {
      * @param timestamp timestamp on which the visit occurred
      * @return
      */
-    public Boolean lives_in(String idPerson, Long idPlace, Long timestamp) {
+    public Boolean lives_in(String namePerson, String namePlace, Long timestamp) {
         if (!connected) {
             return false;
         }
@@ -747,12 +554,12 @@ public Place importPlace(Place p) {
                 @Override
                 public Boolean execute(Transaction tx) {
                     String query = "MATCH (a:Person), (b:Place) "
-                            + "WHERE a.id = $idPerson AND b.id = $idPlace "
+                            + "WHERE a.name = $namePerson AND b.name = $namePlace "
                             + "CREATE (a)-[ r:lives_in {timestamp: $timestamp} ] ->(b)";
                     HashMap<String, Object> map = new HashMap<String, Object>();
                     //map.put("timestamp", System.currentTimeMillis());
-                    map.put("idPerson", idPerson);
-                    map.put("idPlace", idPlace);
+                    map.put("namePerson", namePerson);
+                    map.put("namePlace", namePlace);
                     map.put("timestamp", timestamp);
 
                     tx.run(query, map);
@@ -774,7 +581,7 @@ public Place importPlace(Place p) {
      * relationships in the path are relevant
      * @return number of infected people, -1 in case of errors
      */
-    public Long infectedInAGivenSocialDistance(String idPerson, Long n_hops, Long validityTimeMillis) {
+    public Long infectedInAGivenSocialDistance(String name, Long n_hops, Long validityTimeMillis, Long timestamp) {
         if (!connected) {
             return -1L;
         }
@@ -784,17 +591,17 @@ public Place importPlace(Place p) {
                 @Override
                 public Long execute(Transaction tx) {
                     Long infectedNumber = 0L;
-                    String query = "MATCH (a:Person {id: $id}), "
+                    String query = "MATCH (a:Person {name: $name}), "
                             + " p=(a)-[r:visited*1.." + n_hops + "]-(c:Person) "
-                            + " WHERE c.id <> a.id "
+                            + " WHERE c.name <> a.name "
                             + " AND all(rel in relationships(p) WHERE rel.timestamp > $time1) "
                             + " AND (last(relationships(p)).timestamp > c.timestampInfected AND c.timestampInfected <> 0) "
                             + " AND (last(relationships(p)).timestamp < c.timestampHealed OR c.timestampHealed = 0) "
                             + " RETURN COUNT(DISTINCT(c)) as howmuch";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("id", idPerson);
+                    map.put("name", name);
                     //map.put("n_hops", n_hops);
-                    map.put("time1", System.currentTimeMillis() - validityTimeMillis);
+                    map.put("time1", timestamp - validityTimeMillis);
                     Result result = tx.run(query, map);
                     if (!result.hasNext()) {
                         return -1L;
@@ -816,7 +623,7 @@ public Place importPlace(Place p) {
      * @return length of the path to the closest infected person, -1 in case of
      * errors.
      */
-    public Long userRiskOfInfection(String idPerson, Long validityTimeMillis) {
+    public Long userRiskOfInfection(String name, Long validityTimeMillis, Long timestamp) {
         if (!connected) {
             return -1L;
         }
@@ -826,16 +633,16 @@ public Place importPlace(Place p) {
                 public Long execute(Transaction tx) {
 
                     Long res = -1L;
-                    String query = "MATCH (a:Person { id: $id }), "
+                    String query = "MATCH (a:Person { name: $name }), "
                             + "(b:Person { "
                             + "}), "
                             + "p = shortestPath((a)-[r:visited*..30]-(b)) "
                             + "WHERE a.id <> b.id AND b.timestampInfected >$val1 AND b.timestampHealed < $val2 AND all(rel in relationships(p) WHERE rel.timestamp > $val1) "
                             + "RETURN length(p) AS length ORDER BY length(p) LIMIT 1";
                     HashMap<String, Object> map = new HashMap<String, Object>();
-                    map.put("id", idPerson);
-                    map.put("val1", System.currentTimeMillis() - validityTimeMillis);
-                    map.put("val2", System.currentTimeMillis());
+                    map.put("name", name);
+                    map.put("val1", timestamp - validityTimeMillis);
+                    map.put("val2", timestamp);
                     Result result = tx.run(query, map);
                     if (!result.hasNext()) {
                         return 0L;
@@ -860,7 +667,7 @@ public Place importPlace(Place p) {
      * @return list of the most riskful places for the given user, null in case
      * of errors.
      */
-    public ArrayList<Place> userMostRiskfulPlace(String idPerson, Long numberOfNodes, Long validityTimeMillis) {
+    public ArrayList<Place> userMostRiskfulPlace(String name, Long numberOfNodes, Long validityTimeMillis, Long timestamp) {
         if (!connected) {
             return null;
         }
@@ -870,14 +677,14 @@ public Place importPlace(Place p) {
                 public ArrayList<Place> execute(Transaction tx) {
                     ArrayList<Place> list = new ArrayList<>();
                     String query = "MATCH (a:Person)-[k:visited]->(b:Place) "
-                            + "WHERE a.id = $id AND k.timestamp > $val1 AND b.type <> 'house' "
+                            + "WHERE a.name = $name AND k.timestamp > $val1 AND b.type <> 'house' "
                             + "RETURN b AS place "
                             + "ORDER BY b.infectionRisk "
                             + "LIMIT $numb";
                     HashMap<String, Object> map = new HashMap<String, Object>();
-                    map.put("id", idPerson);
+                    map.put("name", name);
                     map.put("numb", numberOfNodes);
-                    map.put("val1", System.currentTimeMillis() - validityTimeMillis);
+                    map.put("val1", timestamp - validityTimeMillis);
 
                     Result result = tx.run(query, map);
                     while (result.hasNext()) {
@@ -897,7 +704,7 @@ public Place importPlace(Place p) {
      * @param idPlace place on which the query must be performed
      * @return risk index of the given place, -1.0 in case of errors.
      */
-    public Double riskOfInfectionIndex(Long idPlace) {
+    public Double riskOfInfectionIndex(String name) {
         if (!connected) {
             return null;
         }
@@ -906,9 +713,9 @@ public Place importPlace(Place p) {
                 @Override
                 public Double execute(Transaction tx) {
                     Double res = 0.0;
-                    String query = "MATCH (a:Place {id: $id}) RETURN a.infectionRisk AS infectionIndex";
+                    String query = "MATCH (a:Place {name: $name}) RETURN a.infectionRisk AS infectionIndex";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("id", idPlace);
+                    map.put("name", name);
                     Result result = tx.run(query, map);
                     if (!result.hasNext()) {
                         return -1.0;
@@ -962,7 +769,7 @@ public Place importPlace(Place p) {
      * recognized as infected
      * @return true on success, false otherwise
      */
-    public Boolean userUpdateStatus_infected(String idPerson, Long timestampInfectedMills) {
+    public Boolean userUpdateStatus_infected(String name, Long timestampInfectedMills) {
         if (!connected) {
             return false;
         }
@@ -970,10 +777,10 @@ public Place importPlace(Place p) {
             return session.readTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
-                    String query = "MATCH (a:Person {id: $id }) "
+                    String query = "MATCH (a:Person {name: $name }) "
                             + "SET a.timestampInfected = $time";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("id", idPerson);
+                    map.put("name", name);
                     map.put("time", timestampInfectedMills);
                     tx.run(query, map);
                     return true;
@@ -990,7 +797,7 @@ public Place importPlace(Place p) {
      * as healed
      * @return true on success, false otherwise
      */
-    public Boolean userUpdateStatus_healed(String idPerson, Long timestampHealedMills) {
+    public Boolean userUpdateStatus_healed(String name, Long timestampHealedMills) {
         if (!connected) {
             return false;
         }
@@ -998,10 +805,10 @@ public Place importPlace(Place p) {
             return session.readTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
-                    String query = "MATCH (a:Person {id: $id }) "
+                    String query = "MATCH (a:Person {name: $name }) "
                             + "SET a.timestampHealed = $time";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("id", idPerson);
+                    map.put("name", name);
                     map.put("time", timestampHealedMills);
                     tx.run(query, map);
                     return true;
@@ -1018,7 +825,7 @@ public Place importPlace(Place p) {
      * the Place node are relevant
      * @return infection risk index of the given place, -1.0 in case of errors.
      */
-    public Double computeRiskInfection(Long idPlace, Long validityTimeMills) {
+    public Double computeRiskInfection(String namePlace, Long validityTimeMills, Long timestamp) {
         if (!connected) {
             return -1.0;
         }
@@ -1030,10 +837,10 @@ public Place importPlace(Place p) {
                     ArrayList<Person> listPerson = new ArrayList<>();
                     ArrayList<Long> listTimestamp = new ArrayList<>();
 
-                    String query = "MATCH (a:Person), (b:Place {id: $idPlace}),  ((a)-[r:visited]->(b)) WHERE r.timestamp > $val1 RETURN b.area AS placeArea, r.timestamp AS timestamp, a AS Person";
+                    String query = "MATCH (a:Person), (b:Place {name: $namePlace}),  ((a)-[r:visited]->(b)) WHERE r.timestamp > $val1 RETURN b.area AS placeArea, r.timestamp AS timestamp, a AS Person";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("idPlace", idPlace);
-                    map.put("val1", System.currentTimeMillis() - validityTimeMills);
+                    map.put("name", namePlace);
+                    map.put("val1", timestamp - validityTimeMills);
                     Result result = tx.run(query, map);
                     if (!result.hasNext()) {
                         return 0.0;

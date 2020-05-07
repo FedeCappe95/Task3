@@ -12,15 +12,15 @@ public class Person {
     
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd:MM:hhhh hh:mm");
     
-    private String id;
+    private String fiscalCode;
     private String name;
     private String surname;
     private Long timestampInfected;
     private Long timestampHealed;
     
 
-    public Person(String id, String name, String surname) {
-        this.id = id;
+    public Person(String fiscalCode, String name, String surname) {
+        this.fiscalCode = fiscalCode;
         this.name = name;
         this.surname = surname;
         this.timestampInfected = 0L; 
@@ -35,12 +35,12 @@ public class Person {
         this.surname = surname;
     }
 
-    public String getId() {
-        return id;
+    public String getFiscalCode() {
+        return fiscalCode;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setFiscalCode(String id) {
+        this.fiscalCode = id;
     }
 
     public String getName() {
@@ -68,7 +68,7 @@ public class Person {
     }
     
     public Person(Map<String, Object> map){
-        this.id = (String)map.get("id");
+        this.fiscalCode = (String)map.get("fiscalCode");
         this.name = (String)map.get("name");   
         this.surname = (String)map.get("surname");
         this.timestampInfected = (Long)map.get("timestampInfected");
