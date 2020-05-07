@@ -231,7 +231,7 @@ public class Neo4JManager {
                 public Boolean execute(Transaction tx) {
                     HashMap<String, Object> map = new HashMap<>();
                     String query = "MERGE (a:Person { id: $id})"
-                            + " ON CREATE SET a.id: $id, "
+                            + " ON CREATE SET a.id = $id, "
                             + " a.name = $name, "
                             + " a.surname = $surname, "
                             + " a.timestampInfected = $timestampInfected, "
