@@ -12,9 +12,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="555.0" prefWidth="649.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiControlPanelController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="555.0" prefWidth="649.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiControlPanelController">
    <children>
-      <HBox layoutX="24.0" layoutY="78.0" prefHeight="26.0" prefWidth="441.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="184.0">
+      <HBox alignment="CENTER_LEFT" layoutX="24.0" layoutY="78.0" prefHeight="26.0" prefWidth="441.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0">
          <children>
             <Label prefHeight="26.0" text="My risk of infection:">
                <font>
@@ -72,7 +72,7 @@
         </items>
       </SplitMenuButton>
       <Button fx:id="buttonMostCriticalPlacesRefresh" layoutX="569.0" layoutY="219.0" mnemonicParsing="false" text="Refresh" AnchorPane.rightAnchor="24.0" />
-      <Button fx:id="buttonAddANewVisit" layoutX="528.0" layoutY="79.0" mnemonicParsing="false" text="Add a new visit" AnchorPane.rightAnchor="24.0" />
+      <Button fx:id="buttonAddANewVisit" layoutX="429.0" layoutY="219.0" mnemonicParsing="false" text="Add a new visit" AnchorPane.rightAnchor="123.0" />
       <HBox alignment="CENTER_LEFT" layoutX="22.0" layoutY="510.0">
          <children>
             <Label text="Search infection risk in:">

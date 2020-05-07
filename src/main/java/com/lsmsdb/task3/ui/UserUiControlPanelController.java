@@ -111,7 +111,7 @@ public class UserUiControlPanelController implements Initializable {
         }
         
         splitMenuDistance.getItems().clear();
-        for(String menuItemText : Configuration.getDistanceLookupTable().keySet()) {
+        for(String menuItemText : Configuration.getDistances()) {
             MenuItem menuItem = new MenuItem(menuItemText);
             menuItem.setOnAction((event) -> {
                 splitMenuDistance.setText(menuItemText);
@@ -122,23 +122,8 @@ public class UserUiControlPanelController implements Initializable {
         buttonRefreshRiskOfInfection.setOnAction((event) -> {
             Long numberOfHops = Neo4JManager.getIstance().userRiskOfInfection(
                     person.getFiscalCode(), Configuration.getValidityPeriod(), System.currentTimeMillis()
-                );
-            /*if(numberOfHops == 2L || numberOfHops == 4L) {
-                labelRiskOfInfection.setText("Very high");
-            }
-            else if(numberOfHops == 6L || numberOfHops == 8L) {
-                labelRiskOfInfection.setText("High");
-            }
-            else if(numberOfHops == 10L || numberOfHops == 12L) {
-                labelRiskOfInfection.setText("Moderate");
-            }
-            else if(numberOfHops >= 20L) {
-                labelRiskOfInfection.setText("Very low");
-            }
-            else {
-                labelRiskOfInfection.setText("Low");
-            }*/
-            labelRiskOfInfection.setText(Configuration.distanceLongToString(numberOfHops));
+            );
+            labelRiskOfInfection.setText(Configuration.getInfectionRiskByHopCount(numberOfHops));
         });
         
         buttonFind.setOnAction((event) -> {

@@ -3,6 +3,7 @@ package com.lsmsdb.task3;
 import com.lsmsdb.task3.utils.Utils;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -18,12 +19,13 @@ public class Configuration {
     private static long VALIDITY_PERIOD = 2*7*24*60*60*1000; //2 weeks
     private static long USER_MOST_CRITICAL_PLACES_NUMBER = 5;
     
-    private static final Map<String,Integer> DISTANCE_LOOKUP_TABLE;
+    private static final LinkedHashMap<String,Integer> DISTANCE_LOOKUP_TABLE;
     private static final Map<Long,String> INFECTION_RISK_LOOKUP_TABLE;
     private static final String CONFIGURATION_FILE_PATH = "/otherResources/configuration.json";
+    private static final String UNDETERMINATED_INFECTION_RISK_STRING = "Undeterminated";
     
     static {
-        DISTANCE_LOOKUP_TABLE = new HashMap<>();
+        DISTANCE_LOOKUP_TABLE = new LinkedHashMap<>();
         DISTANCE_LOOKUP_TABLE.put("Very close", 2);
         DISTANCE_LOOKUP_TABLE.put("Close", 4);
         DISTANCE_LOOKUP_TABLE.put("Medium", 6);
@@ -95,14 +97,20 @@ public class Configuration {
         return USER_MOST_CRITICAL_PLACES_NUMBER;
     }
     
-    public static String distanceLongToString(Long distance) {
-        List<Long> keySet = INFECTION_RISK_LOOKUP_TABLE.keySet().stream().sorted()
-                                 .collect(Collectors.toCollection(ArrayList::new));
+    public static String getInfectionRiskByHopCount(Long distance) {
+        if(distance == 0L)
+            return UNDETERMINATED_INFECTION_RISK_STRING;
+        
+        List<Long> keySet = INFECTION_RISK_LOOKUP_TABLE.keySet().stream().sorted().collect(Collectors.toCollection(ArrayList::new));
         for(Long key : keySet) {
             if(distance <= key)
                 return INFECTION_RISK_LOOKUP_TABLE.get(key);
         }
         return INFECTION_RISK_LOOKUP_TABLE.get(keySet.get(keySet.size()-1));
+    }
+    
+    public static List<String> getDistances() {
+        return DISTANCE_LOOKUP_TABLE.keySet().stream().collect(Collectors.toCollection(ArrayList::new));
     }
     
 }
