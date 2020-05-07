@@ -163,7 +163,7 @@ public class SignInUiController implements Initializable {
         final String OPTION_1 = "Select an exisitng house";
         String options[] = {OPTION_0,OPTION_1}; 
         ChoiceDialog choiseDialog = new ChoiceDialog(options[0], options);
-        ((Stage)choiseDialog.getGraphic().getScene().getWindow()).getIcons().add(Main.getProgramIcon());
+        //((Stage)choiseDialog.getGraphic().getScene().getWindow()).getIcons().add(Main.getProgramIcon());
         choiseDialog.setHeaderText("Please select an option");
         choiseDialog.showAndWait();
         if(choiseDialog.getResult() == null) {
