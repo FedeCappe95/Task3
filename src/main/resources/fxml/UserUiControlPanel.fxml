@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="555.0" prefWidth="649.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiControlPanelController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="555.0" prefWidth="649.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiControlPanelController">
    <children>
       <HBox layoutX="24.0" layoutY="78.0" prefHeight="26.0" prefWidth="441.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="184.0">
          <children>
@@ -75,7 +75,7 @@
       <Button fx:id="buttonAddANewVisit" layoutX="528.0" layoutY="79.0" mnemonicParsing="false" text="Add a new visit" AnchorPane.rightAnchor="24.0" />
       <HBox alignment="CENTER_LEFT" layoutX="22.0" layoutY="510.0">
          <children>
-            <Label text="Search infection rick in:">
+            <Label text="Search infection risk in:">
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>

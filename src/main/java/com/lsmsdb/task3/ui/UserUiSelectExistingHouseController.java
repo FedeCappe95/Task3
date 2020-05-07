@@ -42,7 +42,7 @@ public class UserUiSelectExistingHouseController implements Initializable {
                 return;
             }
             Place maybeAnHouse = Neo4JManager.getIstance().getPlace(placeName);
-            if(house == null) {
+            if(maybeAnHouse == null) {
                 Utils.showErrorAlert("Error: house not found", "Can not find a place with that name");
                 return;
             }
