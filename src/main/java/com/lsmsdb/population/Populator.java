@@ -49,20 +49,23 @@ public class Populator {
         }
         
         //reading of the file containing the dataset of the places
+        Long counter = 0L;
         try(BufferedReader reader = new BufferedReader(new FileReader(placeDir))){
             String line = reader.readLine();
-            Long id = 0L;
             while(line!=null) {
                 String[] toInsert = line.split(",");
                 Place p = new Place(toInsert[0], toInsert[5], Long.parseLong(toInsert[4]), toInsert[1]);
                 p.setLatitude(Double.parseDouble(toInsert[2]));
                 p.setLongitude(Double.parseDouble(toInsert[3]));
                 Neo4JManager.getIstance().addPlace(p);
-                ++id;
+                ++counter;
                 line = reader.readLine(); 
             }
         }catch(Exception e){
             e.printStackTrace();
+        }
+        if(Neo4JManager.getIstance().countPlaces() == counter) {
+            System.out.println("Tutto a posto a ferragosto!!!");
         }
         
         //reading of the file containing the dataset of the 'visited' relations
