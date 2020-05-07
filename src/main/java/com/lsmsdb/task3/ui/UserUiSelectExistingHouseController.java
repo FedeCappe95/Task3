@@ -20,7 +20,7 @@ public class UserUiSelectExistingHouseController implements Initializable {
      * FXML private data memebers
     */
     @FXML
-    private TextField textFieldHouseId;
+    private TextField textFieldName;
     @FXML
     private Button buttonSelect;
     
@@ -36,21 +36,17 @@ public class UserUiSelectExistingHouseController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         house = null;
         buttonSelect.setOnAction((event) -> {
-            long placeId;
-            try {
-                placeId = Long.parseLong(textFieldHouseId.getText());
-            }
-            catch(NumberFormatException ex) {
-                ex.printStackTrace();
-                Utils.showErrorAlert("Error, can not procede", "Can not parse the data you inserted. Please check the text field.");
+            String placeName = textFieldName.getText();
+            if(placeName.isEmpty()) {
+                Utils.showErrorAlert("Error", "Please, fill the form before pressing Select");
                 return;
             }
-            Place maybeAnHouse = Neo4JManager.getIstance().getPlace(placeId);
+            Place maybeAnHouse = Neo4JManager.getIstance().getPlace(placeName);
             if(house == null) {
-                Utils.showErrorAlert("Error: house not found", "Can not find a place with that id");
+                Utils.showErrorAlert("Error: house not found", "Can not find a place with that name");
                 return;
             }
-            if(!maybeAnHouse.getType().equals("house")) {
+            if(!maybeAnHouse.getType().equals(Place.HOUSE_TYPE_IDENTIFICATOR)) {
                 Utils.showErrorAlert("Error: house not found", "The place you selected is not an house");
                 return;
             }

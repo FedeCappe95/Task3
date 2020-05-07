@@ -542,7 +542,7 @@ public class Neo4JManager {
      * @param timestamp timestamp on which the visit occurred
      * @return
      */
-    public Boolean lives_in(String namePerson, String namePlace, Long timestamp) {
+    public Boolean lives_in(String fiscalCode, String namePlace, Long timestamp) {
         if (!connected) {
             return false;
         }
@@ -551,11 +551,11 @@ public class Neo4JManager {
                 @Override
                 public Boolean execute(Transaction tx) {
                     String query = "MATCH (a:Person), (b:Place) "
-                            + "WHERE a.name = $namePerson AND b.name = $namePlace "
+                            + "WHERE a.fiscalCode = $fiscalCode AND b.name = $namePlace "
                             + "CREATE (a)-[ r:lives_in {timestamp: $timestamp} ] ->(b)";
                     HashMap<String, Object> map = new HashMap<String, Object>();
                     //map.put("timestamp", System.currentTimeMillis());
-                    map.put("namePerson", namePerson);
+                    map.put("fiscalCode", fiscalCode);
                     map.put("namePlace", namePlace);
                     map.put("timestamp", timestamp);
 
@@ -580,7 +580,7 @@ public class Neo4JManager {
      * relationships in the path are relevant statring from the timestamp
      * @return number of infected people, -1 in case of errors
      */
-    public Long infectedInAGivenSocialDistance(String name, Long n_hops, Long validityTimeMillis, Long timestamp) {
+    public Long infectedInAGivenSocialDistance(String fiscalCode, Long n_hops, Long validityTimeMillis, Long timestamp) {
         if (!connected) {
             return -1L;
         }
@@ -590,7 +590,7 @@ public class Neo4JManager {
                 @Override
                 public Long execute(Transaction tx) {
                     Long infectedNumber = 0L;
-                    String query = "MATCH (a:Person {name: $name}), "
+                    String query = "MATCH (a:Person {fiscalCode: $fiscalCode}), "
                             + " p=(a)-[r:visited*1.." + n_hops + "]-(c:Person) "
                             + " WHERE c.name <> a.name "
                             + " AND all(rel in relationships(p) WHERE rel.timestamp > $time1) "
@@ -598,7 +598,7 @@ public class Neo4JManager {
                             + " AND (last(relationships(p)).timestamp < c.timestampHealed OR c.timestampHealed = 0) "
                             + " RETURN COUNT(DISTINCT(c)) as howmuch";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("name", name);
+                    map.put("fiscalCode", fiscalCode);
                     //map.put("n_hops", n_hops);
                     map.put("time1", timestamp - validityTimeMillis);
                     Result result = tx.run(query, map);
@@ -623,7 +623,7 @@ public class Neo4JManager {
      * @return length of the path to the closest infected person, -1 in case of
      * errors.
      */
-    public Long userRiskOfInfection(String name, Long validityTimeMillis, Long timestamp) {
+    public Long userRiskOfInfection(String fiscalCode, Long validityTimeMillis, Long timestamp) {
         if (!connected) {
             return -1L;
         }
@@ -633,14 +633,14 @@ public class Neo4JManager {
                 public Long execute(Transaction tx) {
 
                     Long res = -1L;
-                    String query = "MATCH (a:Person { name: $name }), "
+                    String query = "MATCH (a:Person { fiscalCode: $fiscalCode }), "
                             + "(b:Person { "
                             + "}), "
                             + "p = shortestPath((a)-[r:visited*..30]-(b)) "
                             + "WHERE a.id <> b.id AND b.timestampInfected >$val1 AND b.timestampHealed < $val2 AND all(rel in relationships(p) WHERE rel.timestamp > $val1) "
                             + "RETURN length(p) AS length ORDER BY length(p) LIMIT 1";
                     HashMap<String, Object> map = new HashMap<String, Object>();
-                    map.put("name", name);
+                    map.put("name", fiscalCode);
                     map.put("val1", timestamp - validityTimeMillis);
                     map.put("val2", timestamp);
                     Result result = tx.run(query, map);
@@ -668,7 +668,7 @@ public class Neo4JManager {
      * @return list of the most riskful places for the given user, null in case
      * of errors.
      */
-    public ArrayList<Place> userMostRiskfulPlace(String name, Long numberOfNodes, Long validityTimeMillis, Long timestamp) {
+    public ArrayList<Place> userMostRiskfulPlace(String fiscalCode, Long numberOfNodes, Long validityTimeMillis, Long timestamp) {
         if (!connected) {
             return null;
         }
@@ -678,14 +678,15 @@ public class Neo4JManager {
                 public ArrayList<Place> execute(Transaction tx) {
                     ArrayList<Place> list = new ArrayList<>();
                     String query = "MATCH (a:Person)-[k:visited]->(b:Place) "
-                            + "WHERE a.name = $name AND k.timestamp > $val1 AND b.type <> 'house' "
+                            + "WHERE a.fiscalCode = $fiscalCode AND k.timestamp > $val1 AND b.type <> $houseTypeIdentificator "
                             + "RETURN b AS place "
                             + "ORDER BY b.infectionRisk "
                             + "LIMIT $numb";
                     HashMap<String, Object> map = new HashMap<String, Object>();
-                    map.put("name", name);
+                    map.put("fiscalCode", fiscalCode);
                     map.put("numb", numberOfNodes);
                     map.put("val1", timestamp - validityTimeMillis);
+                    map.put("houseTypeIdentificator", Place.HOUSE_TYPE_IDENTIFICATOR);
 
                     Result result = tx.run(query, map);
                     while (result.hasNext()) {
@@ -770,7 +771,7 @@ public class Neo4JManager {
      * recognized as infected
      * @return true on success, false otherwise
      */
-    public Boolean userUpdateStatus_infected(String name, Long timestampInfectedMills) {
+    public Boolean userUpdateStatus_infected(String fiscalCode, Long timestampInfectedMills) {
         if (!connected) {
             return false;
         }
@@ -778,10 +779,10 @@ public class Neo4JManager {
             return session.readTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
-                    String query = "MATCH (a:Person {name: $name }) "
+                    String query = "MATCH (a:Person {fiscalCode: $fiscalCode }) "
                             + "SET a.timestampInfected = $time";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("name", name);
+                    map.put("fiscalCode", fiscalCode);
                     map.put("time", timestampInfectedMills);
                     tx.run(query, map);
                     return true;
@@ -798,7 +799,7 @@ public class Neo4JManager {
      * as healed
      * @return true on success, false otherwise
      */
-    public Boolean userUpdateStatus_healed(String name, Long timestampHealedMills) {
+    public Boolean userUpdateStatus_healed(String fiscalCode, Long timestampHealedMills) {
         if (!connected) {
             return false;
         }
@@ -806,10 +807,10 @@ public class Neo4JManager {
             return session.readTransaction(new TransactionWork<Boolean>() {
                 @Override
                 public Boolean execute(Transaction tx) {
-                    String query = "MATCH (a:Person {name: $name }) "
+                    String query = "MATCH (a:Person {fiscalCode: $fiscalCode }) "
                             + "SET a.timestampHealed = $time";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("name", name);
+                    map.put("fiscalCode", fiscalCode);
                     map.put("time", timestampHealedMills);
                     tx.run(query, map);
                     return true;

@@ -124,6 +124,7 @@ public class Main extends Application {
     private static void showLogin() {
         String options[] = {"User","Admin (Delegated person)"}; 
         ChoiceDialog choiseDialog = new ChoiceDialog(options[0], options);
+        ((Stage)choiseDialog.getGraphic().getScene().getWindow()).getIcons().add(Main.getProgramIcon());
         choiseDialog.setHeaderText("Login: please select your role");
         choiseDialog.showAndWait();
         if(choiseDialog.getResult() == null) {

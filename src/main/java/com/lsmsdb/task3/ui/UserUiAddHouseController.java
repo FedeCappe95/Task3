@@ -28,6 +28,8 @@ public class UserUiAddHouseController implements Initializable {
     @FXML
     private TextField textFieldCity;
     @FXML
+    private TextField textFieldName;
+    @FXML
     private Button buttonAdd;
     
     /*

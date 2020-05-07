@@ -163,6 +163,7 @@ public class SignInUiController implements Initializable {
         final String OPTION_1 = "Select an exisitng house";
         String options[] = {OPTION_0,OPTION_1}; 
         ChoiceDialog choiseDialog = new ChoiceDialog(options[0], options);
+        ((Stage)choiseDialog.getGraphic().getScene().getWindow()).getIcons().add(Main.getProgramIcon());
         choiseDialog.setHeaderText("Please select an option");
         choiseDialog.showAndWait();
         if(choiseDialog.getResult() == null) {
@@ -237,16 +238,15 @@ public class SignInUiController implements Initializable {
         
         if(Neo4JManager.getIstance().registerPersonAndCreateItsHouse(person, house, System.currentTimeMillis())) {
             Utils.showInfoAlert(
-                    "House info",
-                    "Your house is generated with id: " + house.getId() + ".\n" + 
-                    "Keep this id in a safe place."
+                    "Success",
+                    "You request has been correcly executed!"
             );
             showUserWorkspace(person);
         } else {
             Utils.showErrorAlert(
-                    "Error connecting to the database",
-                    "There was an error trying to connect to the database.\n" +
-                    "Please, check your internet connection."
+                    "Error can not procede",
+                    "There was an error trying to connect to the database or registring your profile or house.\n" +
+                    "Please, check your internet connection and the information you have inserted."
             );
         }
     }
