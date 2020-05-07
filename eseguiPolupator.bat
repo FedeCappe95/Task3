@@ -3,9 +3,7 @@ echo #########################
 echo #  Launching Populator  #
 echo #########################
 echo.
-cd target
-java -cp Task3-1.0-SNAPSHOT.jar com.lsmsdb.population.Populator
-cd ..
+java -cp .\target\Task3-1.0-SNAPSHOT.jar com.lsmsdb.population.Populator
 echo.
 echo.
 echo If no exceptions were thrown it means it worked like a charm!

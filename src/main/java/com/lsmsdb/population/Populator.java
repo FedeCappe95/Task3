@@ -13,8 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -25,9 +23,10 @@ public class Populator {
     /**
      * @param args the command line arguments
      */
-    private static String personDir = "C:\\Users\\susin\\Documents\\GitHub\\Task3\\datasetTask3\\datasetTask3\\people_dataset.txt" ;
-    private static String placeDir = "C:\\Users\\susin\\Documents\\GitHub\\Task3\\datasetTask3\\datasetTask3\\places.txt";
-    private static String livingDir = "C:\\Users\\susin\\Documents\\GitHub\\Task3\\datasetTask3\\datasetTask3\\living_dataset.txt";
+    private static String personDir = ".\\datasetTask3\\datasetTask3\\people_dataset.txt" ;
+    private static String placeDir = ".\\datasetTask3\\datasetTask3\\places.txt";
+    private static String livingDir = ".\\datasetTask3\\datasetTask3\\living_dataset.txt";
+    private static String movements = ".\\datasetTask3\\datasetTask3\\movements\\";
     
     public static void main(String[] args) {
         
@@ -63,8 +62,6 @@ public class Populator {
         
         Map <String, Long> map = new HashMap<>();
         try(BufferedReader reader = new BufferedReader(new FileReader(placeDir))){
-            
-            String movements = "C:\\Users\\susin\\Documents\\GitHub\\Task3\\datasetTask3\\datasetTask3\\movements\\";
             
             String line = reader.readLine();
             Long id = 0L;
