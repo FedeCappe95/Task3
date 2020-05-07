@@ -210,11 +210,6 @@ public class SignInUiController implements Initializable {
                     Logger.getLogger(SignInUiController.class.getName()).log(Level.SEVERE, null, ex);
                     System.exit(1);
                 }
-                Utils.showInfoAlert(
-                        "House info",
-                        "Your house is generated with id: " + house.getId() + ".\n" + 
-                        "Keep this id in a safe place."
-                );
                 break;
             case OPTION_1:
                 try {
@@ -241,6 +236,11 @@ public class SignInUiController implements Initializable {
         }
         
         if(Neo4JManager.getIstance().registerPersonAndCreateItsHouse(person, house, System.currentTimeMillis())) {
+            Utils.showInfoAlert(
+                    "House info",
+                    "Your house is generated with id: " + house.getId() + ".\n" + 
+                    "Keep this id in a safe place."
+            );
             showUserWorkspace(person);
         } else {
             Utils.showErrorAlert(

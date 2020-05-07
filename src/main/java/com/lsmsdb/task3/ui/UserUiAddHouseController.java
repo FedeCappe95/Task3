@@ -64,7 +64,7 @@ public class UserUiAddHouseController implements Initializable {
                 return;
             }
             
-            house = new Place("house" + person.getSurname(), textFieldCity.getText(), area);
+            house = new Place("house" + person.getSurname(), textFieldCity.getText(), area, Place.HOUSE_TYPE_IDENTIFICATOR);
             house.setLatitude(latitude);
             house.setLongitude(longitude);
             ((Stage)buttonAdd.getScene().getWindow()).close();

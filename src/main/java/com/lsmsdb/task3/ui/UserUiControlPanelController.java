@@ -200,7 +200,7 @@ public class UserUiControlPanelController implements Initializable {
             Utils.showInfoAlert(
                     "House info",
                     String.format(
-                            "Latitude x longitude: %dx%d\nArea: %d\nId: %d",
+                            "Latitude x longitude: %fx%f\nArea: %d\nId: %d",
                             house.getLatitude(), house.getLongitude(), house.getArea(), house.getId()
                     )
             );

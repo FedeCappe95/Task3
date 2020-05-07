@@ -15,6 +15,8 @@ import java.util.Map;
  */
 public class Place {
 
+    public static final String HOUSE_TYPE_IDENTIFICATOR = "house";
+    
     private Long id;
     private String name;
     private Double infectionRisk;
@@ -36,13 +38,13 @@ public class Place {
 	this.city = city;
     }
     
-    public Place(String name, String city, Long area) {
+    public Place(String name, String city, Long area, String type) {
         this.id = -1L;
         this.name = name;
         this.infectionRisk = 0.0;
         this.latitude = 0.0;
         this.longitude = 0.0;
-        this.type = "type1";
+        this.type = type;
         this.area = area;
 	this.city = city;
     }

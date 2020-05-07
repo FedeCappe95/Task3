@@ -529,7 +529,7 @@ public Place importPlace(Place p) {
         if (!connected) {
             return false;
         }
-        if (place.getType().compareTo("house") != 0) {
+        if (place.getType().compareTo(Place.HOUSE_TYPE_IDENTIFICATOR) != 0) {
             return false;
         }
         try (Session session = driver.session()) {
@@ -655,11 +655,11 @@ public Place importPlace(Place p) {
                 public Place execute(Transaction tx) {
                     Place house = null;
                     String query = "MATCH (a:Person)-[k:lives_in]->(b:Place) "
-                            + "WHERE a.id = $id AND b.type <> 'house' "
+                            + "WHERE a.id = $id AND b.type = $houseTypeIdentificator "
                             + "RETURN b AS place";
                     HashMap<String, Object> map = new HashMap<String, Object>();
                     map.put("id", idPerson);
-
+                    map.put("houseTypeIdentificator", Place.HOUSE_TYPE_IDENTIFICATOR);
                     Result result = tx.run(query, map);
                     if (result.hasNext()) {
                         Record r = result.next();
