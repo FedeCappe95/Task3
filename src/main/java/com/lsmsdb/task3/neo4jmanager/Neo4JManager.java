@@ -557,7 +557,7 @@ public Place importPlace(Place p) {
                 if (place.getId() == -1L || place.getId() == null) {
                     map = new HashMap<>();
                     query = "MERGE (a:Place { id: $id}) "
-                            + " ON CREATE SET a.id = id(a) "
+                            + " ON CREATE SET a.id = id(a), "
                             + " a.name = $name, "
                             + " a.infectionRisk = $infectionRisk, "
                             + " a.latitude = $latitude, "
