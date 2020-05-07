@@ -5,11 +5,7 @@ import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.computation.InfectionRiskCalculator;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import static org.neo4j.driver.SessionConfig.builder;
-import org.neo4j.driver.AccessMode;
 import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Bookmark;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Record;
@@ -184,9 +180,9 @@ public class Neo4JManager {
     }
 
     /**
-     * Return the place by id
+     * Return the place by name
      *
-     * @param idPlace th id of the place
+     * @param name the place name
      * @return the place
      */
     public Place getPlace(String name) {
@@ -298,9 +294,9 @@ public class Neo4JManager {
     }
 
     /**
-     * Remove a Person from the database
+     * Remove a Person from the database by name
      *
-     * @param idPerson id of the Person to be removed
+     * @param name the person name 
      * @return true on success, false otherwise
      */
     public Boolean removePerson(String name) {
@@ -328,9 +324,9 @@ public class Neo4JManager {
     }
 
     /**
-     * Remove a Place from the database
+     * Remove a Place from the database by name
      *
-     * @param idPlace id of the Place to be removed
+     * @param name the place name 
      * @return true on success, false otherwise
      */
     public Boolean removePlace(String name) {
@@ -363,6 +359,7 @@ public class Neo4JManager {
      *
      * @param person the person
      * @param place the place
+     * @param timestamp the starting timestamp
      * @return true if the db is updated
      */
     public Boolean registerPersonAndCreateItsHouse(Person person, Place place, Long timestamp) {
@@ -470,9 +467,9 @@ public class Neo4JManager {
     }
 
     /**
-     * Return the house by idPerson
+     * Return the house by the person name
      *
-     * @param idPerson the id of the owner.
+     * @param name the person name
      * @return the house.
      */
     public Place getHouse(String name) {
@@ -506,8 +503,8 @@ public class Neo4JManager {
     /**
      * Insert a visit of a Person to a Place
      *
-     * @param idPerson id of the person that has visited the place
-     * @param idPlace id of the place that was visited
+     * @param namePerson the person name
+     * @param namePlace the place name
      * @param timestamp timestamp on which the visit occurred
      * @return
      */
@@ -540,8 +537,8 @@ public class Neo4JManager {
     /**
      * Insert a lives_in between a Person and a house Place
      *
-     * @param idPerson id of the person that lives in the house
-     * @param idPlace id of the place that was visited
+     * @param namePerson the person name
+     * @param namePlace the place name
      * @param timestamp timestamp on which the visit occurred
      * @return
      */
@@ -575,10 +572,11 @@ public class Neo4JManager {
      * Retrieve the number of people who are linked with a path to a given
      * person within a given social distance (number of hops).
      *
-     * @param idPerson start person
+     * @param name the starting person name
      * @param n_hops maximum number of hops
+     * @param timestamp the starting timestamp
      * @param validityTimeMillis interval of time on which each visit
-     * relationships in the path are relevant
+     * relationships in the path are relevant statring from the timestamp
      * @return number of infected people, -1 in case of errors
      */
     public Long infectedInAGivenSocialDistance(String name, Long n_hops, Long validityTimeMillis, Long timestamp) {
@@ -617,9 +615,10 @@ public class Neo4JManager {
     /**
      * Find the closest infected person starting from a given person
      *
-     * @param idPerson the start person
+     * @param name the starting person name
+     * @param timestamp the starting timestamp
      * @param validityTimeMillis the interval of time on which each visit
-     * relationships in the path are relevant
+     * relationships in the path are relevant from the starting timestamp
      * @return length of the path to the closest infected person, -1 in case of
      * errors.
      */
@@ -659,11 +658,12 @@ public class Neo4JManager {
     /**
      * Find the top K most riskful place that a user has visited
      *
-     * @param idPerson start person
+     * @param name the starting person
      * @param numberOfNodes number of nodes to return (i.e the function retrieve
      * the top "numberOfNodes" places)
+     * @param timestamp the starting timestamp
      * @param validityTimeMillis interval of time on which relationships are
-     * relevant
+     * relevant from the starting timestamp
      * @return list of the most riskful places for the given user, null in case
      * of errors.
      */
@@ -701,7 +701,7 @@ public class Neo4JManager {
     /**
      * Retrieve risk of infection of a given place
      *
-     * @param idPlace place on which the query must be performed
+     * @param name the starting place on which the query must be performed
      * @return risk index of the given place, -1.0 in case of errors.
      */
     public Double riskOfInfectionIndex(String name) {
@@ -762,9 +762,9 @@ public class Neo4JManager {
     }
 
     /**
-     * Set to infected a person
+     * Set to infected a person by name
      *
-     * @param idPerson
+     * @param name the person name
      * @param timestampInfectedMills timestamp on which the person was
      * recognized as infected
      * @return true on success, false otherwise
@@ -792,7 +792,7 @@ public class Neo4JManager {
     /**
      * Set to healed a person
      *
-     * @param idPerson
+     * @param name the person name
      * @param timestampHealedMills timestamp on which the person was recognized
      * as healed
      * @return true on success, false otherwise
@@ -818,9 +818,10 @@ public class Neo4JManager {
     }
 
     /**
-     * Compute infection risk index of a given place
+     * Compute infection risk index of a given place by name
      *
-     * @param idPlace
+     * @param namePlace the place name
+     * @param timestamp the starting timestamp
      * @param validityTimeMills interval of time on which relationship entering
      * the Place node are relevant
      * @return infection risk index of the given place, -1.0 in case of errors.
