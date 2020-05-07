@@ -53,7 +53,7 @@ public class Populator {
                 Place p = new Place(id, toInsert[0], toInsert[5], toInsert[1], Long.parseLong(toInsert[4]));
                 p.setLatitude(Double.parseDouble(toInsert[2]));
                 p.setLongitude(Double.parseDouble(toInsert[3]));
-                Neo4JManager.getIstance().addPlace(p);
+                Neo4JManager.getIstance().importPlace(p);
                 ++id;
                 line = reader.readLine(); 
             }
@@ -64,7 +64,7 @@ public class Populator {
         Map <String, Long> map = new HashMap<>();
         try(BufferedReader reader = new BufferedReader(new FileReader(placeDir))){
             
-            String movements = "C:\\Users\\susin\\Documents\\GitHub\\Task3\\datasetTask3\\movements\\";
+            String movements = "C:\\Users\\susin\\Documents\\GitHub\\Task3\\datasetTask3\\datasetTask3\\movements\\";
             
             String line = reader.readLine();
             Long id = 0L;
@@ -76,7 +76,7 @@ public class Populator {
             }
             for(id = 1L; id <= 100; ++id) {
                 String s = Long.toString(id);
-                if(s.length() > 1){
+                if(s.length() == 2){
                     s = "0" + s;
                 }
                 else if(s.length() == 1) {

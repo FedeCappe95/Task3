@@ -272,7 +272,52 @@ public class Neo4JManager {
                 public Place execute(Transaction tx) {
                     HashMap<String, Object> map = new HashMap<>();
                     String query = "MERGE (a:Place { id: $id})"
-                            + " ON CREATE SET a.id = id(a) "
+                            + " ON CREATE SET a.id = id(a), "
+                            + " a.name = $name, "
+                            + " a.infectionRisk = $infectionRisk, "
+                            + " a.latitude = $latitude, "
+                            + " a.longitude = $longitude, "
+                            + " a.type = $type, "
+                            + " a.area = $area, "
+                            + " a.city = $city "
+                            + " RETURN a.id as idplace";
+                    map.put("id", p.getId());
+                    map.put("name", p.getName());
+                    map.put("infectionRisk", p.getInfectionRisk());
+                    map.put("latitude", p.getLatitude());
+                    map.put("longitude", p.getLongitude());
+                    map.put("type", p.getType());
+                    map.put("area", p.getArea());
+                    map.put("city", p.getCity());
+
+                    Result result = tx.run(query, map);
+                    if (!result.hasNext()) {
+                        return p;
+                    } else {
+                        Long idplace = result.next().get("idplace").asLong();
+                        p.setId(idplace);
+                        return p;
+                    }
+
+                }
+
+            });
+        }
+    }
+/**
+Populator function
+*/
+public Place importPlace(Place p) {
+        if (!connected) {
+            return p;
+        }
+        try (Session session = driver.session()) {
+            return session.writeTransaction(new TransactionWork<Place>() {
+                @Override
+                public Place execute(Transaction tx) {
+                    HashMap<String, Object> map = new HashMap<>();
+                    String query = "MERGE (a:Place { id: $id})"
+                            + " ON CREATE SET a.id = $id, "
                             + " a.name = $name, "
                             + " a.infectionRisk = $infectionRisk, "
                             + " a.latitude = $latitude, "
