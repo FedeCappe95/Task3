@@ -123,7 +123,6 @@ public class UserUiControlPanelController implements Initializable {
             Long numberOfHops = Neo4JManager.getIstance().userRiskOfInfection(
                     person.getFiscalCode(), Configuration.getValidityPeriod(), System.currentTimeMillis()
                 );
-            System.out.println("----------------------------" + numberOfHops);
             /*if(numberOfHops == 2L || numberOfHops == 4L) {
                 labelRiskOfInfection.setText("Very high");
             }
