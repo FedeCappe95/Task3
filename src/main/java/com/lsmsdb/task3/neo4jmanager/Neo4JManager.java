@@ -154,9 +154,9 @@ public class Neo4JManager {
     
     /**
      * 
-     * @return the number of Place in the database
+     * @return the number of Places in the database
      */
-    public Long countPlace() {
+    public Long countPlaces() {
         if (!connected) {
             return -1L;
         }
