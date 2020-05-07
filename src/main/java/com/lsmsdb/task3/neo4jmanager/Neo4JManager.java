@@ -480,11 +480,12 @@ public class Neo4JManager {
                 public ArrayList<Place> execute(Transaction tx) {
                     ArrayList<Place> list = new ArrayList<>();
                     String query = "MATCH (a:Place) "
-                            + "WHERE a.city = $city AND b.type <> 'house' "
-                            + "RETURN b AS place "
-                            + "ORDER BY b.name";
+                            + "WHERE a.city = $city AND a.type <> $houseTypeIdentificator "
+                            + "RETURN a AS place "
+                            + "ORDER BY a.name";
                     HashMap<String, Object> map = new HashMap<String, Object>();
                     map.put("city", city);
+                    map.put("houseTypeIdentificator", Place.HOUSE_TYPE_IDENTIFICATOR);
 
                     Result result = tx.run(query, map);
                     while (result.hasNext()) {
@@ -780,9 +781,10 @@ public class Neo4JManager {
                 @Override
                 public ArrayList<Place> execute(Transaction tx) {
                     ArrayList<Place> list = new ArrayList<>();
-                    String query = "MATCH (a:Place) WHERE a.type <> 'house' RETURN a AS place ORDER BY a.infectionRisk LIMIT $max";
+                    String query = "MATCH (a:Place) WHERE a.type <> $houseTypeIdentificator RETURN a AS place ORDER BY a.infectionRisk LIMIT $max";
                     HashMap<String, Object> map = new HashMap<>();
                     map.put("max", max);
+                    map.put("houseTypeIdentificator", Place.HOUSE_TYPE_IDENTIFICATOR);
                     Result result = tx.run(query, map);
 
                     while (result.hasNext()) {
