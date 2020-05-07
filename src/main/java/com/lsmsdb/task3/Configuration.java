@@ -1,10 +1,13 @@
 package com.lsmsdb.task3;
 
 import com.lsmsdb.task3.utils.Utils;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.json.JSONObject;
 
 /**
@@ -16,8 +19,8 @@ public class Configuration {
     private static long USER_MOST_CRITICAL_PLACES_NUMBER = 5;
     
     private static final Map<String,Integer> DISTANCE_LOOKUP_TABLE;
-    private static final Map<Integer,String> INFECTION_RISK_LOOKUP_TABLE;
-    private static final String configurationFilePath = "/otherResources/configuration.json";
+    private static final Map<Long,String> INFECTION_RISK_LOOKUP_TABLE;
+    private static final String CONFIGURATION_FILE_PATH = "/otherResources/configuration.json";
     
     static {
         DISTANCE_LOOKUP_TABLE = new HashMap<>();
@@ -30,17 +33,17 @@ public class Configuration {
     
     static {
         INFECTION_RISK_LOOKUP_TABLE = new HashMap<>();
-        INFECTION_RISK_LOOKUP_TABLE.put(3, "Very high");
-        INFECTION_RISK_LOOKUP_TABLE.put(7, "High");
-        INFECTION_RISK_LOOKUP_TABLE.put(12, "Moderate");
-        INFECTION_RISK_LOOKUP_TABLE.put(18, "Low");
-        INFECTION_RISK_LOOKUP_TABLE.put(20, "Very Low");
+        INFECTION_RISK_LOOKUP_TABLE.put(4L, "Very high");
+        INFECTION_RISK_LOOKUP_TABLE.put(8L, "High");
+        INFECTION_RISK_LOOKUP_TABLE.put(12L, "Moderate");
+        INFECTION_RISK_LOOKUP_TABLE.put(18L, "Low");
+        INFECTION_RISK_LOOKUP_TABLE.put(Long.MAX_VALUE, "Very Low");
     }
     
     public static void loadFromClasspath() {
         try {
             JSONObject jsonObject = new JSONObject(
-                    Utils.readAsStringFromClasspath(configurationFilePath)
+                    Utils.readAsStringFromClasspath(CONFIGURATION_FILE_PATH)
             );
             VALIDITY_PERIOD = Long.parseLong(jsonObject.getString("VALIDITY_PERIOD"));
             USER_MOST_CRITICAL_PLACES_NUMBER = Long.parseLong(jsonObject.getString("USER_MOST_CRITICAL_PLACES_NUMBER"));
@@ -84,12 +87,22 @@ public class Configuration {
         return DISTANCE_LOOKUP_TABLE;
     }
     
-    public static Map<Integer, String> getInfectionRiskLookupTable() {
+    public static Map<Long, String> getInfectionRiskLookupTable() {
         return INFECTION_RISK_LOOKUP_TABLE;
     }
 
     public static long getUserMostCriticalPlacesNumber() {
         return USER_MOST_CRITICAL_PLACES_NUMBER;
+    }
+    
+    public static String distanceLongToString(Long distance) {
+        List<Long> keySet = INFECTION_RISK_LOOKUP_TABLE.keySet().stream().sorted()
+                                 .collect(Collectors.toCollection(ArrayList::new));
+        for(Long key : keySet) {
+            if(distance <= key)
+                return INFECTION_RISK_LOOKUP_TABLE.get(key);
+        }
+        return INFECTION_RISK_LOOKUP_TABLE.get(keySet.get(keySet.size()-1));
     }
     
 }

@@ -124,9 +124,7 @@ public class UserUiControlPanelController implements Initializable {
                     person.getFiscalCode(), Configuration.getValidityPeriod(), System.currentTimeMillis()
                 );
             System.out.println("----------------------------" + numberOfHops);
-            //List<Integer> list = ArrayList.newArrayList(Configuration.getInfectionRiskLookupTable().keySet());
-            //int key = list.stream().min(Comparator.comparingInt((k->Math.abs(k - numberOfHops))));
-            if(numberOfHops == 2L || numberOfHops == 4L) {
+            /*if(numberOfHops == 2L || numberOfHops == 4L) {
                 labelRiskOfInfection.setText("Very high");
             }
             else if(numberOfHops == 6L || numberOfHops == 8L) {
@@ -140,7 +138,8 @@ public class UserUiControlPanelController implements Initializable {
             }
             else {
                 labelRiskOfInfection.setText("Low");
-            }
+            }*/
+            labelRiskOfInfection.setText(Configuration.distanceLongToString(numberOfHops));
         });
         
         buttonFind.setOnAction((event) -> {
