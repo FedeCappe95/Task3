@@ -472,7 +472,7 @@ public class Neo4JManager {
      * @param name the person name
      * @return the house.
      */
-    public Place getHouse(String name) {
+    public Place getHouse(String fiscalCode) {
         if (!connected) {
             return null;
         }
@@ -482,10 +482,10 @@ public class Neo4JManager {
                 public Place execute(Transaction tx) {
                     Place house = null;
                     String query = "MATCH (a:Person)-[k:lives_in]->(b:Place) "
-                            + "WHERE a.name = $name AND b.type = $houseTypeIdentificator "
+                            + "WHERE a.fiscalCode = $fiscalCode AND b.type = $houseTypeIdentificator "
                             + "RETURN b AS place";
                     HashMap<String, Object> map = new HashMap<String, Object>();
-                    map.put("name", name);
+                    map.put("fiscalCode", fiscalCode);
                     map.put("houseTypeIdentificator", Place.HOUSE_TYPE_IDENTIFICATOR);
                     Result result = tx.run(query, map);
                     if (result.hasNext()) {
@@ -508,7 +508,7 @@ public class Neo4JManager {
      * @param timestamp timestamp on which the visit occurred
      * @return
      */
-    public Boolean visit(String namePerson, String namePlace, Long timestamp) {
+    public Boolean visit(String fiscalCode, String namePlace, Long timestamp) {
         if (!connected) {
             return false;
         }
@@ -517,11 +517,11 @@ public class Neo4JManager {
                 @Override
                 public Boolean execute(Transaction tx) {
                     String query = "MATCH (a:Person), (b:Place) "
-                            + "WHERE a.name = $namePerson AND b.name = $namePlace "
+                            + "WHERE a.fiscalCode = $fiscalCode AND b.name = $namePlace "
                             + "CREATE (a)-[ r:visited {timestamp: $timestamp} ] ->(b)";
                     HashMap<String, Object> map = new HashMap<String, Object>();
                     //map.put("timestamp", System.currentTimeMillis());
-                    map.put("namePerson", namePerson);
+                    map.put("fiscalCode", fiscalCode);
                     map.put("namePlace", namePlace);
                     map.put("timestamp", timestamp);
 
