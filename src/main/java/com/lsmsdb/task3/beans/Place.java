@@ -25,36 +25,15 @@ public class Place {
     private Long area;
     private String city;
 
-    //at the end of the file there is the getId() method.
-    public Place(String name, String city, Long area) {
-        this.name = name;
-        this.infectionRisk = 0.0;
-        this.latitude = 0.0;
-        this.longitude = 0.0;
-        this.type = "type1";
-        this.area = area;
-	this.city = city;
-    }
-    
+   
     public Place(String name, String city, Long area, String type) {
         this.name = name;
         this.infectionRisk = 0.0;
         this.latitude = 0.0;
-        this.longitude = 0.0;
-        this.type = type;
+        this.longitude = 0.0;        
         this.area = area;
+        this.type = type;
 	this.city = city;
-    }
-
-
-    //constructor for the Populator
-    public Place(String name, String city, String type, Long area) {
-        this.name = name;
-        this.infectionRisk = 0.0;
-        this.latitude = 0.0;
-        this.longitude = 0.0;
-        this.type = type;
-        this.area = area;
     }
 
     public String getCity() {
@@ -118,20 +97,10 @@ public class Place {
         this.infectionRisk = (Double) map.get("infectionRisk");
         this.latitude = (Double) map.get("latitude");
         this.longitude = (Double) map.get("longitude");
-        this.type = (String) map.get("type");
         this.area = (Long) map.get("area");
+        this.type = (String) map.get("type");
         this.city = (String) map.get("city");
     }
 
-    /*public static Long getId(Double _latitute, Double _longitude, String _userId) {
-        String input = _latitute.toString() + _longitude.toString() + _userId;
-        Long h = 1125899906842597L; // prime
-        int len = input.length();
-
-        for (int i = 0; i < len; ++i) {
-            h = 31 * h + input.charAt(i);
-        }
-        return h;
-    }*/
 
 }
