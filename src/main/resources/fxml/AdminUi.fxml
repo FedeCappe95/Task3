@@ -19,15 +19,15 @@
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="657.0" prefWidth="634.0">
                <children>
-                  <Label layoutX="39.0" layoutY="45.0" prefHeight="32.0" prefWidth="232.0" text="Change a user current status:" />
-                  <HBox alignment="CENTER_LEFT" layoutX="41.0" layoutY="95.0" prefHeight="25.0" prefWidth="323.0">
+                  <Label layoutX="39.0" layoutY="45.0" prefHeight="32.0" prefWidth="232.0" text="Change a user current status:" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" />
+                  <HBox alignment="CENTER_LEFT" layoutX="41.0" layoutY="95.0" prefHeight="25.0" prefWidth="323.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
                      <children>
                         <Label prefHeight="14.0" text="Fiscal code:">
                            <HBox.margin>
                               <Insets right="20.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField id="userTextField" fx:id="textFieldSelectUserUserId" HBox.hgrow="ALWAYS">
+                        <TextField id="userTextField" fx:id="textFieldSelectUserUserId" HBox.hgrow="NEVER">
                            <HBox.margin>
                               <Insets right="20.0" />
                            </HBox.margin>
@@ -35,14 +35,14 @@
                         <Button id="updateButton" fx:id="buttonUserShow" mnemonicParsing="false" text="Show" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER_LEFT" layoutX="39.0" layoutY="181.0" prefHeight="25.0" prefWidth="428.0">
+                  <HBox alignment="CENTER_LEFT" layoutX="39.0" layoutY="181.0" prefHeight="25.0" prefWidth="428.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
                      <children>
                         <Label text="Pick date:">
                            <padding>
                               <Insets right="20.0" />
                            </padding>
                         </Label>
-                        <DatePicker id="datePicker" fx:id="datePickerNewStatus" prefHeight="25.0" HBox.hgrow="ALWAYS">
+                        <DatePicker id="datePicker" fx:id="datePickerNewStatus" HBox.hgrow="NEVER">
                            <HBox.margin>
                               <Insets right="20.0" />
                            </HBox.margin>
@@ -50,7 +50,7 @@
                         <Button id="updateButton" fx:id="buttonUserUpdate" mnemonicParsing="false" text="Update" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER_LEFT" layoutX="39.0" layoutY="148.0">
+                  <HBox alignment="CENTER_LEFT" layoutX="39.0" layoutY="148.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
                      <children>
                         <Label text="New status:">
                            <padding>
@@ -72,15 +72,15 @@
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <Label layoutX="47.0" layoutY="46.0" text="View Most Critical Places" />
-                  <HBox alignment="CENTER_LEFT" layoutX="47.0" layoutY="79.0" prefHeight="25.0" prefWidth="405.0">
+                  <Label layoutX="47.0" layoutY="46.0" text="View Most Critical Places" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" />
+                  <HBox alignment="CENTER_LEFT" layoutX="47.0" layoutY="79.0" prefHeight="25.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
                      <children>
                         <Label text="Number of places to show:">
                            <HBox.margin>
                               <Insets right="20.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField id="numberOfPlacesTextField" fx:id="textFieldMostCriticalPlacesNumber" prefHeight="25.0" HBox.hgrow="ALWAYS">
+                        <TextField id="numberOfPlacesTextField" fx:id="textFieldMostCriticalPlacesNumber" prefHeight="25.0" prefWidth="180.0" HBox.hgrow="NEVER">
                            <HBox.margin>
                               <Insets right="20.0" />
                            </HBox.margin>
@@ -88,7 +88,7 @@
                         <Button fx:id="buttonMostCriticalPlacesCompute" mnemonicParsing="false" text="Compute" />
                      </children>
                   </HBox>
-                  <TableView id="tableViewMostCriticalPlaces" fx:id="tableViewMostCriticalPlaces" layoutX="48.0" layoutY="163.0" prefHeight="466.0" prefWidth="541.0">
+                  <TableView id="tableViewMostCriticalPlaces" fx:id="tableViewMostCriticalPlaces" layoutX="48.0" layoutY="163.0" prefHeight="466.0" prefWidth="541.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
                     <columns>
                       <TableColumn prefWidth="75.0" text="Name" />
                         <TableColumn prefWidth="96.0" text="Infection Risk" />

@@ -178,7 +178,7 @@ public class Main extends Application {
             stage.setTitle("Admin panel");
             stage.setScene(scene);
             stage.getIcons().add(getProgramIcon());
-            stage.setResizable(false);
+            stage.setResizable(true);
             stage.show();
         }
         catch(Exception ex) {
