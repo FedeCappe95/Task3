@@ -10,7 +10,6 @@ import com.lsmsdb.task3.utils.Utils;
 import com.lynden.gmapsfx.javascript.object.InfoWindow;
 import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
 import com.lynden.gmapsfx.javascript.object.Marker;
-import com.lynden.gmapsfx.javascript.object.MarkerOptions;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
@@ -35,21 +34,22 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 /**
  * FXML Controller class for the user control panel
  */
 public class UserUiControlPanelController implements Initializable {
-    
+
     /*
      * CONSTANTS
-    */
+     */
     private static final Logger LOGGER = Logger.getLogger(UserUiControlPanelController.class.getName());
 
     /*
      * FXML private data members
-    */
+     */
     @FXML
     private Label labelUserName;
     @FXML
@@ -72,23 +72,27 @@ public class UserUiControlPanelController implements Initializable {
     private TextField textFieldShowByCityCity;
     @FXML
     private Button buttonShowByCityGo;
-    
-    
+    @FXML
+    private Label labelMostRiskfulPlaces;
+
     /*
      * Other private data members
-    */
+     */
     private Person person;
     private UserUiMapController mapController;
-    
-    
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        labelMostRiskfulPlaces.setText(
+                String.format(labelMostRiskfulPlaces.getText(), Configuration.getUserMostCriticalPlacesNumber())
+        );
+
         tablePlaces.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        for(TableColumn tc : tablePlaces.getColumns()) {
-            switch(tc.getText()) {
+        for (TableColumn tc : tablePlaces.getColumns()) {
+            switch (tc.getText()) {
                 case "Place":
                     tc.setCellValueFactory(new PropertyValueFactory("name"));
                     break;
@@ -97,8 +101,8 @@ public class UserUiControlPanelController implements Initializable {
                     break;
             }
         }
-        
-        person = (Person)rb.getObject("person");
+
+        person = (Person) rb.getObject("person");
         labelUserName.setText(person.getName() + " " + person.getSurname());
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
@@ -117,26 +121,26 @@ public class UserUiControlPanelController implements Initializable {
             Logger.getLogger(UserUiControlPanelController.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
-        
+
         splitMenuDistance.getItems().clear();
-        for(String menuItemText : Configuration.getDistances()) {
+        for (String menuItemText : Configuration.getDistances()) {
             MenuItem menuItem = new MenuItem(menuItemText);
             menuItem.setOnAction((event) -> {
                 splitMenuDistance.setText(menuItemText);
             });
             splitMenuDistance.getItems().add(menuItem);
         }
-        
+
         buttonRefreshRiskOfInfection.setOnAction((event) -> {
             Long numberOfHops = Neo4JManager.getIstance().userRiskOfInfection(
                     person.getFiscalCode(), Configuration.getValidityPeriod(), System.currentTimeMillis()
             );
             labelRiskOfInfection.setText(Configuration.getInfectionRiskByHopCount(numberOfHops));
         });
-        
+
         buttonFind.setOnAction((event) -> {
             Integer hopNumber = Configuration.getDistanceLookupTable().get(splitMenuDistance.getText());
-            if(hopNumber == null) {
+            if (hopNumber == null) {
                 Utils.showErrorAlert("Error", "Before continue, select a valid distance");
                 return;
             }
@@ -148,27 +152,29 @@ public class UserUiControlPanelController implements Initializable {
             );
             Utils.showInfoAlert("Result", "I found " + inagsd + (inagsd == 1 ? " person" : " people"));
         });
-        
+
         buttonMostCriticalPlacesRefresh.setOnAction((event) -> {
             retriveAndShowMostCriticalPlaces();
         });
-        
+
         tablePlaces.setOnMouseClicked((event) -> {
             Place selectedPlace = tablePlaces.getSelectionModel().getSelectedItem();
-            if(selectedPlace == null)
+            if (selectedPlace == null) {
                 return;
+            }
             mapController.centerMap(
                     new Coordinate(selectedPlace.getLatitude(), selectedPlace.getLongitude())
             );
         });
-        
+
         buttonAddANewVisit.setOnAction((event) -> {
             try {
                 ResourceBundle resourceBundle = new ResourceBundle() {
                     @Override
                     protected Object handleGetObject(String key) {
-                        if(key.equals("person"))
+                        if (key.equals("person")) {
                             return person;
+                        }
                         return null;
                     }
 
@@ -184,7 +190,7 @@ public class UserUiControlPanelController implements Initializable {
                         return Collections.enumeration(keySet());
                     }
                 };
-                Parent root = FXMLLoader.load(SignInUiController.class.getResource("/fxml/UserUiNewVisit.fxml"),resourceBundle);
+                Parent root = FXMLLoader.load(SignInUiController.class.getResource("/fxml/UserUiNewVisit.fxml"), resourceBundle);
                 Scene scene = new Scene(root);
                 Stage stage = new Stage();
                 stage.setTitle("Add a new visit");
@@ -192,16 +198,15 @@ public class UserUiControlPanelController implements Initializable {
                 stage.getIcons().add(getProgramIcon());
                 stage.setResizable(true);
                 stage.showAndWait();
-            }
-            catch(IOException ex) {
-                LOGGER.log(Level.SEVERE,null,ex);
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
                 System.exit(1);
             }
         });
-        
+
         buttonShowHouseInfo.setOnAction((event) -> {
             Place house = Neo4JManager.getIstance().getHouse(person.getFiscalCode());
-            if(house == null) {
+            if (house == null) {
                 Utils.showErrorAlert(
                         "Error: house not found",
                         "Your house was not found inside the database"
@@ -216,41 +221,22 @@ public class UserUiControlPanelController implements Initializable {
                     )
             );
         });
-        
+
         buttonShowByCityGo.setOnAction((event) -> {
-            String city = textFieldShowByCityCity.getText();
-            if(city.isEmpty()) {
-                Utils.showErrorAlert(
-                        "Error, can not precede",
-                        "Please, insert a valid city name"
-                );
-            }
-            List<Place> places = Neo4JManager.getIstance().getAllPlaceByCity(city);
-            mapController.clearMarkers();
-            for(Place place : places) {
-                Marker marker = mapController.createAndAddMarker(
-                        new Coordinate(place.getLatitude(), place.getLongitude())
-                );
-                marker.setTitle(place.getName() + " - " + place.getInfectionRisk());
-                InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-                infoWindowOptions.content(
-                        String.format(
-                                "<h2>%s</h2>Risk index:%2f",
-                                place.getName(), place.getInfectionRisk()
-                        )
-                );
-                InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
-                mapController.addInfoWindow(infoWindow, marker);
-            }
+            showPlacesByCity();
+        });
+
+        textFieldShowByCityCity.setOnKeyPressed((event) -> {
+            if (event.getCode().equals(KeyCode.ENTER))
+                showPlacesByCity();
         });
     }
-    
+
     public void retriveAndShowMostCriticalPlaces() {
         try {
             mapController.clearMarkers();
-        }
-        catch(Exception ex) {
-            LOGGER.log(Level.SEVERE,null,ex);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
             tablePlaces.getItems().clear();
             return;
         }
@@ -261,12 +247,39 @@ public class UserUiControlPanelController implements Initializable {
                 System.currentTimeMillis()
         );
         tablePlaces.getItems().setAll(places);
-        for(Place place : places) {
+        for (Place place : places) {
             mapController.createAndAddMarker(
                     new Coordinate(place.getName(), place.getLatitude(), place.getLongitude())
             )
                     .setTitle(place.getName() + " - " + place.getInfectionRisk());
         }
     }
-    
+
+    private void showPlacesByCity() {
+        String city = textFieldShowByCityCity.getText();
+        if (city.isEmpty()) {
+            Utils.showErrorAlert(
+                    "Error, can not precede",
+                    "Please, insert a valid city name"
+            );
+        }
+        List<Place> places = Neo4JManager.getIstance().getAllPlaceByCity(city);
+        mapController.clearMarkers();
+        for (Place place : places) {
+            Marker marker = mapController.createAndAddMarker(
+                    new Coordinate(place.getLatitude(), place.getLongitude())
+            );
+            marker.setTitle(place.getName() + " - " + place.getInfectionRisk());
+            InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+            infoWindowOptions.content(
+                    String.format(
+                            "<h2>%s</h2>Risk index:%2f",
+                            place.getName(), place.getInfectionRisk()
+                    )
+            );
+            InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
+            mapController.openInfoWindow(infoWindow, marker);
+        }
+    }
+
 }

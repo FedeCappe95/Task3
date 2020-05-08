@@ -300,11 +300,11 @@ public class UserUiMapController implements Initializable {
     }
     
     /**
-     * Add an InfoWindows infoWindow for the Marker marker
+     * Open an InfoWindows infoWindow for the Marker marker
      * @param infoWindow
      * @param marker 
      */
-    public void addInfoWindow(InfoWindow infoWindow, Marker marker) {
+    public void openInfoWindow(InfoWindow infoWindow, Marker marker) {
         infoWindow.open(map, marker);
     }
     
