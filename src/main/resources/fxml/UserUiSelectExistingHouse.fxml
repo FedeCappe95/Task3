@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="132.0" prefWidth="440.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiSelectExistingHouseController">
+<AnchorPane id="AnchorPane" prefHeight="132.0" prefWidth="440.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiSelectExistingHouseController">
    <children>
       <Label layoutX="248.0" layoutY="34.0" text="Select an existing house" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
          <font>

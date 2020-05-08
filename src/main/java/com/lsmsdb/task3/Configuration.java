@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -16,31 +17,57 @@ import org.json.JSONObject;
  */
 public class Configuration {
     
-    private static long VALIDITY_PERIOD = 2*7*24*60*60*1000; //2 weeks
-    private static long USER_MOST_CRITICAL_PLACES_NUMBER = 5;
-    
-    private static final LinkedHashMap<String,Integer> DISTANCE_LOOKUP_TABLE;
-    private static final Map<Long,String> INFECTION_RISK_LOOKUP_TABLE;
+    /*
+     * Constants
+    */
+    private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
     private static final String CONFIGURATION_FILE_PATH = "/otherResources/configuration.json";
     private static final String UNDETERMINATED_INFECTION_RISK_STRING = "Undeterminated";
     
+    /*
+     * Configuration parameters
+    */
+    private static long VALIDITY_PERIOD = 2*7*24*60*60*1000; //2 weeks
+    private static long USER_MOST_CRITICAL_PLACES_NUMBER = 5;
+    private static LinkedHashMap<String,Integer> DISTANCE_LOOKUP_TABLE;
+    private static Map<Long,String> INFECTION_RISK_LOOKUP_TABLE;
+    
+    /*
+     * Static initialization
+    */
     static {
+        initWithDefaultValues();
+        loadFromClasspath();
+    }
+    
+    
+    
+    
+    /*
+     * Private methods
+    */
+    public static void initWithDefaultValues() {
         DISTANCE_LOOKUP_TABLE = new LinkedHashMap<>();
         DISTANCE_LOOKUP_TABLE.put("Very close", 2);
         DISTANCE_LOOKUP_TABLE.put("Close", 4);
         DISTANCE_LOOKUP_TABLE.put("Medium", 6);
         DISTANCE_LOOKUP_TABLE.put("Distant", 8);
         DISTANCE_LOOKUP_TABLE.put("Very distant", 10);
-    }
-    
-    static {
+        
         INFECTION_RISK_LOOKUP_TABLE = new HashMap<>();
         INFECTION_RISK_LOOKUP_TABLE.put(4L, "Very high");
         INFECTION_RISK_LOOKUP_TABLE.put(8L, "High");
         INFECTION_RISK_LOOKUP_TABLE.put(12L, "Moderate");
         INFECTION_RISK_LOOKUP_TABLE.put(18L, "Low");
-        INFECTION_RISK_LOOKUP_TABLE.put(Long.MAX_VALUE, "Very Low");
+        INFECTION_RISK_LOOKUP_TABLE.put(Long.MAX_VALUE, "Very low");
     }
+    
+    
+    
+    
+    /*
+     * Access functions
+    */
     
     /**
      * Load the configuration from the JSON file inside the classpath
@@ -48,19 +75,35 @@ public class Configuration {
      */
     public static void loadFromClasspath() {
         try {
-            JSONObject jsonObject = new JSONObject(
+            JSONObject jsonRoot = new JSONObject(
                     Utils.readAsStringFromClasspath(CONFIGURATION_FILE_PATH)
             );
-            VALIDITY_PERIOD = Long.parseLong(jsonObject.getString("VALIDITY_PERIOD"));
-            USER_MOST_CRITICAL_PLACES_NUMBER = Long.parseLong(jsonObject.getString("USER_MOST_CRITICAL_PLACES_NUMBER"));
-            /*
-             * TO-DO PRENDERE DA FILE ANCHE LE ALTRE VARIABILI
-            */
+            VALIDITY_PERIOD = Long.parseLong(jsonRoot.getString("VALIDITY_PERIOD"));
+            
+            USER_MOST_CRITICAL_PLACES_NUMBER = Long.parseLong(jsonRoot.getString("USER_MOST_CRITICAL_PLACES_NUMBER"));
+            
+            LinkedHashMap<String,Integer> newDistanceLookupTable = new LinkedHashMap<>();
+            jsonRoot.getJSONArray("DISTANCE_LOOKUP_TABLE").forEach((entry) -> {
+                JSONObject o = (JSONObject)entry;
+                newDistanceLookupTable.put(o.getString("key"), o.getInt("value"));
+            });
+            DISTANCE_LOOKUP_TABLE = newDistanceLookupTable;
+            
+            Map<Long,String> newInfectionRiskLookupTable = new HashMap<>();
+            jsonRoot.getJSONArray("INFECTION_RISK_LOOKUP_TABLE").forEach((entry) -> {
+                JSONObject o = (JSONObject)entry;
+                String key = o.getString("key");
+                newInfectionRiskLookupTable.put(
+                        key.equals("MAX_VALUE") ? Long.MAX_VALUE : Long.parseLong(key),
+                        o.getString("value")
+                );
+            });
         }
-        catch(Exception ex) {
-            Logger.getLogger(Configuration.class.getName()).log(
+        catch(NumberFormatException | JSONException ex) {
+            LOGGER.log(
                     Level.WARNING,
-                    "Error loading configuration, default configuration will be used"
+                    "Error loading configuration, default configuration will be used where it is not possible to procede",
+                    ex
             );
         }
     }

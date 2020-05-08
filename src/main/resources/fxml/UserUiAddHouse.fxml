@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="251.0" prefWidth="398.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiAddHouseController">
+<AnchorPane id="AnchorPane" prefHeight="251.0" prefWidth="398.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiAddHouseController">
    <children>
       <Label layoutX="238.0" layoutY="24.0" text="Add an house" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
          <font>

@@ -1,4 +1,18 @@
 {
-    "VALIDITY_PERIOD": "‭1209600000‬",
-    "USER_MOST_CRITICAL_PLACES_NUMBER": "5"
+    "VALIDITY_PERIOD": "1209600000",
+    "USER_MOST_CRITICAL_PLACES_NUMBER": "5",
+    "DISTANCE_LOOKUP_TABLE": [
+        {"key": "Very close",   "value": 2},
+        {"key": "Close",        "value": 4},
+        {"key": "Medium",       "value": 6},
+        {"key": "Distant",      "value": 8},
+        {"key": "Very distant", "value": 10}
+    ],
+    "INFECTION_RISK_LOOKUP_TABLE": [
+        {"key": "4",         "value": "Very high"},
+        {"key": "8",         "value": "High"},
+        {"key": "12",        "value": "Moderate"},
+        {"key": "18",        "value": "Low"},
+        {"key": "MAX_VALUE", "value": "Very low"}
+    ]
 }
