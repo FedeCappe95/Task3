@@ -252,7 +252,8 @@ public class UserUiControlPanelController implements Initializable {
         for(Place place : places) {
             mapController.createAndAddMarker(
                     new Coordinate(place.getName(), place.getLatitude(), place.getLongitude())
-            );
+            )
+                    .setTitle(place.getName() + " - " + place.getInfectionRisk());
         }
     }
     
