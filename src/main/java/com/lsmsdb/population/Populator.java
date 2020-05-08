@@ -30,7 +30,7 @@ public class Populator {
     private static String livingDir = "./datasetTask3/datasetTask3/living_dataset.txt";
     private static String movements = "./datasetTask3/datasetTask3/movements/";
     
-    public void LoadUsers() {
+    public static void loadUsers() {
         //connection to the database
         Neo4JManager.getIstance().connect();
         
@@ -51,7 +51,7 @@ public class Populator {
         Neo4JManager.getIstance().close();
     }
     
-    public boolean LoadPlaces() {
+    public static boolean loadPlaces(String locFile) {
         //connection to the database
         Neo4JManager.getIstance().connect();
         
@@ -60,7 +60,7 @@ public class Populator {
         
         //reading of the file containing the dataset of the places
         Long counter = 0L;
-        try(BufferedReader reader = new BufferedReader(new FileReader(placeDir))){
+        try(BufferedReader reader = new BufferedReader(new FileReader(locFile))){
             String line = reader.readLine();
             while(line!=null) {
                 String[] toInsert = line.split(",");
@@ -85,7 +85,7 @@ public class Populator {
         return true;
     }
     
-    public void LoadVisitedRelations() {
+    public static void loadVisitedRelations() {
         //connection to the database
         Neo4JManager.getIstance().connect();
         
@@ -119,7 +119,7 @@ public class Populator {
         Neo4JManager.getIstance().close();
     }
     
-    public void LoadLivesInRelations() {
+    public static void loadLivesInRelations() {
         //connection to the database
         Neo4JManager.getIstance().connect();
         
@@ -142,16 +142,29 @@ public class Populator {
     }
     
     public static void main(String[] args) {
-        Populator populator = new Populator();
-        //populator.LoadUsers();
-        if(!populator.LoadPlaces()) {
+        if(args[0].equals("--createdb")) {
+            loadUsers();
+            boolean ret = loadPlaces(placeDir);
+            loadLivesInRelations();
+            loadVisitedRelations();
+            if(ret){
+                System.out.println("The creation of the database was successfull!!!");
+            }
+            else {
+                System.err.println("ATTENTION: creation of database went wrong");
+            }
+        }
+        else if(args[0].equals("--addplaces")) {
+            if(!loadPlaces(args[1])) {
             System.err.println("ATTENTION: insertion of new places went wrong");
+            }
+            else {
+                System.out.println("New places insertion was successful!!!");
+            }
         }
         else {
-            System.out.println("New places insertion was successful!!!");
-        }
-        //populator.LoadLivesInRelations();
-        //populator.LoadVisitedRelations();
+            System.err.println("ATTENTION: typing error!\nCheck if you inserted the right command");
+        }        
     }
 }
 

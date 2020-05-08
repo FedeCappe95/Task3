@@ -1,0 +1,4 @@
+Palazzetto dello sport "Pala Parenti",struttura sportiva,43.7128438,10.7676584,400,Santa Croce Sull'Arno
+Decibel Fanatiko,negozio elettronica,43.720822,10.772179,50,Santa Croce Sull'Arno
+Pasticceria "Lorianabetti",pasticceria,43.7122222,10.780306,20,Santa Croce Sull'Arno
+Bar "Giannelli",bar,43.7153711,10.7750942,30,Santa Croce Sull'Arno
