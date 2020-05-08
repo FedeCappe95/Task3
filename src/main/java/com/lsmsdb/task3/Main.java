@@ -1,5 +1,6 @@
 package com.lsmsdb.task3;
 
+import com.lsmsdb.population.Populator;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.ui.SplashScreen;
 import com.lsmsdb.task3.utils.Utils;
@@ -35,6 +36,10 @@ public class Main extends Application {
             "java.util.logging.SimpleFormatter.format",
             "[%1$tF %1$tT %1$tL] %2$s %4$s: %5$s%6$s%n"
         );
+        if(args[0].equals("--createdb") || args[0].equals("--addplace")) {
+            Populator.main(args);
+            return;
+        }
         workingMode = WorkingMode.LOGIN_MODE;
         for(String s : args) {
             String slc = s.toLowerCase();

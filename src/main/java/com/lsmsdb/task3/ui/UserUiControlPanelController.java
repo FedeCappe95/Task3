@@ -273,7 +273,7 @@ public class UserUiControlPanelController implements Initializable {
             InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
             infoWindowOptions.content(
                     String.format(
-                            "<h2>%s</h2>Risk index:%2f",
+                            "<h2>%s</h2>Risk index:%.4f",
                             place.getName(), place.getInfectionRisk()
                     )
             );
