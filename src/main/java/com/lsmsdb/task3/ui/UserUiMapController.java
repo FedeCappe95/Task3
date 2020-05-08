@@ -4,6 +4,7 @@ import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
+import com.lynden.gmapsfx.javascript.object.InfoWindow;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
@@ -47,8 +48,9 @@ public class UserUiMapController implements Initializable {
     /*
      * Constants
     */
-    private static final double initialMapPositionLatitude = 43.718609D;
-    private static final double initialMapPositionLongitude = 10.942520D;
+    private static final double INITIAL_MAP_POSITION_LATITUDE = 43.718609D;
+    private static final double INITIAL_MAP_POSITION_LONGITUDE = 10.942520D;
+    private static final Logger LOGGER = Logger.getLogger(UserUiMapController.class.getName());
     
     /*
      * Other objects
@@ -121,7 +123,7 @@ public class UserUiMapController implements Initializable {
             public void mapInitialized() {
                 //Set the initial options of the map.
                 mapOptions = new MapOptions();
-                mapOptions.center(new LatLong(initialMapPositionLatitude, initialMapPositionLongitude))
+                mapOptions.center(new LatLong(INITIAL_MAP_POSITION_LATITUDE, INITIAL_MAP_POSITION_LONGITUDE))
                         .mapType(MapTypeIdEnum.ROADMAP)
                         .overviewMapControl(false)
                         .panControl(false)
@@ -155,24 +157,26 @@ public class UserUiMapController implements Initializable {
          *   mapView.addMapInitializedListener(mapComponentInitializedListener);
          * would not be correct
         */
-        Method initMethod = null;
+        Method initMethod;
         try {
             initMethod = GoogleMapView.class.getMethod("addMapInitializedListener", MapComponentInitializedListener.class);
         }
         catch(NoSuchMethodException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO,"Use the old GMapsFX map initialization method");
+            LOGGER.log(Level.INFO,"Use the old GMapsFX map initialization method");
             try {
                 initMethod = GoogleMapView.class.getMethod("addMapInializedListener", MapComponentInitializedListener.class);
             }
             catch(NoSuchMethodException ex1) {
+                LOGGER.log(Level.SEVERE, "Can not find GMAPFX initialization method", ex1);
                 ex1.printStackTrace();
                 System.exit(1);
+                return;
             }
         }
         try {
             initMethod.invoke(mapView, mapComponentInitializedListener);
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
-            Logger.getLogger(UserUiMapController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
@@ -248,7 +252,7 @@ public class UserUiMapController implements Initializable {
     
     /**
      * Center the map to coordinates
-     * @param location 
+     * @param coordinate 
      */
     public void centerMap(Coordinate coordinate) {
         centerMap(new LatLong(coordinate.getLatitude(), coordinate.getLongitude()));
@@ -293,6 +297,15 @@ public class UserUiMapController implements Initializable {
     public void removeMarker(Marker marker) {
         map.removeMarker(marker);
         markers.remove(marker);
+    }
+    
+    /**
+     * Add an InfoWindows infoWindow for the Marker marker
+     * @param infoWindow
+     * @param marker 
+     */
+    public void addInfoWindow(InfoWindow infoWindow, Marker marker) {
+        infoWindow.open(map, marker);
     }
     
 }

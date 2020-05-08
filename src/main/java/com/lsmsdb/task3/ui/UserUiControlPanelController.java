@@ -7,7 +7,10 @@ import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.utils.Utils;
+import com.lynden.gmapsfx.javascript.object.InfoWindow;
+import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
 import com.lynden.gmapsfx.javascript.object.Marker;
+import com.lynden.gmapsfx.javascript.object.MarkerOptions;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
@@ -229,6 +232,15 @@ public class UserUiControlPanelController implements Initializable {
                         new Coordinate(place.getLatitude(), place.getLongitude())
                 );
                 marker.setTitle(place.getName() + " - " + place.getInfectionRisk());
+                InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+                infoWindowOptions.content(
+                        String.format(
+                                "<h2>%s</h2>Risk index:%2f",
+                                place.getName(), place.getInfectionRisk()
+                        )
+                );
+                InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
+                mapController.addInfoWindow(infoWindow, marker);
             }
         });
     }
