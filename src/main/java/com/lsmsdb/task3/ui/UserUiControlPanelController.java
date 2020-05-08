@@ -7,10 +7,10 @@ import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.utils.Utils;
+import com.lynden.gmapsfx.javascript.object.Marker;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +38,11 @@ import javafx.stage.Stage;
  * FXML Controller class for the user control panel
  */
 public class UserUiControlPanelController implements Initializable {
+    
+    /*
+     * CONSTANTS
+    */
+    private static final Logger LOGGER = Logger.getLogger(UserUiControlPanelController.class.getName());
 
     /*
      * FXML private data members
@@ -185,8 +190,8 @@ public class UserUiControlPanelController implements Initializable {
                 stage.setResizable(true);
                 stage.showAndWait();
             }
-            catch(Exception ex) {
-                ex.printStackTrace();
+            catch(IOException ex) {
+                LOGGER.log(Level.SEVERE,null,ex);
                 System.exit(1);
             }
         });
@@ -217,6 +222,14 @@ public class UserUiControlPanelController implements Initializable {
                         "Please, insert a valid city name"
                 );
             }
+            List<Place> places = Neo4JManager.getIstance().getAllPlaceByCity(city);
+            mapController.clearMarkers();
+            for(Place place : places) {
+                Marker marker = mapController.createAndAddMarker(
+                        new Coordinate(place.getLatitude(), place.getLongitude())
+                );
+                marker.setTitle(place.getName() + " - " + place.getInfectionRisk());
+            }
         });
     }
     
@@ -224,8 +237,8 @@ public class UserUiControlPanelController implements Initializable {
         try {
             mapController.clearMarkers();
         }
-        catch(Exception e) {
-            e.printStackTrace();
+        catch(Exception ex) {
+            LOGGER.log(Level.SEVERE,null,ex);
             tablePlaces.getItems().clear();
             return;
         }
@@ -241,16 +254,6 @@ public class UserUiControlPanelController implements Initializable {
                     new Coordinate(place.getName(), place.getLatitude(), place.getLongitude())
             );
         }
-    }
-    
-    
-    
-    
-    /*
-     * Private functions
-    */
-    private Stage getStage() {
-        return (Stage)buttonRefreshRiskOfInfection.getScene().getWindow();
     }
     
 }
