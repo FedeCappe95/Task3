@@ -30,8 +30,7 @@ public class Populator {
     private static String livingDir = "./datasetTask3/datasetTask3/living_dataset.txt";
     private static String movements = "./datasetTask3/datasetTask3/movements/";
     
-    public static void main(String[] args) {
-        
+    public void LoadUsers() {
         //connection to the database
         Neo4JManager.getIstance().connect();
         
@@ -47,6 +46,17 @@ public class Populator {
         }catch(Exception e){
             e.printStackTrace();
         }
+        
+        //close the connection with the database
+        Neo4JManager.getIstance().close();
+    }
+    
+    public boolean LoadPlaces() {
+        //connection to the database
+        Neo4JManager.getIstance().connect();
+        
+        //get the current number of places
+        Long prevPlaces = Neo4JManager.getIstance().countPlaces();
         
         //reading of the file containing the dataset of the places
         Long counter = 0L;
@@ -64,9 +74,20 @@ public class Populator {
         }catch(Exception e){
             e.printStackTrace();
         }
-        if(Neo4JManager.getIstance().countPlaces() == counter) {
-            System.out.println("Tutto a posto a ferragosto!!!");
+        
+        //check if all the places have been added
+        if((Neo4JManager.getIstance().countPlaces() - prevPlaces) != counter) {
+            return false;
         }
+        
+        //close the connection with the database
+        Neo4JManager.getIstance().close();
+        return true;
+    }
+    
+    public void LoadVisitedRelations() {
+        //connection to the database
+        Neo4JManager.getIstance().connect();
         
         //reading of the file containing the dataset of the 'visited' relations
         Long id = 0L;
@@ -94,6 +115,14 @@ public class Populator {
             }
         }
         
+        //close the connection with the database
+        Neo4JManager.getIstance().close();
+    }
+    
+    public void LoadLivesInRelations() {
+        //connection to the database
+        Neo4JManager.getIstance().connect();
+        
         //reading of the file containing the dataset of the 'lives_in' relations
         try(BufferedReader reader = new BufferedReader(new FileReader(livingDir))){
             String line = reader.readLine();
@@ -107,7 +136,22 @@ public class Populator {
         }catch(Exception e){
             e.printStackTrace();
         }
+        
+        //close the connection with the database
         Neo4JManager.getIstance().close();
+    }
+    
+    public static void main(String[] args) {
+        Populator populator = new Populator();
+        //populator.LoadUsers();
+        if(!populator.LoadPlaces()) {
+            System.err.println("ATTENTION: insertion of new places went wrong");
+        }
+        else {
+            System.out.println("New places insertion was successful!!!");
+        }
+        //populator.LoadLivesInRelations();
+        //populator.LoadVisitedRelations();
     }
 }
 
