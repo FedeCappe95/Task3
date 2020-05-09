@@ -13,8 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="435.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="com.lsmsdb.task3.ui.UserUiNewVisitController">
+<AnchorPane id="AnchorPane" prefHeight="435.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lsmsdb.task3.ui.UserUiNewVisitController">
    <children>
       <Label layoutX="228.0" layoutY="14.0" text="Add a new visit" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
          <font>
@@ -43,7 +42,7 @@
       </TableView>
       <HBox layoutX="14.0" layoutY="396.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
          <children>
-            <DatePicker fx:id="datePickerDate" prefHeight="25.0" prefWidth="198.0" promptText="When did it happen? (day)">
+            <DatePicker fx:id="datePickerDate" editable="false" prefHeight="25.0" prefWidth="198.0" promptText="When did it happen? (day)">
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>
