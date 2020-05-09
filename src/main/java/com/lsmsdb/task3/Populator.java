@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package com.lsmsdb.population;
+package com.lsmsdb.task3;
 
 import java.io.*;
 import com.lsmsdb.task3.beans.Person;
@@ -11,14 +6,9 @@ import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- *
- * @author lore
+ * Class to "create" and populate the database
  */
 public class Populator {
 
@@ -31,9 +21,6 @@ public class Populator {
     private static String movements = "./datasetTask3/datasetTask3/movements/";
     
     public static void loadUsers() {
-        //connection to the database
-        Neo4JManager.getIstance().connect();
-        
         //reading of the file containing the dataset of the people
         try(BufferedReader reader = new BufferedReader(new FileReader(personDir))){
             String line = reader.readLine();
@@ -46,15 +33,9 @@ public class Populator {
         }catch(Exception e){
             e.printStackTrace();
         }
-        
-        //close the connection with the database
-        Neo4JManager.getIstance().close();
     }
     
     public static boolean loadPlaces(String locFile) {
-        //connection to the database
-        Neo4JManager.getIstance().connect();
-        
         //get the current number of places
         Long prevPlaces = Neo4JManager.getIstance().countPlaces();
         
@@ -79,16 +60,10 @@ public class Populator {
         if((Neo4JManager.getIstance().countPlaces() - prevPlaces) != counter) {
             return false;
         }
-        
-        //close the connection with the database
-        Neo4JManager.getIstance().close();
         return true;
     }
     
     public static void loadVisitedRelations() {
-        //connection to the database
-        Neo4JManager.getIstance().connect();
-        
         //reading of the file containing the dataset of the 'visited' relations
         Long id = 0L;
         for(id = 1L; id <= 100; ++id) {
@@ -114,15 +89,9 @@ public class Populator {
                 e.printStackTrace();
             }
         }
-        
-        //close the connection with the database
-        Neo4JManager.getIstance().close();
     }
     
     public static void loadLivesInRelations() {
-        //connection to the database
-        Neo4JManager.getIstance().connect();
-        
         //reading of the file containing the dataset of the 'lives_in' relations
         try(BufferedReader reader = new BufferedReader(new FileReader(livingDir))){
             String line = reader.readLine();
@@ -136,13 +105,11 @@ public class Populator {
         }catch(Exception e){
             e.printStackTrace();
         }
-        
-        //close the connection with the database
-        Neo4JManager.getIstance().close();
     }
     
     public static void main(String[] args) {
         if(args[0].equals("--createdb")) {
+            Neo4JManager.getIstance().connect();
             loadUsers();
             boolean ret = loadPlaces(placeDir);
             loadLivesInRelations();
@@ -153,14 +120,17 @@ public class Populator {
             else {
                 System.err.println("ATTENTION: creation of database went wrong");
             }
+            Neo4JManager.getIstance().close();
         }
         else if(args[0].equals("--addplaces")) {
+            Neo4JManager.getIstance().connect();
             if(!loadPlaces(args[1])) {
             System.err.println("ATTENTION: insertion of new places went wrong");
             }
             else {
                 System.out.println("New places insertion was successful!!!");
             }
+            Neo4JManager.getIstance().close();
         }
         else {
             System.err.println("ATTENTION: typing error!\nCheck if you inserted the right command");

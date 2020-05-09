@@ -1,11 +1,8 @@
 package com.lsmsdb.task3;
 
-import com.lsmsdb.population.Populator;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.ui.SplashScreen;
 import com.lsmsdb.task3.utils.Utils;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -38,6 +35,7 @@ public class Main extends Application {
         );
         if(args[0].equals("--createdb") || args[0].equals("--addplaces")) {
             Populator.main(args);
+            Platform.exit();
             return;
         }
         workingMode = WorkingMode.LOGIN_MODE;
