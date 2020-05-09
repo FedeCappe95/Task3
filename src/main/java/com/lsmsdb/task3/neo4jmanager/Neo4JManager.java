@@ -438,6 +438,7 @@ public class Neo4JManager {
                 map.put("type", place.getType());
                 map.put("area", place.getArea());
                 map.put("city", place.getCity());
+                tx.run(query, map);
 
                 /* LIVES_IN  */
                 query = "MATCH (a:Person), (b:Place) "
