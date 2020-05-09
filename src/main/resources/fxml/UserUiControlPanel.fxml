@@ -52,8 +52,22 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <Label layoutX="24.0" layoutY="148.0" prefHeight="26.0" prefWidth="282.0" text="Find infected users at the given distance:" />
-      <Button id="findButton" fx:id="buttonFind" layoutX="565.0" layoutY="145.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="60.0" text="Find" AnchorPane.rightAnchor="24.0">
+      <HBox alignment="CENTER_LEFT" layoutX="24.0" layoutY="148.0" prefHeight="26.0" prefWidth="531.0">
+         <children>
+            <Label prefHeight="26.0" prefWidth="282.0" text="Find number of infected users at the given distance:">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Label>
+            <SplitMenuButton fx:id="splitMenuDistance" mnemonicParsing="false" prefWidth="150.0" text="Select a distance">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Action 1" />
+                <MenuItem mnemonicParsing="false" text="Action 2" />
+              </items>
+            </SplitMenuButton>
+         </children>
+      </HBox>
+      <Button id="findButton" fx:id="buttonFind" layoutX="567.0" layoutY="143.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="60.0" text="Find" AnchorPane.rightAnchor="24.0">
          <font>
             <Font size="16.0" />
          </font>
@@ -65,12 +79,6 @@
         </columns>
       </TableView>
       <Label fx:id="labelMostRiskfulPlaces" layoutX="24.0" layoutY="223.0" text="Top %d most riskful places you recently vidited:" />
-      <SplitMenuButton fx:id="splitMenuDistance" layoutX="298.0" layoutY="151.0" mnemonicParsing="false" prefWidth="150.0" text="Select a distance">
-        <items>
-          <MenuItem mnemonicParsing="false" text="Action 1" />
-          <MenuItem mnemonicParsing="false" text="Action 2" />
-        </items>
-      </SplitMenuButton>
       <Button fx:id="buttonMostCriticalPlacesRefresh" layoutX="569.0" layoutY="219.0" mnemonicParsing="false" text="Refresh" AnchorPane.rightAnchor="24.0" />
       <Button fx:id="buttonAddANewVisit" layoutX="429.0" layoutY="219.0" mnemonicParsing="false" text="Add a new visit" AnchorPane.rightAnchor="123.0" />
       <HBox alignment="CENTER_LEFT" layoutX="22.0" layoutY="510.0" AnchorPane.leftAnchor="22.0" AnchorPane.rightAnchor="22.0">

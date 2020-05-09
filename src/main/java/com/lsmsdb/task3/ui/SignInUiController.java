@@ -40,6 +40,7 @@ public class SignInUiController implements Initializable {
     private static final String BUTTON_CHANGE_INTERNAL_FRAME_TEXT_1 = "Where do my info go?";
     private static final String BUTTON_CHANGE_INTERNAL_FRAME_TEXT_2 = "Go back";
     private static final String PRIVACY_POLICY_TXT_PATH = "/otherResources/privacyPolicy.txt";
+    private static final Logger LOGGER = Logger.getLogger(SignInUiController.class.getName());
     
     
     /*
@@ -94,7 +95,7 @@ public class SignInUiController implements Initializable {
                     Utils.readAsStringFromClasspath(PRIVACY_POLICY_TXT_PATH)
             );
         } catch (Exception ex) {
-            Logger.getLogger(SignInUiController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             labelPrivacyPolicy.setText("Error loading privacy policy");
         }
         
@@ -160,9 +161,8 @@ public class SignInUiController implements Initializable {
         
         Place house = null;
         final String OPTION_0 = "Add a new house";
-        final String OPTION_1 = "Select an exisitng house";
-        String options[] = {OPTION_0,OPTION_1}; 
-        ChoiceDialog choiseDialog = new ChoiceDialog(options[0], options);
+        final String OPTION_1 = "Select an existing house";
+        ChoiceDialog choiseDialog = new ChoiceDialog(OPTION_0, OPTION_0, OPTION_1);
         //((Stage)choiseDialog.getGraphic().getScene().getWindow()).getIcons().add(Main.getProgramIcon());
         choiseDialog.setHeaderText("Please select an option");
         choiseDialog.showAndWait();
@@ -208,7 +208,7 @@ public class SignInUiController implements Initializable {
                     if(house == null)
                         return;
                 } catch (IOException ex) {
-                    Logger.getLogger(SignInUiController.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                     System.exit(1);
                 }
                 break;
@@ -228,7 +228,7 @@ public class SignInUiController implements Initializable {
                     if(house == null)
                         return;
                 } catch (IOException ex) {
-                    Logger.getLogger(SignInUiController.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                     System.exit(1);
                 }
                 break;
@@ -286,8 +286,8 @@ public class SignInUiController implements Initializable {
             stage.show();
             getStage().close();
         }
-        catch(Exception ex) {
-            ex.printStackTrace();
+        catch(IOException ex) {
+            LOGGER.log(Level.SEVERE,null,ex);
             System.exit(1);
         }
     }

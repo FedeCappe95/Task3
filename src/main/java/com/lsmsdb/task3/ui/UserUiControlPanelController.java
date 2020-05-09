@@ -262,6 +262,7 @@ public class UserUiControlPanelController implements Initializable {
                     "Error, can not precede",
                     "Please, insert a valid city name"
             );
+            return;
         }
         List<Place> places = Neo4JManager.getIstance().getAllPlaceByCity(city);
         mapController.clearMarkers();

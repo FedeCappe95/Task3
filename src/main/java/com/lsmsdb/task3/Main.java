@@ -3,6 +3,8 @@ package com.lsmsdb.task3;
 import com.lsmsdb.task3.neo4jmanager.Neo4JManager;
 import com.lsmsdb.task3.ui.SplashScreen;
 import com.lsmsdb.task3.utils.Utils;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +19,11 @@ import javafx.stage.StageStyle;
  * Main class (entry point) of the application
  */
 public class Main extends Application {
+    
+    /*
+     * Constants
+    */
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
     
     /*
      * Private static data members
@@ -125,8 +132,9 @@ public class Main extends Application {
      * When a working mode is selected, the corresponding workspace is shown.
      */
     private static void showLogin() {
-        String options[] = {"User","Admin (Delegated person)"}; 
-        ChoiceDialog choiseDialog = new ChoiceDialog(options[0], options);
+        final String OPTION_0 = "User";
+        final String OPTION_1 = "Admin (Delegated person)";
+        ChoiceDialog choiseDialog = new ChoiceDialog(OPTION_0, OPTION_0, OPTION_1);
         //((Stage)choiseDialog.getGraphic().getScene().getWindow()).getIcons().add(Main.getProgramIcon());
         choiseDialog.setHeaderText("Login: please select your role");
         choiseDialog.showAndWait();
@@ -136,10 +144,10 @@ public class Main extends Application {
         }
         String selected = (String)choiseDialog.getSelectedItem();
         switch(selected) {
-            case "User":
+            case OPTION_0:
                 showUserSignIn();
                 break;
-            case "Admin (Delegated person)":
+            case OPTION_1:
                 showAdminWorkspace();
                 break;
             default:
@@ -163,7 +171,7 @@ public class Main extends Application {
             stage.show();
         }
         catch(Exception ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE,null,ex);
             showErrorAlertJarCorrupted();
             System.exit(1);
         }
@@ -185,7 +193,7 @@ public class Main extends Application {
             stage.show();
         }
         catch(Exception ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE,null,ex);
             showErrorAlertJarCorrupted();
             System.exit(1);
         }
