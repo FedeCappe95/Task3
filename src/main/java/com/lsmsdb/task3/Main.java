@@ -33,7 +33,7 @@ public class Main extends Application {
             "java.util.logging.SimpleFormatter.format",
             "[%1$tF %1$tT %1$tL] %2$s %4$s: %5$s%6$s%n"
         );
-        if(args[0].equals("--createdb") || args[0].equals("--addplaces")) {
+        if(args.length > 0 && (args[0].equals("--createdb") || args[0].equals("--addplaces"))) {
             Populator.main(args);
             Platform.exit();
             return;
