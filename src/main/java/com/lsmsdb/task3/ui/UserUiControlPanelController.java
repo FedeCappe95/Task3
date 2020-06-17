@@ -248,10 +248,10 @@ public class UserUiControlPanelController implements Initializable {
         );
         tablePlaces.getItems().setAll(places);
         for (Place place : places) {
-            mapController.createAndAddMarker(
-                    new Coordinate(place.getName(), place.getLatitude(), place.getLongitude())
-            )
-                    .setTitle(place.getName() + " - " + place.getInfectionRisk());
+            Coordinate markerCoord = new Coordinate(place.getName(), place.getLatitude(), place.getLongitude());
+            Marker marker = mapController.createAndAddMarker(markerCoord);
+            if(marker != null)
+                marker.setTitle(place.getName() + " - " + place.getInfectionRisk());
         }
     }
 
@@ -270,16 +270,18 @@ public class UserUiControlPanelController implements Initializable {
             Marker marker = mapController.createAndAddMarker(
                     new Coordinate(place.getLatitude(), place.getLongitude())
             );
-            marker.setTitle(place.getName() + " - " + place.getInfectionRisk());
-            InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-            infoWindowOptions.content(
-                    String.format(
-                            "<h2>%s</h2>Risk index:%.4f",
-                            place.getName(), place.getInfectionRisk()
-                    )
-            );
-            InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
-            mapController.openInfoWindow(infoWindow, marker);
+            if(marker != null) {
+                marker.setTitle(place.getName() + " - " + place.getInfectionRisk());
+                InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+                infoWindowOptions.content(
+                        String.format(
+                                "<h2>%s</h2>Risk index:%.4f",
+                                place.getName(), place.getInfectionRisk()
+                        )
+                );
+                InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
+                mapController.openInfoWindow(infoWindow, marker);
+            }
         }
     }
 

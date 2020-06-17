@@ -55,6 +55,7 @@ public class UserUiMapController implements Initializable {
     /*
      * Other objects
     */
+    private boolean mapIsInitialized;
     private Runnable onCenterChangeListener;
     private GoogleMap map;
     private MapOptions mapOptions;
@@ -74,6 +75,8 @@ public class UserUiMapController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        mapIsInitialized = false;
+        
         onCenterChangeListener = null;
         
         markers = new ArrayList<>();
@@ -204,6 +207,8 @@ public class UserUiMapController implements Initializable {
         //Also the zoom buttons have to be enabled
         btnZoomIn.setDisable(false);
         btnZoomOut.setDisable(false);
+        
+        mapIsInitialized = true;
     }
 
     /**
@@ -247,6 +252,8 @@ public class UserUiMapController implements Initializable {
      * @return the new marker
      */
     public Marker createAndAddMarker(Coordinate coordinate) {
+        if(!mapIsInitialized)
+            return null;
         return createAndAddMarker(new LatLong(coordinate.getLatitude(), coordinate.getLongitude()));
     }
     
@@ -255,6 +262,8 @@ public class UserUiMapController implements Initializable {
      * @param coordinate 
      */
     public void centerMap(Coordinate coordinate) {
+        if(!mapIsInitialized)
+            return;
         centerMap(new LatLong(coordinate.getLatitude(), coordinate.getLongitude()));
     }
     
@@ -286,6 +295,8 @@ public class UserUiMapController implements Initializable {
      * Remove all markers from the map
      */
     public void clearMarkers() {
+        if(!mapIsInitialized)
+            return;
         map.clearMarkers();
         markers.clear();
     }
@@ -295,6 +306,8 @@ public class UserUiMapController implements Initializable {
      * @param marker The marker to remove from the map
      */
     public void removeMarker(Marker marker) {
+        if(!mapIsInitialized)
+            return;
         map.removeMarker(marker);
         markers.remove(marker);
     }
@@ -305,6 +318,8 @@ public class UserUiMapController implements Initializable {
      * @param marker 
      */
     public void openInfoWindow(InfoWindow infoWindow, Marker marker) {
+        if(!mapIsInitialized)
+            return;
         infoWindow.open(map, marker);
     }
     

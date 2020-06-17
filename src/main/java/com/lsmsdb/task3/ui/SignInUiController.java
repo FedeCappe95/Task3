@@ -205,8 +205,10 @@ public class SignInUiController implements Initializable {
                     stage.setResizable(false);
                     stage.showAndWait();
                     house = controller.getHouse();
-                    if(house == null)
+                    if(house == null){
+                        LOGGER.log(Level.INFO, "signUpAndLogin(...) -> house == null");
                         return;
+                    }
                 } catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
                     System.exit(1);
@@ -225,8 +227,10 @@ public class SignInUiController implements Initializable {
                     stage.setResizable(false);
                     stage.showAndWait();
                     house = controller.getHouse();
-                    if(house == null)
+                    if(house == null){
+                        LOGGER.log(Level.INFO, "signUpAndLogin(...) -> house == null");
                         return;
+                    }
                 } catch (IOException ex) {
                     LOGGER.log(Level.SEVERE, null, ex);
                     System.exit(1);
