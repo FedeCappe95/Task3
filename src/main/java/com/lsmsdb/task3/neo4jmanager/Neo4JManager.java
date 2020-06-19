@@ -1,5 +1,6 @@
 package com.lsmsdb.task3.neo4jmanager;
 
+import com.lsmsdb.task3.Configuration;
 import com.lsmsdb.task3.beans.Person;
 import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.computation.InfectionRiskCalculator;
@@ -859,12 +860,12 @@ public class Neo4JManager {
      * Compute infection risk index of a given place by name
      *
      * @param namePlace the place name
-     * @param timestamp the starting timestamp
+     * @param now the starting timestamp
      * @param validityTimeMills interval of time on which relationship entering
      * the Place node are relevant
      * @return infection risk index of the given place, -1.0 in case of errors.
      */
-    public Double computeRiskInfection(String namePlace, Long validityTimeMills, Long timestamp) {
+    private Double computeRiskInfection(String namePlace, Long validityTimeMills, Long now) {
         if (!connected) {
             return -1.0;
         }
@@ -878,11 +879,11 @@ public class Neo4JManager {
 
                     String query = "MATCH (a:Person), (b:Place {name: $namePlace}),  ((a)-[r:visited]->(b)) WHERE r.timestamp > $val1 RETURN b.area AS placeArea, r.timestamp AS timestamp, a AS Person";
                     HashMap<String, Object> map = new HashMap<>();
-                    map.put("name", namePlace);
-                    map.put("val1", timestamp - validityTimeMills);
+                    map.put("namePlace", namePlace);
+                    map.put("val1", now - validityTimeMills);
                     Result result = tx.run(query, map);
                     if (!result.hasNext()) {
-                        return 0.0;
+                        return -1.0;
                     }
                     while (result.hasNext()) {
                         Record r = result.next();
@@ -907,6 +908,50 @@ public class Neo4JManager {
         }
     }
 
+    /**
+     * For all places (that are not houses) update the infectionRisk
+     */
+    public void updateRisksOfInfectionForPlaces() {
+        if (!connected) {
+            return;
+        }
+        try (Session session = driver.session()) {
+            session.writeTransaction(new TransactionWork<Boolean>() {
+                @Override
+                public Boolean execute(Transaction tx) {
+                    HashMap<Integer,Double> mapPlaceIdRisk = new HashMap();
+                    
+                    String query = "MATCH (a:Place) WHERE a.type <> $houseIdenfifier RETURN a.name as name, ID(a) as id";
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("houseIdenfifier", Place.HOUSE_TYPE_IDENTIFICATOR);
+                    Result result = tx.run(query,map);
+                    if (!result.hasNext()) {
+                        return false;
+                    }
+                    while (result.hasNext()) {
+                        Record r = result.next();
+                        String placeName = r.get("name").asString();
+                        Integer placeId = r.get("id").asInt();
+                        Double risk = computeRiskInfection(placeName, Configuration.getValidityPeriod(), Configuration.now());
+                        if(risk == -1.0d)
+                            continue;
+                        mapPlaceIdRisk.put(placeId,risk);
+                    }
+                    
+                    for(Integer placeId : mapPlaceIdRisk.keySet()) {
+                        String query2 = "MATCH (a:Place) WHERE ID(a) = $id SET a.infectionRisk = $risk";
+                        HashMap<String,Object> map2 = new HashMap<>();
+                        map2.put("risk",mapPlaceIdRisk.get(placeId));
+                        map2.put("id",placeId);
+                        tx.run(query2,map2);
+                    }
+                    
+                    return true;
+                }
+            });
+        }
+    }
+    
     /**
      * Count the number of healed people
      *

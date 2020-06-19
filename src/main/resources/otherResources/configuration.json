@@ -14,5 +14,6 @@
         {"key": "12",        "value": "Moderate"},
         {"key": "18",        "value": "Low"},
         {"key": "MAX_VALUE", "value": "Very low"}
-    ]
+    ],
+    "SERVER_UPDATER_INTERVAL": "14400000"
 }

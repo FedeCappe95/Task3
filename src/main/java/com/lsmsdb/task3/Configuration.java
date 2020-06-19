@@ -31,6 +31,7 @@ public class Configuration {
     private static long USER_MOST_CRITICAL_PLACES_NUMBER = 5;
     private static LinkedHashMap<String,Integer> DISTANCE_LOOKUP_TABLE;
     private static Map<Long,String> INFECTION_RISK_LOOKUP_TABLE;
+    private static long SERVER_UPDATER_INTERVAL;
     
     /*
      * Static initialization
@@ -60,6 +61,8 @@ public class Configuration {
         INFECTION_RISK_LOOKUP_TABLE.put(12L, "Moderate");
         INFECTION_RISK_LOOKUP_TABLE.put(18L, "Low");
         INFECTION_RISK_LOOKUP_TABLE.put(Long.MAX_VALUE, "Very low");
+        
+        SERVER_UPDATER_INTERVAL = 14400000L;
     }
     
     
@@ -98,6 +101,8 @@ public class Configuration {
                         o.getString("value")
                 );
             });
+            
+            SERVER_UPDATER_INTERVAL = Long.parseLong(jsonRoot.getString("SERVER_UPDATER_INTERVAL"));
         }
         catch(NumberFormatException | JSONException ex) {
             LOGGER.log(
@@ -179,6 +184,10 @@ public class Configuration {
      */
     public static List<String> getDistances() {
         return DISTANCE_LOOKUP_TABLE.keySet().stream().collect(Collectors.toCollection(ArrayList::new));
+    }
+    
+    public static long getServerUpdaterInterval() {
+        return SERVER_UPDATER_INTERVAL;
     }
     
 }

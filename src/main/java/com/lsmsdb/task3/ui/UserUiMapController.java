@@ -61,7 +61,6 @@ public class UserUiMapController implements Initializable {
     private MapOptions mapOptions;
     private Label lblZoom;
     private Label lblCenter;
-    private Label lblRadius;
     private ComboBox<MapTypeIdEnum> mapTypeCombo;
     private Button btnZoomOut;
     private Button btnZoomIn;
@@ -95,7 +94,6 @@ public class UserUiMapController implements Initializable {
 
         lblZoom = new Label("N/D");
         lblCenter = new Label("N/D");
-        lblRadius = new Label("5 Km");
         
         mapTypeCombo = new ComboBox<>();
         mapTypeCombo.setOnAction(e -> {
@@ -108,8 +106,7 @@ public class UserUiMapController implements Initializable {
                 btnZoomOut,
                 mapTypeCombo,
                 new Label("Zoom: "), lblZoom,
-                new Label("Center: "), lblCenter,
-                new Label("Radius: "), lblRadius
+                new Label("Center: "), lblCenter
 	);
         
         mapInitialization();
@@ -217,7 +214,6 @@ public class UserUiMapController implements Initializable {
      */
     protected void centerMap(LatLong location) {
         map.setCenter(location);
-        circle.setCenter(location);
         if(onCenterChangeListener != null)
             onCenterChangeListener.run();
     }
