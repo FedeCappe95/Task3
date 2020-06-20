@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class Person {
     
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd:MM:hhhh hh:mm");
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
     
     private String fiscalCode;
     private String name;

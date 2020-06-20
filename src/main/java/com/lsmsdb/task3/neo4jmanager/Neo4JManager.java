@@ -6,6 +6,8 @@ import com.lsmsdb.task3.beans.Place;
 import com.lsmsdb.task3.computation.InfectionRiskCalculator;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
@@ -21,6 +23,8 @@ import org.neo4j.driver.TransactionWork;
  */
 public class Neo4JManager {
 
+    private static final Logger LOGGER = Logger.getLogger(Neo4JManager.class.getName());
+    
     private static Neo4JManager istance = null;
     private static String hostUri;
     private static Driver driver;
@@ -55,7 +59,7 @@ public class Neo4JManager {
         try {
             driver.verifyConnectivity();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE,"",e);
             driver.close();
         }
         try (Session session = driver.session()) {
@@ -65,12 +69,11 @@ public class Neo4JManager {
             hostname_ = hostname;
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE,"",e);
             driver.close();
             connected = false;
             return false;
         }
-
     }
 
     /**
@@ -104,7 +107,6 @@ public class Neo4JManager {
             return null;
         }
         return hostUri;
-
     }
 
     /**
@@ -142,9 +144,8 @@ public class Neo4JManager {
                 driver.close();
                 return true;
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE,"",e);
             return false;
         }
         return false;
@@ -174,7 +175,6 @@ public class Neo4JManager {
                         return result.next().get("howmuch").asLong();
                     }
                 }
-
             });
         }
     }    
@@ -204,7 +204,6 @@ public class Neo4JManager {
                         return new Person(result.next().get("person").asMap());
                     }
                 }
-
             });
         }
     }
@@ -269,11 +268,7 @@ public class Neo4JManager {
                     map.put("timestampInfected", p.getTimestampInfected());
                     map.put("timestampHealed", p.getTimestampHealed());
                     Result result = tx.run(query, map);
-                    if (!result.hasNext()) {
-                        return false;
-                    } else {
-                        return true;
-                    }
+                    return result.hasNext();
                 }
             });
         }
@@ -313,14 +308,8 @@ public class Neo4JManager {
                     map.put("city", p.getCity());
 
                     Result result = tx.run(query, map);
-                    if (!result.hasNext()) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-
+                    return result.hasNext();
                 }
-
             });
         }
     }
@@ -349,7 +338,6 @@ public class Neo4JManager {
 
                     tx.run(query, map);
                     return true;
-
                 }
             });
         }
@@ -379,7 +367,6 @@ public class Neo4JManager {
 
                     tx.run(query, map);
                     return true;
-
                 }
             });
         }
@@ -454,16 +441,14 @@ public class Neo4JManager {
 
                 tx.commit();
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE,"",e);
                 if (tx != null) {
                     tx.rollback();
                     return false;
                 }
             }
-
         }
         return true;
-
     }
 
     /**
@@ -499,7 +484,6 @@ public class Neo4JManager {
                 }
             });
         }
-
     }
 
     /**
@@ -598,7 +582,6 @@ public class Neo4JManager {
                     tx.run(query, map);
                     return true;
                 }
-
             });
         }
     }
@@ -646,7 +629,6 @@ public class Neo4JManager {
                 }
             });
         }
-
     }
 
     /**
@@ -689,7 +671,6 @@ public class Neo4JManager {
                 }
             });
         }
-
     }
 
     /**
@@ -909,6 +890,53 @@ public class Neo4JManager {
     }
 
     /**
+     * Compute infection risk index of a given place by name
+     *
+     * @param tx the currenctly opened Transaction
+     * @param namePlace the place name
+     * @param now the starting timestamp
+     * @param validityTimeMills interval of time on which relationship entering
+     * the Place node are relevant
+     * @return infection risk index of the given place, -1.0 in case of errors.
+     */
+    private Double computeRiskInfection(Transaction tx, String namePlace, Long validityTimeMills, Long now) {
+        if (!connected) {
+            return -1.0;
+        }
+
+        Long placeArea = 0L;
+        ArrayList<Person> listPerson = new ArrayList<>();
+        ArrayList<Long> listTimestamp = new ArrayList<>();
+
+        String query = "MATCH (a:Person), (b:Place {name: $namePlace}),  ((a)-[r:visited]->(b)) WHERE r.timestamp > $val1 RETURN b.area AS placeArea, r.timestamp AS timestamp, a AS Person";
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("namePlace", namePlace);
+        map.put("val1", now - validityTimeMills);
+        Result result = tx.run(query, map);
+        if (!result.hasNext()) {
+            return -1.0;
+        }
+        while (result.hasNext()) {
+            Record r = result.next();
+            placeArea = r.get("placeArea").asLong();
+            listPerson.add(new Person(r.get("Person").asMap()));
+            listTimestamp.add(r.get("timestamp").asLong());
+        }
+        InfectionRiskCalculator calculator = new InfectionRiskCalculator(placeArea);
+        for (int i = 0; i < listTimestamp.size(); ++i) {
+            Long timestamp = listTimestamp.get(i);
+            Person person = listPerson.get(i);
+            boolean isInfected = false;
+            if (timestamp > person.getTimestampInfected() - validityTimeMills && timestamp < person.getTimestampHealed()) {
+                isInfected = true;
+            }
+            calculator.addIncomingArc(isInfected, timestamp);
+        }
+
+        return calculator.getInfectionRisk();
+    }
+    
+    /**
      * For all places (that are not houses) update the infectionRisk
      */
     public void updateRisksOfInfectionForPlaces() {
@@ -932,7 +960,7 @@ public class Neo4JManager {
                         Record r = result.next();
                         String placeName = r.get("name").asString();
                         Integer placeId = r.get("id").asInt();
-                        Double risk = computeRiskInfection(placeName, Configuration.getValidityPeriod(), Configuration.now());
+                        Double risk = computeRiskInfection(tx, placeName, Configuration.getValidityPeriod(), Configuration.now());
                         if(risk == -1.0d)
                             continue;
                         mapPlaceIdRisk.put(placeId,risk);
@@ -980,5 +1008,5 @@ public class Neo4JManager {
         }
     }
 
-    /* ################################### FINE QUERY ########################################## */
+    /* ################################### END QUERY ########################################## */
 }
