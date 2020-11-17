@@ -51,7 +51,7 @@ public class UserUiMapController implements Initializable {
     private static final double INITIAL_MAP_POSITION_LATITUDE = 43.718609D;
     private static final double INITIAL_MAP_POSITION_LONGITUDE = 10.942520D;
     private static final Logger LOGGER = Logger.getLogger(UserUiMapController.class.getName());
-    
+
     /*
      * Other objects
     */
@@ -75,11 +75,11 @@ public class UserUiMapController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         mapIsInitialized = false;
-        
+
         onCenterChangeListener = null;
-        
+
         markers = new ArrayList<>();
-        
+
         btnZoomIn = new Button("Zoom In");
         btnZoomIn.setOnAction(e -> {
             map.zoomProperty().set(map.getZoom() + 1);
@@ -94,13 +94,13 @@ public class UserUiMapController implements Initializable {
 
         lblZoom = new Label("N/D");
         lblCenter = new Label("N/D");
-        
+
         mapTypeCombo = new ComboBox<>();
         mapTypeCombo.setOnAction(e -> {
            map.setMapType(mapTypeCombo.getSelectionModel().getSelectedItem());
         });
         mapTypeCombo.setDisable(true);
-		
+
         toolBar.getItems().addAll(
                 btnZoomIn,
                 btnZoomOut,
@@ -108,16 +108,15 @@ public class UserUiMapController implements Initializable {
                 new Label("Zoom: "), lblZoom,
                 new Label("Center: "), lblCenter
 	);
-        
+
         mapInitialization();
     }
-    
+
     /**
      * Initializes the map.
      * This is the initialization second stage
      */
     public void mapInitialization() {
-        //mapView.setKey("AIzaSyBYpFGg3-OsvEG6Ic5w7HVjVckyfgDD3r4");
         MapComponentInitializedListener mapComponentInitializedListener = new MapComponentInitializedListener() {
             @Override
             public void mapInitialized() {
@@ -135,18 +134,18 @@ public class UserUiMapController implements Initializable {
                         //.styleString("[{'featureType':'landscape','stylers':[{'saturation':-100},{'lightness':65},{'visibility':'on'}]},{'featureType':'poi','stylers':[{'saturation':-100},{'lightness':51},{'visibility':'simplified'}]},{'featureType':'road.highway','stylers':[{'saturation':-100},{'visibility':'simplified'}]},{\"featureType\":\"road.arterial\",\"stylers\":[{\"saturation\":-100},{\"lightness\":30},{\"visibility\":\"on\"}]},{\"featureType\":\"road.local\",\"stylers\":[{\"saturation\":-100},{\"lightness\":40},{\"visibility\":\"on\"}]},{\"featureType\":\"transit\",\"stylers\":[{\"saturation\":-100},{\"visibility\":\"simplified\"}]},{\"featureType\":\"administrative.province\",\"stylers\":[{\"visibility\":\"off\"}]},{\"featureType\":\"water\",\"elementType\":\"labels\",\"stylers\":[{\"visibility\":\"on\"},{\"lightness\":-25},{\"saturation\":-100}]},{\"featureType\":\"water\",\"elementType\":\"geometry\",\"stylers\":[{\"hue\":\"#ffff00\"},{\"lightness\":-25},{\"saturation\":-97}]}]")
                 ;
                 map = mapView.createMap(mapOptions);
-                
+
                 //UI event handlers (map)
                 map.addUIEventHandler(UIEventType.click, (JSObject obj) -> {
                     LatLong ll = new LatLong((JSObject) obj.getMember("latLng"));
                     centerMap(ll);
                 });
-                
+
                 //Next initialization step
                 postMapInitialization();
             }
         };
-        
+
         /*
          * GMapsFX has a bug solved in release 2.12.2.
          * Previous release has a the method (GoogleMapView.addMapInializedListener)
@@ -179,7 +178,7 @@ public class UserUiMapController implements Initializable {
             LOGGER.log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Initializes remaining components.
      * This is the initialization third stage
@@ -195,29 +194,29 @@ public class UserUiMapController implements Initializable {
         map.zoomProperty().addListener((ObservableValue<? extends Number> obs, Number o, Number n) -> {
             lblZoom.setText(n.toString());
         });
-        
+
         //mapTypeCombo has to be populated and activated
         mapTypeCombo.getItems().addAll(MapTypeIdEnum.ALL);
         mapTypeCombo.getSelectionModel().select(1);
         mapTypeCombo.setDisable(false);
-        
+
         //Also the zoom buttons have to be enabled
         btnZoomIn.setDisable(false);
         btnZoomOut.setDisable(false);
-        
+
         mapIsInitialized = true;
     }
 
     /**
      * Center the map to location
-     * @param location 
+     * @param location
      */
     protected void centerMap(LatLong location) {
         map.setCenter(location);
         if(onCenterChangeListener != null)
             onCenterChangeListener.run();
     }
-    
+
     /**
      * Create and add a marker on the map
      * @param location
@@ -231,17 +230,17 @@ public class UserUiMapController implements Initializable {
         markers.add(marker);
         return marker;
     }
-    
-    
-    
-    
+
+
+
+
     /*
     * The following methods are used to "control" the map and to retrieve data
     * from the outside.
     * In particular, the user will interact with a GUI class which it will call
     * these methods.
     */
-    
+
     /**
      * Create and add a marker on the map
      * @param coordinate
@@ -252,41 +251,41 @@ public class UserUiMapController implements Initializable {
             return null;
         return createAndAddMarker(new LatLong(coordinate.getLatitude(), coordinate.getLongitude()));
     }
-    
+
     /**
      * Center the map to coordinates
-     * @param coordinate 
+     * @param coordinate
      */
     public void centerMap(Coordinate coordinate) {
         if(!mapIsInitialized)
             return;
         centerMap(new LatLong(coordinate.getLatitude(), coordinate.getLongitude()));
     }
-    
+
     /**
      * Return the actual center of the map that it is also the center of the
      * cirle
-     * @return 
+     * @return
      */
     public Coordinate getCenter() {
         return new Coordinate("", circle.getCenter().getLatitude(), circle.getCenter().getLongitude());
     }
-    
+
     /**
      * Set a listener (Runnable) for when the center changes
-     * @param onCenterChangeListener 
+     * @param onCenterChangeListener
      */
     public void setOnCenterChangeListener(Runnable onCenterChangeListener) {
         this.onCenterChangeListener = onCenterChangeListener;
     }
-    
+
     /**
      * Remove the listener (Runnable) for when the center changes
      */
     public void removeOnCenterChangeListener() {
         this.onCenterChangeListener = null;
     }
-    
+
     /**
      * Remove all markers from the map
      */
@@ -296,7 +295,7 @@ public class UserUiMapController implements Initializable {
         map.clearMarkers();
         markers.clear();
     }
-    
+
     /**
      * Remove one marker from the map
      * @param marker The marker to remove from the map
@@ -307,16 +306,16 @@ public class UserUiMapController implements Initializable {
         map.removeMarker(marker);
         markers.remove(marker);
     }
-    
+
     /**
      * Open an InfoWindows infoWindow for the Marker marker
      * @param infoWindow
-     * @param marker 
+     * @param marker
      */
     public void openInfoWindow(InfoWindow infoWindow, Marker marker) {
         if(!mapIsInitialized)
             return;
         infoWindow.open(map, marker);
     }
-    
+
 }
